@@ -1,8 +1,8 @@
 # RELEASE_PURITY_v1 — Unity public measure
 
 **Date:** 2026-08-23  
-**Status:** Released to the wild as **public measure under claim ≤ evidence**  
-**Not claimed:** Cosmic absolute security, final physics, live payment rails, deployed biomarkers, hash-as-KYC
+**Status:** Released as **public measure under claim ≤ evidence**  
+**Not claimed:** Absolute final security, final physics, live payment rails, deployed biomarkers, hash-as-KYC
 
 ---
 
@@ -20,11 +20,11 @@ The sealed surface was stressed for:
 | Fake global flat price as fairness | Pricing v3 — log · PPP · γ · prepared-by-default adaptation |
 | Silent “we are done forever” | STRESS_DISSOLVE · supersession under same stick |
 
-**Purity rule used:** If a revision would only add theater, vanity, or un-evidenced cosmic claims, omit it. If a revision closes a real access-truth or equal-law hole, keep it.
+**Purity rule:** If a revision only adds theater, vanity, or un-evidenced absolute claims, omit it. If a revision closes a real access-truth or equal-law hole, keep it.
 
 ---
 
-## What is released to the wild
+## What is released
 
 - Public site canon (local `unity-site/` → deploy target `https://dualiscapax.ai/`)
 - Protocol research: `https://github.com/digenova77-ui/efuse-unity`
@@ -34,7 +34,7 @@ The sealed surface was stressed for:
 
 ---
 
-## Residual gaps (honest — still defend by principle)
+## Residual gaps (honest)
 
 1. Payment gateway **not built**  
 2. Access-layer policy on AI **not applied** yet  
@@ -48,20 +48,26 @@ These gaps are **not** hidden. Closing them is future engineering under equal la
 
 ---
 
-## Why release now (security of the shared playground)
+## Why release now
 
 Further delay does not increase integrity of what is already true:
 
 - Empty center and equal stick are stated  
 - Tamper path is signature-bound until e-fuse  
 - Foreign agents are identity-bound for access-truth only  
-- Pricing cannot buy the glass  
+- Pricing cannot buy Mirror outcome  
 - Keys stay with the holder and the law  
 
-**Cosmic absolute** is not a release criterion we can honestly meet. **Defendable Unity principles under claim ≤ evidence** is. This release is that bar — nothing more, nothing less.
+**Absolute final security** is not a release criterion we can honestly meet. **Defendable Unity principles under claim ≤ evidence** is. This release is that bar — nothing more, nothing less.
+
+---
+
+## Language
+
+Prefer plain operational terms. Avoid poetic absolute metaphors (cosmic, universe-as-theater, glass-as-mysticism). Technical terms (Mirror 0|1, residual, e-fuse, empty center) stay as defined protocol vocabulary.
 
 ---
 
 ## Supersession
 
-If multi-step stress breaks this measure, it dissolves. What replaces it does so under the same stick, not by throne.
+If multi-step stress breaks this measure, it dissolves. What replaces it does so under the same stick, not by privilege.
