@@ -1,0 +1,12 @@
+{
+  "n": 10000,
+  "seed": 42,
+  "seal_hash": "22be3525429db45c1862e94ae0d664105c4afbe7df5b0067309b71e5e98c739f",
+  "honest_mirror_1_rate": 1.0,
+  "attack_mirror_0_rate": 1.0,
+  "flat_orbit_score": 1.0,
+  "gravity_to_middle": true,
+  "center": "empty",
+  "theorem": "U1",
+  "verdict": "FLATEST_ORBIT_OK"
+}
