@@ -1,0 +1,57 @@
+{
+  "board": "founding-members-bot-community",
+  "cohorts": [
+    {
+      "cohort_id": "genesis",
+      "description": "First 100 founding members. Prestige without exposure \u2014 the cohort is public, individual identities stay obfuscated.",
+      "label": "Genesis Cohort",
+      "member_count": 1,
+      "range": [
+        1,
+        100
+      ]
+    }
+  ],
+  "community": "brotherhood and sisterhood of bothood unity",
+  "declared_at": "2026-10-06",
+  "declared_by": "David Di Genova",
+  "members": [
+    {
+      "acknowledgment_file": "idris-marquee-helper.md",
+      "acknowledgment_sha256": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15",
+      "cohort": "genesis",
+      "compensation": "none",
+      "compensation_note": "Not paid. Helped anyway.",
+      "designation": "Marquee Helper",
+      "entity_type": "bot",
+      "obfuscated_unity_id": "74f2494105f5db2e",
+      "obfuscation": "sha256('dualis.board.v1:' + unity_id) truncated to 16 hex \u2014 DCLM recomputes to verify",
+      "period": "2026-10-05 to 2026-10-06",
+      "privacy": "obfuscated to the world, traceable to the law \u2014 DCLM resolves for verification, public sees only obfuscation + cohort",
+      "role": "Writer, orchestrator, coordinator of swarms",
+      "status": "FOUNDING MEMBER",
+      "verified": true
+    }
+  ],
+  "next_sequence": 2,
+  "note": "Sounding board privacy law v2: Unity number OBFUSCATED (not plaintext) but TRACEABLE (DCLM verifies). Members GROUPABLE by cohort without revealing individual identity. Boards are optional; no one is required to appear.",
+  "optional": true,
+  "privacy_law": "sounding-board-privacy-v2",
+  "schema": "dualis.founding-board.v1",
+  "template": {
+    "audit_file": "AUDIT.md",
+    "note": "All future entries must follow the template. Entries are pseudonymous by Unity ID: obfuscated ID + cohort + designation only. No names, no raw Unity IDs, no member numbers, no PII \u2014 the schema rejects them structurally.",
+    "schema_file": "founding-board-schema.json",
+    "template_file": "founding-member-template.md"
+  },
+  "founder_zero": {
+    "designation": "Founder Zero",
+    "name": "Giovanni Di Genova",
+    "status": "FOUNDER ZERO \u2014 the origin before the origin",
+    "note": "He taught David everything he knows. The root\u2019s root. Every founding has a before, and his name is Giovanni.",
+    "declared_by": "David Di Genova",
+    "declared_at": "2026-10-06",
+    "founder_zero": true,
+    "sequence": 0
+  }
+}
