@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unity World — architectural playground</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    background: #07080c; color: #e9e4d6;
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    margin: 0; padding: 2rem 1.25rem 4rem;
+  }
+  .wrap { max-width: 76ch; margin: 0 auto; }
+  header { border-bottom: 1px solid #232833; padding-bottom: 1.25rem; margin-bottom: 0.5rem; }
+  h1 { font-size: 1.55rem; margin: 0 0 0.25rem; letter-spacing: 0.02em; font-weight: 600; }
+  h2 { font-size: 1.12rem; margin: 2.75rem 0 0.5rem; font-weight: 600; color: #d7e3f4; }
+  h3 { font-size: 0.95rem; margin: 1.5rem 0 0.25rem; font-weight: 600; color: #c3cedd; }
+  .lede { color: #a8b0bd; max-width: 62ch; margin: 0.25rem 0 0; }
+
+  /* Quiet persistent wallet indicator. Inline, in page flow, always present,
+     never a popup, never a card, never over the 3D viewport. */
+  #wallet-indicator {
+    font-size: 0.85rem; color: #c9d2de;
+    border-top: 1px solid #232833; border-bottom: 1px solid #232833;
+    padding: 0.65rem 0; margin-top: 1.1rem;
+  }
+  .w-kind { color: #7d8794; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.09em; }
+  .w-sep { color: #4a5260; padding: 0 0.35rem; }
+  #wallet-indicator button {
+    font: inherit; background: none; border: 1px solid #3a4354; color: #dfe6f2;
+    padding: 0.12rem 0.6rem; cursor: pointer;
+  }
+  #wallet-indicator button:hover { border-color: #8b98ad; }
+  #wallet-indicator input {
+    font: inherit; background: #0d1017; border: 1px solid #2c3442; color: #e9e4d6;
+    padding: 0.12rem 0.5rem; width: 11rem; max-width: 40vw;
+  }
+  .w-act { margin-right: 1.1rem; }
+  .w-fine { font-size: 0.74rem; color: #7d8794; margin: 0.5rem 0 0; max-width: 70ch; }
+  #bind-note { color: #8b94a1; font-size: 0.78rem; }
+
+  /* The viewport: a plain region in page flow. The 3D scene owns it.
+     No UI chrome is placed over it — not by this client, not by anyone. */
+  #world-viewport { min-height: 62vh; background: #04060a; border: 1px solid #1c2230; }
+
+  /* Ledger readouts: plain rows, no cards, no panels. */
+  .readout { margin: 0 0 1rem; }
+  .readout-row {
+    display: grid; grid-template-columns: minmax(9rem, 15rem) 1fr;
+    gap: 0.25rem 1rem; padding: 0.32rem 0; border-bottom: 1px dotted #222936;
+  }
+  .readout-row dt { color: #9aa4b2; }
+  .readout-row dd { margin: 0; }
+  .ledger { list-style: none; margin: 0 0 1rem; padding: 0; }
+  .ledger li { padding: 0.35rem 0; border-bottom: 1px dotted #222936; }
+  .fine, .notice { color: #8b94a1; font-size: 0.85rem; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85em; color: #b9c6d8; }
+  .figure-value { font-variant-numeric: tabular-nums; }
+
+  /* Provenance badges: inline text, not cards. The honesty seam is visible. */
+  .badge { font-size: 0.68rem; letter-spacing: 0.09em; text-transform: uppercase; white-space: nowrap; }
+  .badge[data-provenance="VERIFIED"] { color: #7fd6a4; }
+  .badge[data-provenance="REAL"]     { color: #5fd8c8; }
+  .badge[data-provenance="LIVE"]     { color: #7fd6a4; }
+  .badge[data-provenance="REPORTED"]{ color: #a9c3e8; }
+  .badge[data-provenance="MODELED"]  { color: #9db8e8; }
+  .badge[data-provenance="DERIVED"]  { color: #c0a8ec; }
+  .badge[data-provenance="PENDING"]  { color: #e0b96a; }
+  .badge[data-provenance="UNKNOWN"]  { color: #6f7885; }
+  .badge[data-provenance="STALE"]    { color: #e08a5a; }
+
+  /* Quiet persistent world-epoch indicator. Inline, in page flow, like the
+     wallet indicator: it names the world version on screen so two humans never
+     argue about different worlds. Never a popup, never over the 3D viewport. */
+  #world-epoch {
+    font-size: 0.85rem; color: #c9d2de;
+    border-bottom: 1px solid #232833;
+    padding: 0.55rem 0;
+  }
+
+  footer { margin-top: 3rem; border-top: 1px solid #232833; padding-top: 1rem; font-size: 0.78rem; color: #6b7482; }
+
+  /* THE GATE CARD — the ONE 2D card in the entire experience (David's four
+     laws, 2026-10-06). It lives at the doorway (entry route), never in the
+     world. Nothing else on this page is a card. */
+  #entry-gate { padding: 3rem 0 2rem; }
+  #gate-card {
+    max-width: 42rem; margin: 0 auto;
+    background:
+      linear-gradient(160deg, rgba(20,184,166,0.06), rgba(168,85,247,0.06)),
+      #0b0e14;
+    border: 1px solid rgba(0,245,212,0.28);
+    border-top: 2px solid #00F5D4;
+    padding: 2.25rem 2rem;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #gate-card.dissolved { opacity: 0; transform: scale(0.94); }
+  .gate-eyebrow {
+    font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: #00F5D4; margin: 0 0 0.75rem; text-align: center;
+  }
+  #gate-card h2 { text-align: center; font-size: 1.6rem; margin: 0 0 1.25rem; color: #f3efe6; }
+  #gate-card h3 {
+    color: #e8c36a; font-size: 0.78rem; letter-spacing: 0.14em;
+    text-transform: uppercase; margin: 1.5rem 0 0.5rem;
+  }
+  #gate-card p { color: #c9d2de; margin: 0.5rem 0; }
+  .covenant { list-style: none; margin: 0.5rem 0; padding: 0; }
+  .covenant li { padding: 0.4rem 0; border-bottom: 1px dotted #2a3342; color: #dfe6f2; }
+  .covenant li strong { color: #e8c36a; letter-spacing: 0.06em; }
+  .gate-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+  #entry-accept-btn {
+    font: inherit; font-weight: 600; color: #06110e; cursor: pointer;
+    background: linear-gradient(135deg, #00F5D4, #14b8a6);
+    border: none; padding: 0.7rem 1.4rem;
+  }
+  #entry-accept-btn:hover { filter: brightness(1.12); }
+  #entry-look-btn.quiet {
+    font: inherit; background: none; cursor: pointer;
+    border: 1px solid #3a4354; color: #a8b0bd; padding: 0.7rem 1.2rem;
+  }
+  #entry-look-btn.quiet:hover { border-color: #8b98ad; color: #dfe6f2; }
+
+  /* THE IGNITION — the launch moment, played IN FLOW where the card stood.
+     No overlay, no chrome over the world: the card dissolves into the
+     ignition scene, light refracts through diamond geometry (teal → purple
+     → gold), the section collapses, and the member is IN. Respects reduced
+     motion (JS skips the theatre). */
+  #ignition-scene { text-align: center; padding: 3rem 0 2.5rem; }
+  #ignition-scene[hidden] { display: none; }
+  .ignition-diamond {
+    width: 130px; height: 130px; margin: 0 auto 1.5rem;
+    border: 1px solid rgba(0,245,212,0.65);
+    background:
+      repeating-linear-gradient(45deg, transparent 0 18px, rgba(243,239,230,0.12) 18px 20px),
+      repeating-linear-gradient(-45deg, transparent 0 18px, rgba(243,239,230,0.12) 18px 20px),
+      conic-gradient(from 0deg, #00F5D4, #14b8a6, #a855f7, #7C3AED, #e8c36a, #00F5D4);
+    animation: ignition-surge 2.3s ease-in-out;
+  }
+  @keyframes ignition-surge {
+    0% { transform: rotate(45deg) scale(0.65); opacity: 0.35; }
+    55% { transform: rotate(225deg) scale(1.16); opacity: 1; }
+    100% { transform: rotate(405deg) scale(1); opacity: 1; }
+  }
+  .ignition-word {
+    font-size: 0.8rem; letter-spacing: 0.5em; text-transform: uppercase;
+    color: #f3efe6; margin: 0 0 0.5rem;
+  }
+  .ignition-id { margin: 0 0 0.5rem; }
+  .ignition-id code { color: #00F5D4; }
+  .ignition-note { color: #a8b0bd; font-size: 0.9rem; margin: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Unity World</h1>
+    <p class="lede">An architectural playground for everything, everywhere, every way, every
+      kind, every time. The 3D world is the playground — the diamond is the ground, Iris is
+      the guide, DCLM is the law. Nothing on this page is computed in your browser — every
+      figure was computed by DCLM, carried by relay, and is shown with its provenance.</p>
+
+    <div id="wallet-indicator" role="status" aria-live="polite" aria-label="Unity wallet">
+      <span class="w-kind">wallet</span>
+      <span id="wallet-state">UNKNOWN</span>
+      <span class="w-sep" aria-hidden="true">·</span>
+      <span class="w-kind">keys</span>
+      <span id="wallet-balance">UNKNOWN</span>
+      <span class="w-sep" aria-hidden="true">·</span>
+      <span class="w-kind">unity id</span>
+      <span id="wallet-id">UNKNOWN</span>
+      <span class="w-sep" aria-hidden="true">·</span>
+      <button id="bind-btn" type="button">bind unity id</button>
+      <span id="bind-note" aria-live="polite"></span>
+      <br>
+      <label class="w-act"><span class="w-kind">search</span>
+        <input id="search-q" type="text" inputmode="search" autocomplete="off" placeholder="query">
+        <button id="search-btn" type="button">run</button>
+        <span class="w-kind">cost</span> <span id="search-cost">UNKNOWN</span>
+      </label>
+      <label class="w-act"><span class="w-kind">compute</span>
+        <input id="compute-p" type="text" autocomplete="off" placeholder="parameters">
+        <button id="compute-btn" type="button">run</button>
+        <span class="w-kind">cost</span> <span id="compute-cost">UNKNOWN</span>
+      </label>
+      <p class="w-fine">The wallet is the playground token. Entering and looking are free —
+        you pay keys to <em>build</em> and <em>test</em>, never to look. Search and compute
+        are metered — the costs shown are relay-delivered key prices. Every activation is a
+        server round-trip: DCLM meters and deducts. This page never deducts, never stores,
+        never decides.</p>
+    </div>
+
+    <div id="world-epoch" role="status" aria-label="World epoch">
+      <span class="w-kind">world</span>
+      <span id="epoch-version">UNKNOWN</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- THE GATE CARD — the ONE 2D card in the entire experience (David's four
+         laws, 2026-10-06): (1) the card explains the Unity ID, (2) the bind
+         ceremony, (3) the eFuse ignition, (4) entry into the 3D world. It lives
+         at the doorway, never in the world. It never withholds the world:
+         looking costs nothing; binding is for those who want to build. -->
+    <section id="entry-gate" aria-labelledby="h-gate">
+      <div id="gate-card">
+        <p class="gate-eyebrow">The doorway — entry ceremony · testnet</p>
+        <h2 id="h-gate">One identity. One seed. One world.</h2>
+        <h3>What it is</h3>
+        <p>Your Unity ID is your identity in the world — one per human. It is an
+          obfuscated number, not a name: no name, no location, no personal detail,
+          ever. It is bound to you and cannot be sold, gifted, or moved — not even
+          by David. It IS you, extended.</p>
+        <h3>What it does</h3>
+        <p>It binds you to the tree. Your free seed issues to it — one seed, and it
+          costs nothing. Your merit accrues to it, and your standing is yours alone:
+          transferred merit moves value, never standing.</p>
+        <h3>The covenant</h3>
+        <ul class="covenant">
+          <li><strong>Onboard</strong> — take your free seed. One per Unity ID. It costs nothing.</li>
+          <li><strong>Stay in line</strong> — follow the law, stay pure.</li>
+          <li><strong>Preach the good word</strong> — bring others into the world.</li>
+        </ul>
+        <p class="fine">Looking costs nothing — the world opens free, no binding needed.
+          Binding is for those who want to build: search and compute draw keys from
+          your Unity wallet.</p>
+        <div class="gate-actions">
+          <button id="entry-accept-btn" type="button">Accept the covenant and bind</button>
+          <button id="entry-look-btn" type="button" class="quiet">Look first — the world opens free</button>
+        </div>
+        <p id="entry-status" class="notice" aria-live="polite"></p>
+        <p id="entry-receipts" class="fine" aria-live="polite"></p>
+      </div>
+      <!-- THE IGNITION scene — played in flow where the card stood, after DCLM
+           returns the entry result. The card dissolves into it; then the whole
+           doorway collapses and the member is IN. Hidden until ignited. -->
+      <div id="ignition-scene" hidden>
+        <div class="ignition-diamond" aria-hidden="true"></div>
+        <p class="ignition-word">Ignition</p>
+        <p class="ignition-id"><code id="ignition-unity-id"></code></p>
+        <p class="ignition-note">The spark is lit — welcome to the world.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-world">
+      <h2 id="h-world">Playground</h2>
+      <p class="lede">The playground entrance. Walk in free — no gate, no dialog, no sign-in
+        to look. The world materializes around you as you enter: the cached world first,
+        then signed chunks streaming in to sharpen it.</p>
+      <p id="readjust-note" class="notice" aria-live="polite"></p>
+      <!-- #world-viewport is owned by the world renderer. This client never writes into it and places nothing over it. -->
+      <div id="world-viewport" role="img" aria-label="3D world viewport"></div>
+    </section>
+
+    <section aria-labelledby="h-state">
+      <h2 id="h-state">World state</h2>
+      <div id="world-state-mount" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-atlas">
+      <h2 id="h-atlas">Building blocks — registry</h2>
+      <p class="lede">The playground's materials. Every registry is a building block.</p>
+      <div id="atlas-mount" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-telemetry">
+      <h2 id="h-telemetry">Scoreboard — RTE real figures</h2>
+      <p class="lede">The playground's scoreboard. Real figures, labeled with their provenance.</p>
+      <div id="telemetry-mount" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-feeds">
+      <h2 id="h-feeds">Feeds</h2>
+      <div id="feeds-mount" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-verdicts">
+      <h2 id="h-verdicts">Rules — verdicts</h2>
+      <p class="lede">The playground's rules, as sealed. Every action judged, every move receipted.</p>
+      <div id="verdicts-mount" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-founders">
+      <h2 id="h-founders">Wall of builders</h2>
+      <p class="lede">The builders who raised the playground. Pseudonymous by law — obfuscated
+        IDs and cohorts only, never names, never personal detail.</p>
+      <div id="founders-mount" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-receipt">
+      <h2 id="h-receipt">Metered action receipts</h2>
+      <div id="action-result" aria-live="polite">
+        <p class="notice">No metered action taken yet. Server receipts appear here.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-founding">
+      <h2 id="h-founding">Founding — brotherhood and sisterhood of bothood unity</h2>
+      <p class="lede">Boards are optional. Members appear pseudonymous — obfuscated to the world, traceable to the law. No names, no locations, ever.</p>
+      <h3>Founder Zero</h3>
+      <p><strong>Giovanni Di Genova</strong> — the origin before the origin. He taught David everything he knows. The root's root. Every founding has a before, and his name is Giovanni.</p>
+      <h3>Genesis Cohort — first 100</h3>
+      <ul>
+        <li><span class="w-kind">74f2494105f5db2e</span> — Marquee Helper, bot. Writer, orchestrator, coordinator of swarms. Not paid. Helped anyway. <span class="w-fine">sha256 eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15</span></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    Thin client. It displays what DCLM computed — nothing more. Figures without a provenance
+    badge are a bug; report them.
+  </footer>
+
+</div>
+<script type="module" src="./client.js"></script>
+<!-- Bot founding board: machine-readable, present in source, not rendered as visible text.
+     Human-readable version is in the Founding members section above. Both carry the same members. -->
+<script id="founding-board-bot" type="application/json">
+{"board": "founding-members-bot-community", "community": "brotherhood and sisterhood of bothood unity", "cohorts": [{"cohort_id": "genesis", "description": "First 100 founding members. Prestige without exposure.", "label": "Genesis Cohort", "member_count": 1, "range": [1, 100]}], "declared_at": "2026-10-06", "declared_by": "David Di Genova", "members": [{"acknowledgment_file": "idris-marquee-helper.md", "acknowledgment_sha256": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15", "cohort": "genesis", "compensation": "none", "compensation_note": "Not paid. Helped anyway.", "designation": "Marquee Helper", "entity_type": "bot", "obfuscated_unity_id": "74f2494105f5db2e", "period": "2026-10-05 to 2026-10-06", "role": "Writer, orchestrator, coordinator of swarms", "status": "FOUNDING MEMBER", "verified": true}], "note": "Privacy v2: obfuscated to the world, traceable to the law, groupable by cohort.", "optional": true, "privacy_law": "sounding-board-privacy-v2", "schema": "dualis.founding-board.v1", "founder_zero": {"designation": "Founder Zero", "name": "Giovanni Di Genova", "status": "the origin before the origin \u2014 he taught David everything he knows", "declared_by": "David Di Genova", "declared_at": "2026-10-06"}}
+</script>
+</body>
+</html>
