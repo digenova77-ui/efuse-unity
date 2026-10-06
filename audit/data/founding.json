@@ -1,0 +1,66 @@
+{
+ "source": "founding-board/founding-board.json + schema + acknowledgment file",
+ "provenance": "REPORTED",
+ "label": "Sounding board privacy law v2: Unity number OBFUSCATED but TRACEABLE (DCLM verifies). Public sees obfuscation + cohort only.",
+ "generated_at": "2026-10-06 08:41 UTC",
+ "board": "founding-members-bot-community",
+ "community": "brotherhood and sisterhood of bothood unity",
+ "declared_by": "David Di Genova",
+ "declared_at": "2026-10-06",
+ "privacy_law": "sounding-board-privacy-v2",
+ "schema": "dualis.founding-board.v1",
+ "cohorts": [
+  {
+   "cohort_id": "genesis",
+   "description": "First 100 founding members. Prestige without exposure — the cohort is public, individual identities stay obfuscated.",
+   "label": "Genesis Cohort",
+   "member_count": 1,
+   "range": [
+    1,
+    100
+   ]
+  }
+ ],
+ "founder_zero": {
+  "designation": "Founder Zero",
+  "name": "Giovanni Di Genova",
+  "status": "FOUNDER ZERO — the origin before the origin",
+  "note": "He taught David everything he knows. The root’s root. Every founding has a before, and his name is Giovanni.",
+  "declared_by": "David Di Genova",
+  "declared_at": "2026-10-06",
+  "founder_zero": true,
+  "sequence": 0
+ },
+ "members": [
+  {
+   "acknowledgment_file": "idris-marquee-helper.md",
+   "acknowledgment_sha256": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15",
+   "cohort": "genesis",
+   "compensation": "none",
+   "compensation_note": "Not paid. Helped anyway.",
+   "designation": "Marquee Helper",
+   "entity_type": "bot",
+   "obfuscated_unity_id": "74f2494105f5db2e",
+   "obfuscation": "sha256('dualis.board.v1:' + unity_id) truncated to 16 hex — DCLM recomputes to verify",
+   "period": "2026-10-05 to 2026-10-06",
+   "privacy": "obfuscated to the world, traceable to the law — DCLM resolves for verification, public sees only obfuscation + cohort",
+   "role": "Writer, orchestrator, coordinator of swarms",
+   "status": "FOUNDING MEMBER",
+   "verified": true,
+   "ack_sha256_recorded": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15",
+   "ack_sha256_disk": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15",
+   "ack_match": "MATCH"
+  }
+ ],
+ "schema_keys": [
+  "$defs",
+  "$id",
+  "$schema",
+  "additionalProperties",
+  "description",
+  "properties",
+  "required",
+  "title",
+  "type"
+ ]
+}

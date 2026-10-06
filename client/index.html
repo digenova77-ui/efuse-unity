@@ -159,8 +159,8 @@
   <header>
     <h1>Unity World</h1>
     <p class="lede">An architectural playground for everything, everywhere, every way, every
-      kind, every time. The 3D world is the playground — the diamond is the ground, Iris is
-      the guide, DCLM is the law. Nothing on this page is computed in your browser — every
+      kind, every time. The 3D world is coming — it will be the playground: the diamond the
+      ground, Iris the guide, DCLM the law. Nothing on this page is computed in your browser — every
       figure was computed by DCLM, carried by relay, and is shown with its provenance.</p>
 
     <div id="wallet-indicator" role="status" aria-live="polite" aria-label="Unity wallet">
@@ -248,11 +248,16 @@
     <section aria-labelledby="h-world">
       <h2 id="h-world">Playground</h2>
       <p class="lede">The playground entrance. Walk in free — no gate, no dialog, no sign-in
-        to look. The world materializes around you as you enter: the cached world first,
+        to look. The playground's 3D ground is PENDING — when the world renderer ships,
+        the world will materialize around you as you enter: the cached world first,
         then signed chunks streaming in to sharpen it.</p>
       <p id="readjust-note" class="notice" aria-live="polite"></p>
-      <!-- #world-viewport is owned by the world renderer. This client never writes into it and places nothing over it. -->
-      <div id="world-viewport" role="img" aria-label="3D world viewport"></div>
+      <!-- #world-viewport is RESERVED for the world renderer (PENDING — it has not
+           shipped). This client never writes into it and places nothing over it. -->
+      <div id="world-viewport" role="img" aria-label="Reserved 3D ground, PENDING — the world renderer has not shipped yet"></div>
+      <p class="fine">PENDING — the 3D ground is not built yet. This slot is the reservation:
+        the world renderer will mount here when it ships. Everything around it — the gate,
+        the wallet, the registers — is live now.</p>
     </section>
 
     <section aria-labelledby="h-state">

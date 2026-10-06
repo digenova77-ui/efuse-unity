@@ -1,0 +1,10 @@
+{
+  "unity:testnet:389ac5d912730c8da8f5813f291e95c283b49343936faa74d83b91b5ab27a23d": {
+    "granted_at": 1791275704,
+    "price": 0,
+    "receipt_id": "rcpt:ef39912af3f12d7f8d2a2cedcacafe05985e3cfb66f501670927bae506f9e9e8",
+    "seed_id": "seed:b311b859da1fbec9955c149371d722e9",
+    "transferable": false,
+    "unity_id": "unity:testnet:389ac5d912730c8da8f5813f291e95c283b49343936faa74d83b91b5ab27a23d"
+  }
+}

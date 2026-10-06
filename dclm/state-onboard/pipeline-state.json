@@ -1,0 +1,1397 @@
+{
+  "consumed_work_receipts": {},
+  "destinations": {
+    "CORE_CAUSE_LOCK": {
+      "balance_cents": 0,
+      "entries": []
+    },
+    "PEG_SUPPORT": {
+      "balance_cents": 0,
+      "entries": []
+    },
+    "PLAYGROUND_FUEL": {
+      "balance_cents": 0,
+      "entries": []
+    }
+  },
+  "escrow": {
+    "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2": {
+      "balance_cents": 24196500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 24196500000,
+          "at": "2026-10-06T08:59:40.585212+00:00",
+          "split_id": "9336fd6dc2496704c14de9b1d539cc2516a669d0072a24156dfe34aaea2e8587",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a": {
+      "balance_cents": 24196500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 24196500000,
+          "at": "2026-10-06T09:10:29.910492+00:00",
+          "split_id": "9dd4593c922b343b3b1c30a83d2bd21d68973e000e9fe200113b60371821e370",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd": {
+      "balance_cents": 2422500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 2422500000,
+          "at": "2026-10-06T08:59:58.128173+00:00",
+          "split_id": "b9db0fe8d034bff8f0eb53d54039eff40daa6830acad9cd8e7e4d01ae44f1df0",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080": {
+      "balance_cents": 9158000000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 9158000000,
+          "at": "2026-10-06T09:03:40.884166+00:00",
+          "split_id": "31c74ccce8ce518743a6a9f5b1e55344161da116b8f3a40db484b98c7360a6e7",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66": {
+      "balance_cents": 9158000000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 9158000000,
+          "at": "2026-10-06T08:59:50.112198+00:00",
+          "split_id": "c176b6051aea48b592cf4ea1245678a494b28d86e78b375d58aa9a30b8847e25",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26": {
+      "balance_cents": 2422500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 2422500000,
+          "at": "2026-10-06T09:10:45.992210+00:00",
+          "split_id": "7521ebb1cf5aece6697082cbb0500143bc20cccf29db6a03d294f9415d723118",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c": {
+      "balance_cents": 2422500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 2422500000,
+          "at": "2026-10-06T09:03:49.501984+00:00",
+          "split_id": "010015fde0d15754ac266cd324f7e4dbe294a42cf62f1a35ac85144646044079",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f": {
+      "balance_cents": 24196500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 24196500000,
+          "at": "2026-10-06T08:55:08.635830+00:00",
+          "split_id": "e7eb87dd603d8679ca53bd7449573631d6dde29a3e3e74b5d4160c5d43231eb1",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa": {
+      "balance_cents": 24196500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 24196500000,
+          "at": "2026-10-06T09:03:34.212146+00:00",
+          "split_id": "eb302ccf4ee2d3a1980b24eaa265f02cb4ceb583274c5dfaadff10640080cc47",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10": {
+      "balance_cents": 9158000000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 9158000000,
+          "at": "2026-10-06T09:10:37.486004+00:00",
+          "split_id": "6a0b0754ffb106bc43c6b4dc1606486e0b4880579917cf9448f7a54b23016278",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e": {
+      "balance_cents": 2422500000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 2422500000,
+          "at": "2026-10-06T08:55:21.885484+00:00",
+          "split_id": "b22b4697eab0770a5a2e2b05a1dfdf9b9e10e2ef9339627395a9ca8f341f2df3",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    },
+    "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa": {
+      "balance_cents": 9158000000,
+      "currency": "CAD",
+      "entries": [
+        {
+          "amount_cents": 9158000000,
+          "at": "2026-10-06T08:55:16.047088+00:00",
+          "split_id": "6471f32ecd5e901f6a76949148b3cb46a6bceea840d105b634396e54202d5702",
+          "status": "AWAITING_SPLIT_RULING"
+        }
+      ]
+    }
+  },
+  "onboarders": {
+    "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T08:59:36.484884+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T085746Z-amina-genesis",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "baa12189823601679e59ea23d7a5a65b9c6f12b3601380d1392029adf0b10889",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2"
+      },
+      "onboard_receipt_id": "baa12189823601679e59ea23d7a5a65b9c6f12b3601380d1392029adf0b10889",
+      "onboarded_at": "2026-10-06T08:59:36.484884+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T085746Z-amina-genesis",
+      "reported_total_cents": 127350000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T09:10:26.554180+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T090830Z-amina-genesis",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "ed294f7f5b050d1ec4317f1ca273a9de84d1a43d2a33aafe0e663037d3cb96be",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a"
+      },
+      "onboard_receipt_id": "ed294f7f5b050d1ec4317f1ca273a9de84d1a43d2a33aafe0e663037d3cb96be",
+      "onboarded_at": "2026-10-06T09:10:26.554180+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T090830Z-amina-genesis",
+      "reported_total_cents": 127350000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T08:59:54.039164+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T085746Z-cato-late",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "9b12c3f2b3cb2fe04a8959d2962240199e4105439dec1c1be722a086fc00dc42",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd"
+      },
+      "onboard_receipt_id": "9b12c3f2b3cb2fe04a8959d2962240199e4105439dec1c1be722a086fc00dc42",
+      "onboarded_at": "2026-10-06T08:59:54.039164+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T085746Z-cato-late",
+      "reported_total_cents": 12750000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T09:03:36.554547+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T090126Z-borin-mid",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "aa22bebd64122eb2b725d6ae61fe5b7ec9ef8a93562767582ef616ca8e98fc55",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080"
+      },
+      "onboard_receipt_id": "aa22bebd64122eb2b725d6ae61fe5b7ec9ef8a93562767582ef616ca8e98fc55",
+      "onboarded_at": "2026-10-06T09:03:36.554547+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T090126Z-borin-mid",
+      "reported_total_cents": 48200000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T08:59:44.892026+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T085746Z-borin-mid",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "55cc675bfd570ebd3f4a848bd2d9086793d1c08494f5e38d9bf4eb1fb4d22131",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66"
+      },
+      "onboard_receipt_id": "55cc675bfd570ebd3f4a848bd2d9086793d1c08494f5e38d9bf4eb1fb4d22131",
+      "onboarded_at": "2026-10-06T08:59:44.892026+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T085746Z-borin-mid",
+      "reported_total_cents": 48200000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T09:10:40.845066+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T090830Z-cato-late",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "817463202e54f4f9544b49e83a0dc6352f6affd52d47fff7296eeb5b999745b9",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26"
+      },
+      "onboard_receipt_id": "817463202e54f4f9544b49e83a0dc6352f6affd52d47fff7296eeb5b999745b9",
+      "onboarded_at": "2026-10-06T09:10:40.845066+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T090830Z-cato-late",
+      "reported_total_cents": 12750000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T09:03:45.220140+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T090126Z-cato-late",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "e5799b53c6f36a53a79f73d63a32a92dbc900248ec89b5120730cd7aa53ef096",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c"
+      },
+      "onboard_receipt_id": "e5799b53c6f36a53a79f73d63a32a92dbc900248ec89b5120730cd7aa53ef096",
+      "onboarded_at": "2026-10-06T09:03:45.220140+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T090126Z-cato-late",
+      "reported_total_cents": 12750000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T08:55:04.746036+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T085317Z-amina-genesis",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "2b847737cdf12b189f454500fcc241456d5a9e0062251e42c956b0bd0861206f",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f"
+      },
+      "onboard_receipt_id": "2b847737cdf12b189f454500fcc241456d5a9e0062251e42c956b0bd0861206f",
+      "onboarded_at": "2026-10-06T08:55:04.746036+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T085317Z-amina-genesis",
+      "reported_total_cents": 127350000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T09:03:30.197980+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T090126Z-amina-genesis",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "9ae7f82b8e91ea16b0a68109fcc64a5d69367ac25e7e3e7bfc2e57b349e01fe2",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa"
+      },
+      "onboard_receipt_id": "9ae7f82b8e91ea16b0a68109fcc64a5d69367ac25e7e3e7bfc2e57b349e01fe2",
+      "onboarded_at": "2026-10-06T09:03:30.197980+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T090126Z-amina-genesis",
+      "reported_total_cents": 127350000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T09:10:33.039445+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T090830Z-borin-mid",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "f6cc1b230470dc0dfc84e3276d3ef6c0c692d24b1b50dc5f1a0b9a3b4fa76520",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10"
+      },
+      "onboard_receipt_id": "f6cc1b230470dc0dfc84e3276d3ef6c0c692d24b1b50dc5f1a0b9a3b4fa76520",
+      "onboarded_at": "2026-10-06T09:10:33.039445+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T090830Z-borin-mid",
+      "reported_total_cents": 48200000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T08:55:18.684612+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T085317Z-cato-late",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "20b037940d191fc4464f93f6658101b53909a6f3267e151a044fcdd0bb20fe91",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e"
+      },
+      "onboard_receipt_id": "20b037940d191fc4464f93f6658101b53909a6f3267e151a044fcdd0bb20fe91",
+      "onboarded_at": "2026-10-06T08:55:18.684612+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T085317Z-cato-late",
+      "reported_total_cents": 12750000000,
+      "residual_remaining_cents": 0
+    },
+    "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa": {
+      "currency": "CAD",
+      "onboard_receipt": {
+        "issued_at": "2026-10-06T08:55:11.822721+00:00",
+        "kind": "ONBOARD",
+        "note": "Unity-bound onboarder registered. No value moved; no projection made. Testnet only.",
+        "outcome": "GRANTED",
+        "paperwork_ref": "paperwork-maximum-run-20261006T085317Z-borin-mid",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "c02f6180e72660ce666fc5e9f57e2d001639d85a659320a9aafbfac4b6116da1",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "ONBOARD_RECEIPT",
+        "unity_id": "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa"
+      },
+      "onboard_receipt_id": "c02f6180e72660ce666fc5e9f57e2d001639d85a659320a9aafbfac4b6116da1",
+      "onboarded_at": "2026-10-06T08:55:11.822721+00:00",
+      "paperwork_ref": "paperwork-maximum-run-20261006T085317Z-borin-mid",
+      "reported_total_cents": 48200000000,
+      "residual_remaining_cents": 0
+    }
+  },
+  "residual_intakes": [
+    {
+      "amount_cents": 127350000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 127350000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T08:55:06.682189+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "5f2dab469c0725a76068829ca7ec3c3460f83189826aaf6450fe993e6722abbc",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "966b5edd525eacb9ff330f85e0bbdb8001a90a7f07bb3592fa777d3b59ad2fe8",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f"
+      },
+      "intake_receipt_id": "966b5edd525eacb9ff330f85e0bbdb8001a90a7f07bb3592fa777d3b59ad2fe8",
+      "intaken_at": "2026-10-06T08:55:06.682189+00:00",
+      "paperwork_hash": "5f2dab469c0725a76068829ca7ec3c3460f83189826aaf6450fe993e6722abbc",
+      "unity_id": "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f"
+    },
+    {
+      "amount_cents": 48200000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 48200000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T08:55:13.997737+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "232c15a7d4a15ad448aa65c23cb027cf45c9ff507c02a02efaa78d1773a92e3e",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "f90cd69a91563667985048ae6d31c33d54967e61a5ebb153aa3950b1740e1603",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa"
+      },
+      "intake_receipt_id": "f90cd69a91563667985048ae6d31c33d54967e61a5ebb153aa3950b1740e1603",
+      "intaken_at": "2026-10-06T08:55:13.997737+00:00",
+      "paperwork_hash": "232c15a7d4a15ad448aa65c23cb027cf45c9ff507c02a02efaa78d1773a92e3e",
+      "unity_id": "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa"
+    },
+    {
+      "amount_cents": 12750000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 12750000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T08:55:20.110838+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "7d5ecfe7dea8488e39f915fe2fe962fcbcd21cc1db0ea827583a29f5b9c712ed",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "1e8409e64c76bb2785383bc75c94956628552f8a9128bbf264c69260adf5e906",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e"
+      },
+      "intake_receipt_id": "1e8409e64c76bb2785383bc75c94956628552f8a9128bbf264c69260adf5e906",
+      "intaken_at": "2026-10-06T08:55:20.110838+00:00",
+      "paperwork_hash": "7d5ecfe7dea8488e39f915fe2fe962fcbcd21cc1db0ea827583a29f5b9c712ed",
+      "unity_id": "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e"
+    },
+    {
+      "amount_cents": 127350000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 127350000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T08:59:38.154292+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "8758d526adcd6241eb033a759fb963df80c4aafa7878dc77afe755eb21f173eb",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "2a53dc9bb611357dc3ec1036599a03d2d6eeacb606d356dda37a9b2d9bdca7ea",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2"
+      },
+      "intake_receipt_id": "2a53dc9bb611357dc3ec1036599a03d2d6eeacb606d356dda37a9b2d9bdca7ea",
+      "intaken_at": "2026-10-06T08:59:38.154292+00:00",
+      "paperwork_hash": "8758d526adcd6241eb033a759fb963df80c4aafa7878dc77afe755eb21f173eb",
+      "unity_id": "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2"
+    },
+    {
+      "amount_cents": 48200000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 48200000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T08:59:47.411792+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "450603a13d81967dec43c3951195ff4a504155e91c5d9871b03844e94f324641",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "2897f4d95762f916981162e56fcf0e9d52714e93194e8900d896537b28f44e1c",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66"
+      },
+      "intake_receipt_id": "2897f4d95762f916981162e56fcf0e9d52714e93194e8900d896537b28f44e1c",
+      "intaken_at": "2026-10-06T08:59:47.411792+00:00",
+      "paperwork_hash": "450603a13d81967dec43c3951195ff4a504155e91c5d9871b03844e94f324641",
+      "unity_id": "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66"
+    },
+    {
+      "amount_cents": 12750000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 12750000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T08:59:56.047821+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "cfcf92bcd7c7b8262250dec84aee69fd11feea840ea512a66b7e63efc1e0f20a",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "558cb00ce6ccf9a0d4d1dc54ef6f6176ea1255e9346289fafc9585524264c7d0",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd"
+      },
+      "intake_receipt_id": "558cb00ce6ccf9a0d4d1dc54ef6f6176ea1255e9346289fafc9585524264c7d0",
+      "intaken_at": "2026-10-06T08:59:56.047821+00:00",
+      "paperwork_hash": "cfcf92bcd7c7b8262250dec84aee69fd11feea840ea512a66b7e63efc1e0f20a",
+      "unity_id": "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd"
+    },
+    {
+      "amount_cents": 127350000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 127350000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T09:03:31.547213+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "c50e0a7b9e68e7ac064c03c43eca4b98767e9e8ffb5eba56c3789e07988fd356",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "951567b40f990f7a97e96de06a2d4570d4d81a979dd0c0546f135cd21d9e55e6",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa"
+      },
+      "intake_receipt_id": "951567b40f990f7a97e96de06a2d4570d4d81a979dd0c0546f135cd21d9e55e6",
+      "intaken_at": "2026-10-06T09:03:31.547213+00:00",
+      "paperwork_hash": "c50e0a7b9e68e7ac064c03c43eca4b98767e9e8ffb5eba56c3789e07988fd356",
+      "unity_id": "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa"
+    },
+    {
+      "amount_cents": 48200000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 48200000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T09:03:38.866850+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "0e460a4eb460ca3ed8ca7ec9eca523424eaccf1bcaab1006feab366ba438ce15",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "da3eee0f401338791968cbba5c29f3e4ba33e37de059b3b67cc56e2b76f15ead",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080"
+      },
+      "intake_receipt_id": "da3eee0f401338791968cbba5c29f3e4ba33e37de059b3b67cc56e2b76f15ead",
+      "intaken_at": "2026-10-06T09:03:38.866850+00:00",
+      "paperwork_hash": "0e460a4eb460ca3ed8ca7ec9eca523424eaccf1bcaab1006feab366ba438ce15",
+      "unity_id": "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080"
+    },
+    {
+      "amount_cents": 12750000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 12750000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T09:03:47.296166+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "79b238ff3063bccfcbb5f65300a0c173314a24d3561a9687edac671796a3624d",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "8bdc9ac2eb4b451e7ac64813382cd76d5f34e532a832ea45f7d96a9eb0508f20",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c"
+      },
+      "intake_receipt_id": "8bdc9ac2eb4b451e7ac64813382cd76d5f34e532a832ea45f7d96a9eb0508f20",
+      "intaken_at": "2026-10-06T09:03:47.296166+00:00",
+      "paperwork_hash": "79b238ff3063bccfcbb5f65300a0c173314a24d3561a9687edac671796a3624d",
+      "unity_id": "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c"
+    },
+    {
+      "amount_cents": 127350000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 127350000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T09:10:28.492140+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "867e3d255ef182bf4a0277963fda45b7607103446e758e7862b37cc923b44938",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "41b2b81eabe6f01542ae11d826758b0988e00b118a3affbb4611188cbe8d4d34",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a"
+      },
+      "intake_receipt_id": "41b2b81eabe6f01542ae11d826758b0988e00b118a3affbb4611188cbe8d4d34",
+      "intaken_at": "2026-10-06T09:10:28.492140+00:00",
+      "paperwork_hash": "867e3d255ef182bf4a0277963fda45b7607103446e758e7862b37cc923b44938",
+      "unity_id": "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a"
+    },
+    {
+      "amount_cents": 48200000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 48200000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T09:10:35.090590+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "d351f013e96d9133782526acf14a8e03d9969a097301a7f9f899817eb736cda3",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "cb216bee4b39756de21ce17763e1462885071b04c98a62ce24b108551455ee51",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10"
+      },
+      "intake_receipt_id": "cb216bee4b39756de21ce17763e1462885071b04c98a62ce24b108551455ee51",
+      "intaken_at": "2026-10-06T09:10:35.090590+00:00",
+      "paperwork_hash": "d351f013e96d9133782526acf14a8e03d9969a097301a7f9f899817eb736cda3",
+      "unity_id": "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10"
+    },
+    {
+      "amount_cents": 12750000000,
+      "currency": "CAD",
+      "intake_receipt": {
+        "amount_cents": 12750000000,
+        "currency": "CAD",
+        "figure_label": "REPORTED",
+        "intake_class": "residual_figure",
+        "issued_at": "2026-10-06T09:10:43.792268+00:00",
+        "kind": "RESIDUAL_INTAKE",
+        "note": "REPORTED residual figure intaken: real paperwork, paperwork hash recorded. Never modeled.",
+        "outcome": "GRANTED",
+        "paperwork_hash": "ce0b1b1fc46facee52d13cc7af0db89650b95a8586ea601acc58f2effb487160",
+        "provenance": "REPORTED",
+        "reason": null,
+        "receipt_id": "d6c396675583e52b65c0e43af6667f26edaf3fc3b24abee1bee1bc92071454b2",
+        "schema": "unity.onboard.v1.testnet",
+        "testnet": true,
+        "type": "RESIDUAL_INTAKE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26"
+      },
+      "intake_receipt_id": "d6c396675583e52b65c0e43af6667f26edaf3fc3b24abee1bee1bc92071454b2",
+      "intaken_at": "2026-10-06T09:10:43.792268+00:00",
+      "paperwork_hash": "ce0b1b1fc46facee52d13cc7af0db89650b95a8586ea601acc58f2effb487160",
+      "unity_id": "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26"
+    }
+  ],
+  "routing_log": [
+    {
+      "amount_cents": 24196500000,
+      "at": "2026-10-06T08:55:09.914998+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "be3244f4cdfb82a7c8867d2c00d642ccbc01f82db0c89db87592d14ad350e51f",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f"
+    },
+    {
+      "amount_cents": 9158000000,
+      "at": "2026-10-06T08:55:17.890686+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "05fa3e151f8d5183013f2a594b11882e75bfa7087c9e9dc0e539ddb25b8f9a1c",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa"
+    },
+    {
+      "amount_cents": 2422500000,
+      "at": "2026-10-06T08:55:23.784221+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "592c457eb0d93112a125a66c433d36ac7408d3bb9a6b7a6ea7a4fb27af15933c",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e"
+    },
+    {
+      "amount_cents": 24196500000,
+      "at": "2026-10-06T08:59:42.959973+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "1c52a53dde4f0353ccce9dd03f43473f5a4db5ad67a5992647b81c365d0f4d9d",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2"
+    },
+    {
+      "amount_cents": 9158000000,
+      "at": "2026-10-06T08:59:51.711472+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "1e2b381b8405f5a5381e0ada6282d7a1b415a85dfb528ebfd63280305986fdea",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66"
+    },
+    {
+      "amount_cents": 2422500000,
+      "at": "2026-10-06T08:59:59.822256+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "1755ad8059cf6892ae2d2309a99206c5e60b35fef31ebadf3fbcf6ffb6787127",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd"
+    },
+    {
+      "amount_cents": 24196500000,
+      "at": "2026-10-06T09:03:35.377361+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "b30968acca031f629083bba7aaa531e8572988e1c60c674852a0d99e435fe0cf",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa"
+    },
+    {
+      "amount_cents": 9158000000,
+      "at": "2026-10-06T09:03:42.994409+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "ea99710a9c4881522c6c96f4bdcdc4f28061049270a1ce48a46a49801da77509",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080"
+    },
+    {
+      "amount_cents": 2422500000,
+      "at": "2026-10-06T09:03:52.147222+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "45daa81a7f1e131cec48f6add76dd3f9bac0623e03b6c121457b89de659ee8d5",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c"
+    },
+    {
+      "amount_cents": 24196500000,
+      "at": "2026-10-06T09:10:31.377375+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "55599a75de204018bf160c73bf17fd599b2fb987de5c31e36c935bded6c3543b",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a"
+    },
+    {
+      "amount_cents": 9158000000,
+      "at": "2026-10-06T09:10:39.225813+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "150ec586139383160f0f0e611e78b3aa461a62630661b0b2ce55de0d89b4083d",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10"
+    },
+    {
+      "amount_cents": 2422500000,
+      "at": "2026-10-06T09:10:48.214813+00:00",
+      "currency": "CAD",
+      "destinations": null,
+      "routing_receipt_id": "2ca114ca24c7a2534993b82235192cedea37e5ddc1d555599eea21362847eab0",
+      "status": "AWAITING_SPLIT_RULING",
+      "unity_id": "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26"
+    }
+  ],
+  "schema": "unity.onboard.v1.testnet",
+  "splits": [
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 103153500000,
+      "nineteen_cents": 24196500000,
+      "recovered_cents": 127350000000,
+      "split_at": "2026-10-06T08:55:08.635830+00:00",
+      "split_id": "e7eb87dd603d8679ca53bd7449573631d6dde29a3e3e74b5d4160c5d43231eb1",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T08:55:08.635830+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 24196500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 103153500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "08c09505dd5d91ff0bd259dbb482249dfd5acb5fbff03ac3c90b24179b748f81",
+        "recovered_cents": 127350000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "e7eb87dd603d8679ca53bd7449573631d6dde29a3e3e74b5d4160c5d43231eb1",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f"
+      },
+      "split_receipt_id": "08c09505dd5d91ff0bd259dbb482249dfd5acb5fbff03ac3c90b24179b748f81",
+      "unity_id": "unity:testnet:c85f299d6079ac8f8e6d1a39a53ff177367aa4e8138684566d6f93139b52749f"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 39042000000,
+      "nineteen_cents": 9158000000,
+      "recovered_cents": 48200000000,
+      "split_at": "2026-10-06T08:55:16.047088+00:00",
+      "split_id": "6471f32ecd5e901f6a76949148b3cb46a6bceea840d105b634396e54202d5702",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T08:55:16.047088+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 9158000000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 39042000000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "b1f11498bdc6951fa1e540c90b5acde3219a94d7b5a4802f0b2fb6b0506a0ce2",
+        "recovered_cents": 48200000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "6471f32ecd5e901f6a76949148b3cb46a6bceea840d105b634396e54202d5702",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa"
+      },
+      "split_receipt_id": "b1f11498bdc6951fa1e540c90b5acde3219a94d7b5a4802f0b2fb6b0506a0ce2",
+      "unity_id": "unity:testnet:e561b2654b1ad296345023b3e20942684efa32cf86913448b83f328b2cd40afa"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 10327500000,
+      "nineteen_cents": 2422500000,
+      "recovered_cents": 12750000000,
+      "split_at": "2026-10-06T08:55:21.885484+00:00",
+      "split_id": "b22b4697eab0770a5a2e2b05a1dfdf9b9e10e2ef9339627395a9ca8f341f2df3",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T08:55:21.885484+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 2422500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 10327500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "7b1306f227f01f5a08348b1ccdfcb2f2f2288987275022855c8b9198ab3237aa",
+        "recovered_cents": 12750000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "b22b4697eab0770a5a2e2b05a1dfdf9b9e10e2ef9339627395a9ca8f341f2df3",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e"
+      },
+      "split_receipt_id": "7b1306f227f01f5a08348b1ccdfcb2f2f2288987275022855c8b9198ab3237aa",
+      "unity_id": "unity:testnet:e555641cbeb49b625f9722abe6118d2db6c347ef0991bf1ae2840da8b8a4625e"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 103153500000,
+      "nineteen_cents": 24196500000,
+      "recovered_cents": 127350000000,
+      "split_at": "2026-10-06T08:59:40.585212+00:00",
+      "split_id": "9336fd6dc2496704c14de9b1d539cc2516a669d0072a24156dfe34aaea2e8587",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T08:59:40.585212+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 24196500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 103153500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "1051f278a0206cfcb2b1158a93b8d0f2d8d6409b4394d24e7d1e38b8a58693e6",
+        "recovered_cents": 127350000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "9336fd6dc2496704c14de9b1d539cc2516a669d0072a24156dfe34aaea2e8587",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2"
+      },
+      "split_receipt_id": "1051f278a0206cfcb2b1158a93b8d0f2d8d6409b4394d24e7d1e38b8a58693e6",
+      "unity_id": "unity:testnet:06ece27559935ea8353b7716e2637bf8361a7b7248d2c1001de819b27a646fa2"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 39042000000,
+      "nineteen_cents": 9158000000,
+      "recovered_cents": 48200000000,
+      "split_at": "2026-10-06T08:59:50.112198+00:00",
+      "split_id": "c176b6051aea48b592cf4ea1245678a494b28d86e78b375d58aa9a30b8847e25",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T08:59:50.112198+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 9158000000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 39042000000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "f4dad5e031318a0b4e933b18dde529c73c5b8eb2d7f390d07ac4111a6c648110",
+        "recovered_cents": 48200000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "c176b6051aea48b592cf4ea1245678a494b28d86e78b375d58aa9a30b8847e25",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66"
+      },
+      "split_receipt_id": "f4dad5e031318a0b4e933b18dde529c73c5b8eb2d7f390d07ac4111a6c648110",
+      "unity_id": "unity:testnet:7640bc1b2738a580a3f656dd7ba548ae5d3ad7663ae55c61cedef8a6b7198c66"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 10327500000,
+      "nineteen_cents": 2422500000,
+      "recovered_cents": 12750000000,
+      "split_at": "2026-10-06T08:59:58.128173+00:00",
+      "split_id": "b9db0fe8d034bff8f0eb53d54039eff40daa6830acad9cd8e7e4d01ae44f1df0",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T08:59:58.128173+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 2422500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 10327500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "b1e2c1e888d11bfc38ebcffe8ba2f8eefa9032a34fd3b629d34ea15ee0084474",
+        "recovered_cents": 12750000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "b9db0fe8d034bff8f0eb53d54039eff40daa6830acad9cd8e7e4d01ae44f1df0",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd"
+      },
+      "split_receipt_id": "b1e2c1e888d11bfc38ebcffe8ba2f8eefa9032a34fd3b629d34ea15ee0084474",
+      "unity_id": "unity:testnet:723082734abb5297b182cba230e84b284f10af0fd9d238168a4fbf89a71148fd"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 103153500000,
+      "nineteen_cents": 24196500000,
+      "recovered_cents": 127350000000,
+      "split_at": "2026-10-06T09:03:34.212146+00:00",
+      "split_id": "eb302ccf4ee2d3a1980b24eaa265f02cb4ceb583274c5dfaadff10640080cc47",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T09:03:34.212146+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 24196500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 103153500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "0f9dfe4313223cc09a8d7d922295ee701258aab34063666dc94156c89ea03c32",
+        "recovered_cents": 127350000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "eb302ccf4ee2d3a1980b24eaa265f02cb4ceb583274c5dfaadff10640080cc47",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa"
+      },
+      "split_receipt_id": "0f9dfe4313223cc09a8d7d922295ee701258aab34063666dc94156c89ea03c32",
+      "unity_id": "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 39042000000,
+      "nineteen_cents": 9158000000,
+      "recovered_cents": 48200000000,
+      "split_at": "2026-10-06T09:03:40.884166+00:00",
+      "split_id": "31c74ccce8ce518743a6a9f5b1e55344161da116b8f3a40db484b98c7360a6e7",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T09:03:40.884166+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 9158000000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 39042000000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "afd200e7438aa457dc8d6623c955495d2d7c0ed0bb0ac550022ca40632de4c46",
+        "recovered_cents": 48200000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "31c74ccce8ce518743a6a9f5b1e55344161da116b8f3a40db484b98c7360a6e7",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080"
+      },
+      "split_receipt_id": "afd200e7438aa457dc8d6623c955495d2d7c0ed0bb0ac550022ca40632de4c46",
+      "unity_id": "unity:testnet:7305a17884b8ce9bc5e446cab28418f94483383d1a100f983fb26c825895d080"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 10327500000,
+      "nineteen_cents": 2422500000,
+      "recovered_cents": 12750000000,
+      "split_at": "2026-10-06T09:03:49.501984+00:00",
+      "split_id": "010015fde0d15754ac266cd324f7e4dbe294a42cf62f1a35ac85144646044079",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T09:03:49.501984+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 2422500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 10327500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "37f2ea6dcb22a920f38e215a5d552f20e4fd5442673566001b148c92515009e8",
+        "recovered_cents": 12750000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "010015fde0d15754ac266cd324f7e4dbe294a42cf62f1a35ac85144646044079",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c"
+      },
+      "split_receipt_id": "37f2ea6dcb22a920f38e215a5d552f20e4fd5442673566001b148c92515009e8",
+      "unity_id": "unity:testnet:c0cc23eef190f1141c2d02be040c58ccef13dc9867850d3abad9fc6a72c65b3c"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 103153500000,
+      "nineteen_cents": 24196500000,
+      "recovered_cents": 127350000000,
+      "split_at": "2026-10-06T09:10:29.910492+00:00",
+      "split_id": "9dd4593c922b343b3b1c30a83d2bd21d68973e000e9fe200113b60371821e370",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T09:10:29.910492+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 24196500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 103153500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "11a4c6487c9275895ee0adcb1db823bd9fe5ca6f9b44c4fb7e1e85ea46ddb491",
+        "recovered_cents": 127350000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "9dd4593c922b343b3b1c30a83d2bd21d68973e000e9fe200113b60371821e370",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a"
+      },
+      "split_receipt_id": "11a4c6487c9275895ee0adcb1db823bd9fe5ca6f9b44c4fb7e1e85ea46ddb491",
+      "unity_id": "unity:testnet:3832d88f3e7e8a77c7d0ad861e117a96ed38db9cb8a44b444119bc85207e222a"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 39042000000,
+      "nineteen_cents": 9158000000,
+      "recovered_cents": 48200000000,
+      "split_at": "2026-10-06T09:10:37.486004+00:00",
+      "split_id": "6a0b0754ffb106bc43c6b4dc1606486e0b4880579917cf9448f7a54b23016278",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T09:10:37.486004+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 9158000000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 39042000000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "7abc1ce4c00fdeb6550a38d7b9ffef58f13295e03186f28c877b10e331dad2b0",
+        "recovered_cents": 48200000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "6a0b0754ffb106bc43c6b4dc1606486e0b4880579917cf9448f7a54b23016278",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10"
+      },
+      "split_receipt_id": "7abc1ce4c00fdeb6550a38d7b9ffef58f13295e03186f28c877b10e331dad2b0",
+      "unity_id": "unity:testnet:dbd2cc5dba9ae68ee7e4cb0f75d3ce017f3d425b8bf7706d477610dfee456d10"
+    },
+    {
+      "currency": "CAD",
+      "eighty_one_cents": 10327500000,
+      "nineteen_cents": 2422500000,
+      "recovered_cents": 12750000000,
+      "split_at": "2026-10-06T09:10:45.992210+00:00",
+      "split_id": "7521ebb1cf5aece6697082cbb0500143bc20cccf29db6a03d294f9415d723118",
+      "split_receipt": {
+        "currency": "CAD",
+        "issued_at": "2026-10-06T09:10:45.992210+00:00",
+        "kind": "SPLIT_EXECUTE",
+        "leg_19": {
+          "amount_cents": 2422500000,
+          "currency": "CAD",
+          "disposition": "ESCROW_HELD",
+          "escrow_status": "AWAITING_SPLIT_RULING",
+          "note": "The system's 19%: real, recovered, real-world value committed into HELD escrow. Receipted at every step from here.",
+          "pct": 19,
+          "system_value": true
+        },
+        "leg_81": {
+          "amount_cents": 10327500000,
+          "currency": "CAD",
+          "disposition": "ACKNOWLEDGED_OFF_SYSTEM",
+          "note": "The onboarder's 81%: fiat, theirs, untouched. The system never touches it, never claims it, never counts it as system value. Recorded only as acknowledged off-system.",
+          "pct": 81,
+          "system_value": false
+        },
+        "note": "81/19 split executed (David's set ratio). The 81% leg moved nowhere: acknowledged off-system. The 19% leg entered HELD escrow.",
+        "outcome": "GRANTED",
+        "provenance": "DERIVED",
+        "reason": null,
+        "receipt_id": "2c3a902a09396ba6820777db883fb273e2a1dfc0c9f3871e3fbbc2a2a2b9e0df",
+        "recovered_cents": 12750000000,
+        "schema": "unity.onboard.v1.testnet",
+        "split_id": "7521ebb1cf5aece6697082cbb0500143bc20cccf29db6a03d294f9415d723118",
+        "testnet": true,
+        "type": "SPLIT_EXECUTE",
+        "unit": "fiat-cents",
+        "unity_id": "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26"
+      },
+      "split_receipt_id": "2c3a902a09396ba6820777db883fb273e2a1dfc0c9f3871e3fbbc2a2a2b9e0df",
+      "unity_id": "unity:testnet:7c3f38618a86541bde9f4b6e9c05152cce427753efc012a80dbaf8d1a391fd26"
+    }
+  ],
+  "work_intakes": []
+}

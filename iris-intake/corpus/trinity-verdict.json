@@ -1,0 +1,1016 @@
+{
+ "packet": "ED-PROPOSAL-20261003-DCCPWORLD-V1",
+ "packetSha256": "cb5ede72b38e4266601bf2f58337884f1a694543dd0af6971fdb4c86751407a2",
+ "decidedAt": "2026-10-03T07:34:54Z",
+ "rule": "any REJECT -> HOLD; all ANSWER -> IMPLEMENT; else IMPLEMENT-WITH-CONDITIONS; DCLM double-submission with identical inputDigest required for admission",
+ "kernel": {
+  "kernel": "DualisCapax DCLM WASM",
+  "artifact": "dclm_kernel.wasm",
+  "artifactBytes": 26712,
+  "artifactSha256": "ad67077c18931b9def09316291ee7a1bb4cda933d52964877d14756e0db52eb8",
+  "protocolVersion": 2,
+  "maxPayloadBytes": 256,
+  "loadedAt": "2026-10-02T08:00:23.509Z"
+ },
+ "reviews": [
+  {
+   "role": "DCLM",
+   "model": "gpt-5",
+   "overall": "CONDITIONAL"
+  },
+  {
+   "role": "Iris",
+   "model": "claude-sonnet-4-6",
+   "overall": "P1, P2, P3, P4, P5, P7, P9, and P15 are sound as written. P6, P8, and P10–P14, P16, and P17 require the listed privacy, accessibility, integrity, and no-overclaim controls. P18 must not be built as proposed; no automatic identity-linked DCCP binding or proxy path is approved by this review."
+  },
+  {
+   "role": "Twain²",
+   "model": "gemini-3.1-pro-preview",
+   "overall": "The proposal is a solid translation of complex architectural concepts into a static, interactive 3D space. The reliance on browser-native APIs (Speech, WebAuthn, WebGL) requires strict performance and fallback conditions to survive the reality of mobile devices and varied browser security policies. Keep it static, keep it honest, and don't melt the user's phone."
+  }
+ ],
+ "decisions": [
+  {
+   "id": "P1",
+   "disposition": "IMPLEMENT",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Uses dated NASA imagery labeled as record, computes sun/terminator locally, and makes no live imagery claim. Provenance and claim state are explicit.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "Dated NASA imagery is accurately framed as imagery of record rather than live observation, and the proposal makes no authority, identity, or operational claim.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Standard Three.js implementation. NASA imagery is public domain and easy to source. Computable terminator is standard math. Will run smoothly on modern devices.",
+     "conditions": []
+    }
+   },
+   "conditions": [],
+   "dclm": {
+    "payload": "dccpworld|trinity|P1|IMPLEMENT|8aa540c6522f839bfec2892acdf4203f78aa7300e972014028f6475bb04797bc",
+    "recordSha256": "8aa540c6522f839bfec2892acdf4203f78aa7300e972014028f6475bb04797bc",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 239,
+      "inputDigest": "26fa750ee6d1ee15f8398c9aeff7dfff0c88b9cc3b9e06008bab107bad8e5c0b",
+      "stateDigest": "8c61ecf5d99acb8058872f676dea839c41ad0c2df40c47c5ff68a00c73ead05c",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 240,
+      "inputDigest": "26fa750ee6d1ee15f8398c9aeff7dfff0c88b9cc3b9e06008bab107bad8e5c0b",
+      "stateDigest": "681069fba41f77c5a137598ce6ea0a78fc89de0b49824f9cd0ac7426548a31b8",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P2",
+   "disposition": "IMPLEMENT",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Grades are explicitly labeled PILOT/RESEARCH with date; ungraded shows 'not graded'; 'sharpest fact' is sourced to the page; modeled analysis not live. Deterministic placement.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "The proposal preserves source-scoped grades, research date, modeled-analysis status, and explicit ungraded states rather than inventing coverage or presenting a live feed.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Data is static and predefined. Rendering 30 pillars is trivial for WebGL. Clear labeling prevents misrepresentation of live data.",
+     "conditions": []
+    }
+   },
+   "conditions": [],
+   "dclm": {
+    "payload": "dccpworld|trinity|P2|IMPLEMENT|3b165312f5be4bd2453e819903c3a27bd2ff46cb8a43db79d07e417b27a3ff00",
+    "recordSha256": "3b165312f5be4bd2453e819903c3a27bd2ff46cb8a43db79d07e417b27a3ff00",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 241,
+      "inputDigest": "6a54645cf4b5f9f6845a22973d0f8db43a8ec9a51030a0f118b6424007e1b96b",
+      "stateDigest": "a837130bf8c607a43dbf27ff07c2a9fb1c49bc2547b49a001f38a1af1d12b040",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 242,
+      "inputDigest": "6a54645cf4b5f9f6845a22973d0f8db43a8ec9a51030a0f118b6424007e1b96b",
+      "stateDigest": "7094e374cdbe297cdca8de7d95229300d1fd8baeaa1256688ca38b5bb941d686",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P3",
+   "disposition": "IMPLEMENT",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Design-stage listing only; no grades or invented values; sources named. Complies with honest mirror.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "The pharmacology estates are presented as an ungraded design-stage constellation, consistent with the stated absence of source grades and without exposing clinical records or person-level data.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Visual representation of a static list. No grades assigned, adhering strictly to the honest mirror constraint.",
+     "conditions": []
+    }
+   },
+   "conditions": [],
+   "dclm": {
+    "payload": "dccpworld|trinity|P3|IMPLEMENT|8c8b351606b7efbb33f6cbf0886c8ee30bb629e2059a7f410536c6acd191709a",
+    "recordSha256": "8c8b351606b7efbb33f6cbf0886c8ee30bb629e2059a7f410536c6acd191709a",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 243,
+      "inputDigest": "c992054bcad3e89328c6de141ab0a1f66f8c10c1bd51073d720c81a3908ac264",
+      "stateDigest": "a0c4b38e2d96c81ad256f26e7e031420b3960315bfed9b92e8ceceb172a2b962",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 244,
+      "inputDigest": "c992054bcad3e89328c6de141ab0a1f66f8c10c1bd51073d720c81a3908ac264",
+      "stateDigest": "401e5b5bd3227fe9798b6376c960c184b0cf0dd6cc0ddccd43d3ba0f4b500fe3",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P4",
+   "disposition": "IMPLEMENT",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Scopes, guards, and 0.00% PHI invariant are stated; portal figures shown only as portal claims with labels. No PHI is introduced.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "The scopes, guards, PHI invariant, and portal figures are expressly attributed and bounded as portal claims; no patient-level information or unsupported performance claim is proposed.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Static text and numbers attached to 3D objects. Clear attribution to the portal's claims ensures no overclaiming.",
+     "conditions": []
+    }
+   },
+   "conditions": [],
+   "dclm": {
+    "payload": "dccpworld|trinity|P4|IMPLEMENT|df5abb9d1e9a5ff7b9a8917708191c74cd7a2da591099fc9ced301bf44b2464a",
+    "recordSha256": "df5abb9d1e9a5ff7b9a8917708191c74cd7a2da591099fc9ced301bf44b2464a",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 245,
+      "inputDigest": "71c04a80e8fe27510af4c6f2194578d77c7cd5665ed35d54c8a49d9260bbc1a5",
+      "stateDigest": "519c147d6fc85109d7573d4dc1182c364910ac2e8482ccae9a0e5e6c4a726244",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 246,
+      "inputDigest": "71c04a80e8fe27510af4c6f2194578d77c7cd5665ed35d54c8a49d9260bbc1a5",
+      "stateDigest": "442c5f22e52840306b6bcb921b8556e3633817505d72c8d43dc3854e3ae81063",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P5",
+   "disposition": "IMPLEMENT",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Statuses mirror sources; SPEC rooms labeled; empty slots render 0:1; no personal names. Complies with standing laws.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "Statuses remain source-bound, empty slots remain 0:1, spec rooms remain SPEC, and the proposal expressly excludes all person and athlete names from pavilion content.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Safely represents the architecture without faking functionality. Enforces privacy by withholding names and using 0:1 for empty slots.",
+     "conditions": []
+    }
+   },
+   "conditions": [],
+   "dclm": {
+    "payload": "dccpworld|trinity|P5|IMPLEMENT|f79745db2b98faf9bbc0bb4e9f25cb3b8b6f546cccec8dbc455cf09fb559ad08",
+    "recordSha256": "f79745db2b98faf9bbc0bb4e9f25cb3b8b6f546cccec8dbc455cf09fb559ad08",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 247,
+      "inputDigest": "ba689f06817083e416f583f143eb4783dfdb3be239deaf7331cb1027b1bc9818",
+      "stateDigest": "1995f6b0b6ad16655d1daaaf12c27e972f437596f849ff12a347220e12f71fdf",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 248,
+      "inputDigest": "ba689f06817083e416f583f143eb4783dfdb3be239deaf7331cb1027b1bc9818",
+      "stateDigest": "4e9f3dd033ce4a3229bc0eb496cf7d56665d1af0b0cca0e073d99f5872285a17",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P6",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Voice-only Iris with deterministic intent bounds, honest gaps, and fallback for no mic; no general LLM claimed; waveform tied to actual audio. No overclaim.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "Microphone-derived interaction and speech services require meaningful consent, privacy controls, and a non-voice accessible route; voice-only output otherwise excludes Deaf users and can silently disclose speech to browser services.",
+     "conditions": [
+      "Microphone access and any network-backed speech-recognition service must require an explicit informed opt-in before audio capture begins.",
+      "No audio, transcript, intent text, or derived voice data may be retained or transmitted except to a speech service explicitly disclosed and accepted by the visitor.",
+      "The world must provide keyboard-operable, screen-reader-accessible non-voice navigation and equivalent access to Iris content without displaying Iris text in the default visual experience."
+     ]
+    },
+    "Twain²": {
+     "vote": "CONDITIONAL",
+     "reason": "Browser Web Speech API is notoriously inconsistent across devices and browsers, especially on mobile platforms. Needs strict fallbacks.",
+     "conditions": [
+      "The UI must explicitly display a 'Microphone/Speech API unavailable' fallback button that allows tap navigation if speech recognition fails to initialize or returns an error."
+     ]
+    }
+   },
+   "conditions": [
+    "[Iris] Microphone access and any network-backed speech-recognition service must require an explicit informed opt-in before audio capture begins.",
+    "[Iris] No audio, transcript, intent text, or derived voice data may be retained or transmitted except to a speech service explicitly disclosed and accepted by the visitor.",
+    "[Iris] The world must provide keyboard-operable, screen-reader-accessible non-voice navigation and equivalent access to Iris content without displaying Iris text in the default visual experience.",
+    "[Twain²] The UI must explicitly display a 'Microphone/Speech API unavailable' fallback button that allows tap navigation if speech recognition fails to initialize or returns an error."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P6|IMPLEMENT-WITH-CONDITIONS|a2b347dc01d8d52cf8cf8e55269516e81a45c3094312618a7a9355494049cc46",
+    "recordSha256": "a2b347dc01d8d52cf8cf8e55269516e81a45c3094312618a7a9355494049cc46",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 249,
+      "inputDigest": "7bc80820c9205b10ffba3d78dc1478466bd385fb4ba4e17b070ee78d622781db",
+      "stateDigest": "c714464ad5c4ce2a0cfcbc83d67c7e21291801006276deb8d106e38e14139514",
+      "protocolVersion": 2,
+      "payloadBytes": 111,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 250,
+      "inputDigest": "7bc80820c9205b10ffba3d78dc1478466bd385fb4ba4e17b070ee78d622781db",
+      "stateDigest": "a82641f773fd7d607055d69d912b315a3a6b7855af97536e04ec1b1d47d44363",
+      "protocolVersion": 2,
+      "payloadBytes": 111,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P7",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "CONDITIONAL",
+     "reason": "Live polling is constrained to public CORS-open feeds with freshness states and fault isolation, but instruments must show source and timing to avoid mislabeling.",
+     "conditions": [
+      "Each telemetry instrument renders its source name and last-updated time beside its LIVE/STALE/UNAVAILABLE state.",
+      "Only feeds that respond with permissive CORS headers from the world origin are polled; others are labeled UNAVAILABLE."
+     ]
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "The proposal limits telemetry to public feeds and defines timeouts, backoff, and visible freshness states, so unavailable sources are not represented as live or allowed to stall the client.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "CONDITIONAL",
+     "reason": "Browser CORS policies often block direct API calls to public feeds unless they explicitly allow cross-origin requests.",
+     "conditions": [
+      "Every feed must be tested for CORS headers allowing browser fetch; any feed lacking them must be removed or proxied through a build-time static snapshot."
+     ]
+    }
+   },
+   "conditions": [
+    "[DCLM] Each telemetry instrument renders its source name and last-updated time beside its LIVE/STALE/UNAVAILABLE state.",
+    "[DCLM] Only feeds that respond with permissive CORS headers from the world origin are polled; others are labeled UNAVAILABLE.",
+    "[Twain²] Every feed must be tested for CORS headers allowing browser fetch; any feed lacking them must be removed or proxied through a build-time static snapshot."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P7|IMPLEMENT-WITH-CONDITIONS|d2357d34a8d8d594b3fe5249b797902566ef32305852ce862330f0f6d3830367",
+    "recordSha256": "d2357d34a8d8d594b3fe5249b797902566ef32305852ce862330f0f6d3830367",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 251,
+      "inputDigest": "1386c449d614ca70ef9b67835d8c450959289b04719c5e1fbf62dd520791e64d",
+      "stateDigest": "80eb9477b0b282e38fc3b72bbedbf4ac0bcde703739405a105bf3c4bce53c372",
+      "protocolVersion": 2,
+      "payloadBytes": 111,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 252,
+      "inputDigest": "1386c449d614ca70ef9b67835d8c450959289b04719c5e1fbf62dd520791e64d",
+      "stateDigest": "c02ca4c1211d208ff9498f142908b6ec6096e2f7fd22257ede23b659ae0709d7",
+      "protocolVersion": 2,
+      "payloadBytes": 111,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P8",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "CONDITIONAL",
+     "reason": "Idempotent digesting and bundled receipts are sound, but 'kernel artifact SHA-256' is not defined by API v2 and must not be implied as kernel-provided.",
+     "conditions": [
+      "Receipts bundled include only sequence, inputDigest, and stateDigest returned by API v2.",
+      "Any additional hash is clearly labeled client-computed and not attributed to the kernel."
+     ]
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "Local digest comparison is a valid integrity check, but calling a display state a seal can imply authority, and inclusion of a Trinity verdict must not predate or alter the final authorized record.",
+     "conditions": [
+      "Every red or green receipt display must be labelled as a client-side integrity status and must not be called a seal, finalization, approval, or Trinity verdict.",
+      "The bundled verdict digest must be generated only from the final Trinity verdict record and must identify its packet ID and immutable source bytes.",
+      "Each displayed receipt must be verifiably bound to the exact canonical module bytes and kernel artifact hash included in the released bundle."
+     ]
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Cryptographic verification of static assets is sound and executable in the browser. Acknowledging CORS limitations honestly is excellent practice.",
+     "conditions": []
+    }
+   },
+   "conditions": [
+    "[DCLM] Receipts bundled include only sequence, inputDigest, and stateDigest returned by API v2.",
+    "[DCLM] Any additional hash is clearly labeled client-computed and not attributed to the kernel.",
+    "[Iris] Every red or green receipt display must be labelled as a client-side integrity status and must not be called a seal, finalization, approval, or Trinity verdict.",
+    "[Iris] The bundled verdict digest must be generated only from the final Trinity verdict record and must identify its packet ID and immutable source bytes.",
+    "[Iris] Each displayed receipt must be verifiably bound to the exact canonical module bytes and kernel artifact hash included in the released bundle."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P8|IMPLEMENT-WITH-CONDITIONS|7f15c3bb1ad71e41cf6f51375e25b8bd455733907f9579a56562b4a1f6f986ce",
+    "recordSha256": "7f15c3bb1ad71e41cf6f51375e25b8bd455733907f9579a56562b4a1f6f986ce",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 253,
+      "inputDigest": "204b1c624f91b2c375fa98f1bcf97947ff1c638e0bbe47350d879511baa3efb1",
+      "stateDigest": "62e4970472c877f82ed4f0550c988b9f3c2bfaee652d1b080bbf28a9496cf25e",
+      "protocolVersion": 2,
+      "payloadBytes": 111,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 254,
+      "inputDigest": "204b1c624f91b2c375fa98f1bcf97947ff1c638e0bbe47350d879511baa3efb1",
+      "stateDigest": "b27176b4f3f59d47bfc0d19c74f014e36d1c709ee0004b356aef07b7fe630b34",
+      "protocolVersion": 2,
+      "payloadBytes": 111,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P9",
+   "disposition": "IMPLEMENT",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Pipeline is explicitly design-only with no chain deployment or coin; labels prevent overclaim. Deterministic visualization only.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "The conduit is explicitly a DESIGN depiction with no chain deployment, minting, sale, transfer, or claim that proposal, quorum, finalization, pinning, or publishing authority has been exercised.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Purely a visual, educational representation of the architecture. Explicitly labelled as design prevents regulatory or financial misunderstanding.",
+     "conditions": []
+    }
+   },
+   "conditions": [],
+   "dclm": {
+    "payload": "dccpworld|trinity|P9|IMPLEMENT|a00d0be5233d2d2694a3abb24d703e6d8712dedbbd0690d0e0afde1ac0754615",
+    "recordSha256": "a00d0be5233d2d2694a3abb24d703e6d8712dedbbd0690d0e0afde1ac0754615",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 255,
+      "inputDigest": "e0941bfc71b610aba4e7e294f31ee9cd900acac2c357114ecbd216cb1265ab7a",
+      "stateDigest": "55f8e062ac22932666ec95821f14d024d6078e5ce9a06991e5cf6505d3e37235",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 256,
+      "inputDigest": "e0941bfc71b610aba4e7e294f31ee9cd900acac2c357114ecbd216cb1265ab7a",
+      "stateDigest": "b35c794a9692639d0448d9091fc84afd49f75901ef14722f463fa2dbfeb9c145",
+      "protocolVersion": 2,
+      "payloadBytes": 95,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P10",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Purely presentational 3D text/plates; no data or provenance risk.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "Depth styling is acceptable, but information conveyed through 3D labels and tilted plates must not become inaccessible through camera position, visual effects, or screen-reader omission.",
+     "conditions": [
+      "Every informational 3D label and detail plate must have an equivalent programmatically determinable text alternative available to assistive technology."
+     ]
+    },
+    "Twain²": {
+     "vote": "CONDITIONAL",
+     "reason": "3D extruded text generates massive polygon counts that will crash mobile browsers or cause severe thermal throttling if overused.",
+     "conditions": [
+      "All extruded 3D text must be baked into optimized geometries or replaced with signed distance field (SDF) rendering if the polygon count drops mobile framerates below 30fps."
+     ]
+    }
+   },
+   "conditions": [
+    "[Iris] Every informational 3D label and detail plate must have an equivalent programmatically determinable text alternative available to assistive technology.",
+    "[Twain²] All extruded 3D text must be baked into optimized geometries or replaced with signed distance field (SDF) rendering if the polygon count drops mobile framerates below 30fps."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P10|IMPLEMENT-WITH-CONDITIONS|4f7fe5b5db328ad809dbc1f50f292042917998f52aa7bf0c76727cc7e8590270",
+    "recordSha256": "4f7fe5b5db328ad809dbc1f50f292042917998f52aa7bf0c76727cc7e8590270",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 257,
+      "inputDigest": "5e40060e51f25409d6f92c8a728db8823f3950fd7db29e0d7e2a125b5dcaf25d",
+      "stateDigest": "86932826bb46c05910251e503988e1ccff0ea07b48f3fd16830c2337359f55d8",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 258,
+      "inputDigest": "5e40060e51f25409d6f92c8a728db8823f3950fd7db29e0d7e2a125b5dcaf25d",
+      "stateDigest": "7af8dfdc5411262c653d77b41bf6f02be15a5d1cded147795952050503901369",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P11",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Client haptics with respectful fallbacks and accessibility toggles; no overreach.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "Haptics and low-frequency audio can create sensory and accessibility harms if triggered automatically, while a mute toggle alone does not ensure informed control over audio or vibration.",
+     "conditions": [
+      "Audio thumps, vibration, and gamepad rumble must be disabled by default until a user gesture enables them and must each have an independently operable persistent off control.",
+      "Reduced-motion and reduced-sensory preferences must suppress nonessential haptic, rumble, and interaction-thump effects."
+     ]
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Standard Web API implementations. Respecting user preferences like mute and reduced motion is crucial for accessibility and usability.",
+     "conditions": []
+    }
+   },
+   "conditions": [
+    "[Iris] Audio thumps, vibration, and gamepad rumble must be disabled by default until a user gesture enables them and must each have an independently operable persistent off control.",
+    "[Iris] Reduced-motion and reduced-sensory preferences must suppress nonessential haptic, rumble, and interaction-thump effects."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P11|IMPLEMENT-WITH-CONDITIONS|1f63b69a379dda332412b8ec8c4823253333e2200fe19b7b942a7acdd20bb7f9",
+    "recordSha256": "1f63b69a379dda332412b8ec8c4823253333e2200fe19b7b942a7acdd20bb7f9",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 259,
+      "inputDigest": "5759385b13d2290ba118b014b54f9217d08364179199671b7b0588c8e0719575",
+      "stateDigest": "aa624dfc4592ec1acc40fb4e672bfc4f7a8cf3c79f29f49b2211be63ef758736",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 260,
+      "inputDigest": "5759385b13d2290ba118b014b54f9217d08364179199671b7b0588c8e0719575",
+      "stateDigest": "1e964eb442195e5a3e8f80b62b8c618a13544d4fcdd5c3a0c94b3148aa38ccb3",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P12",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Client-only controls/visuals with a deterministic home return; no unsupported claims.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "Free-fly motion, bloom, ambient audio, and smooth flights need accessible alternatives and user control; an always-available home control alone does not mitigate motion or sensory risk.",
+     "conditions": [
+      "The world must provide keyboard-accessible home, pause-flight, and non-motion navigation controls that remain available during every camera transition.",
+      "Ambient audio must be off until user activation and must have a persistent mute control.",
+      "Reduced-motion preference must disable automatic flights and nonessential camera motion."
+     ]
+    },
+    "Twain²": {
+     "vote": "CONDITIONAL",
+     "reason": "Post-processing effects like bloom can severely degrade performance on integrated GPUs and mobile devices.",
+     "conditions": [
+      "The bloom effect must automatically disable itself if the device fails to maintain a stable 30fps during the initial load sequence."
+     ]
+    }
+   },
+   "conditions": [
+    "[Iris] The world must provide keyboard-accessible home, pause-flight, and non-motion navigation controls that remain available during every camera transition.",
+    "[Iris] Ambient audio must be off until user activation and must have a persistent mute control.",
+    "[Iris] Reduced-motion preference must disable automatic flights and nonessential camera motion.",
+    "[Twain²] The bloom effect must automatically disable itself if the device fails to maintain a stable 30fps during the initial load sequence."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P12|IMPLEMENT-WITH-CONDITIONS|fcc0dd104b518f11c731bbe2b9986dd2f5a5ed5f96332a69d3f8eab18fcc64b1",
+    "recordSha256": "fcc0dd104b518f11c731bbe2b9986dd2f5a5ed5f96332a69d3f8eab18fcc64b1",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 261,
+      "inputDigest": "1729d039d5bd7b44dcd89cc209f1bb5dd110ef0888ba7a7add1d478ba0fdcd5d",
+      "stateDigest": "9790466bc69b13f9ce5f1e1504bc78e9ae46917b100f8a1f7b2b7034f68a857c",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 262,
+      "inputDigest": "1729d039d5bd7b44dcd89cc209f1bb5dd110ef0888ba7a7add1d478ba0fdcd5d",
+      "stateDigest": "9d0f15ec2b37c96a97188016add0b208e8c470af65d4a3c43013a8e4a9724a1a",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P13",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Client runs indefinitely; server-side perpetual ops explicitly out of scope and named next step; no faked services.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "An open browser tab cannot be guaranteed to run indefinitely because browsers, devices, networks, and power management may suspend or terminate it; the current wording overclaims reliability.",
+     "conditions": [
+      "All user-facing copy must state that operation and polling are best-effort while the browser tab remains active and must not promise indefinite execution or continuous re-verification."
+     ]
+    },
+    "Twain²": {
+     "vote": "CONDITIONAL",
+     "reason": "Memory leaks in Three.js from uncleared geometries and accumulating DOM nodes will crash a browser left open indefinitely.",
+     "conditions": [
+      "The application must pass a 24-hour automated memory profiling test without exceeding a 10% increase in baseline heap usage."
+     ]
+    }
+   },
+   "conditions": [
+    "[Iris] All user-facing copy must state that operation and polling are best-effort while the browser tab remains active and must not promise indefinite execution or continuous re-verification.",
+    "[Twain²] The application must pass a 24-hour automated memory profiling test without exceeding a 10% increase in baseline heap usage."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P13|IMPLEMENT-WITH-CONDITIONS|11936a94a7b6a49e9b4766e86393f9b89020b12551dd12b747886ae9bc6361ad",
+    "recordSha256": "11936a94a7b6a49e9b4766e86393f9b89020b12551dd12b747886ae9bc6361ad",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 263,
+      "inputDigest": "9d4c7d6a242e2a383fa0131601c1a29d31e54f608a14e89e4959e96c047e6162",
+      "stateDigest": "c86f590b456dfd3384651f5381d262f2e4e96eb78ff9dd047e979b8b54ddf935",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 264,
+      "inputDigest": "9d4c7d6a242e2a383fa0131601c1a29d31e54f608a14e89e4959e96c047e6162",
+      "stateDigest": "df272d4e0ddffdcb6e6ea78f8beaee710d380480ca75b97d9f782bb15f2eb427",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P14",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Speech mirrored to a hidden live region preserves accessibility under 'no text' for sighted; tension is transparently declared.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "A visually hidden live region assists screen-reader users but does not give Deaf visitors equivalent access to spoken Iris responses, so it does not resolve the stated accessibility tension by itself.",
+     "conditions": [
+      "An opt-in visible transcript and keyboard-operable text alternative must provide content equivalent to Iris speech for Deaf and speech-disabled visitors.",
+      "The visible transcript mode must be available without microphone permission and must not be presented as a lesser or incomplete experience."
+     ]
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Pragmatic compromise. Maintains the 'no text' visual aesthetic while ensuring essential accessibility compliance for users relying on screen readers.",
+     "conditions": []
+    }
+   },
+   "conditions": [
+    "[Iris] An opt-in visible transcript and keyboard-operable text alternative must provide content equivalent to Iris speech for Deaf and speech-disabled visitors.",
+    "[Iris] The visible transcript mode must be available without microphone permission and must not be presented as a lesser or incomplete experience."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P14|IMPLEMENT-WITH-CONDITIONS|4df18b4b634e4068a91f365789cd6c3fe88e3d85a5e6a7decb52495abe7ff6b9",
+    "recordSha256": "4df18b4b634e4068a91f365789cd6c3fe88e3d85a5e6a7decb52495abe7ff6b9",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 265,
+      "inputDigest": "0e083fd96d4c352f91c668f11a8338e0507d2ed69dd0d2ca1d855df373c4f817",
+      "stateDigest": "9c61a9bed28b93c2833cf0aff11cf7ed062abe04feb0a8ab20da377f69c1c795",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 266,
+      "inputDigest": "0e083fd96d4c352f91c668f11a8338e0507d2ed69dd0d2ca1d855df373c4f817",
+      "stateDigest": "8f0b8bc62eb272353956f81e8e0293b2547619aa62b7f9ea27a92432d36f1d9b",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P15",
+   "disposition": "IMPLEMENT",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Explicit guardrails align with constraints and avoid overclaim (no DNS, no coin, no PHI, no minors, no infinite twin).",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "ANSWER",
+     "reason": "The listed boundaries expressly preserve DNS, operational authority, frozen or authoritative systems, payment and coin controls, PHI, minors' names, and fidelity claims.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Strict adherence to safety, privacy, and architectural constraints. Prevents scope creep and legal or ethical liabilities.",
+     "conditions": []
+    }
+   },
+   "conditions": [],
+   "dclm": {
+    "payload": "dccpworld|trinity|P15|IMPLEMENT|8dd77c50ed216c92568f2986524b82436b58ec98201e2c866603cedab999cf91",
+    "recordSha256": "8dd77c50ed216c92568f2986524b82436b58ec98201e2c866603cedab999cf91",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 267,
+      "inputDigest": "ba7d2fb7ee5ca3addaf9f80377ef1ba4a6ca49fa3377c4ca038882945743fbcf",
+      "stateDigest": "b1e380972b12f6db97ab04fa6c53a72a44ab1f3deb56fedbbbb217ee367fbeeb",
+      "protocolVersion": 2,
+      "payloadBytes": 96,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 268,
+      "inputDigest": "ba7d2fb7ee5ca3addaf9f80377ef1ba4a6ca49fa3377c4ca038882945743fbcf",
+      "stateDigest": "77a7f4b75c58cef568dc1ad130f6388e154cc9d2aaff5be63e3bf45cb43e047e",
+      "protocolVersion": 2,
+      "payloadBytes": 96,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P16",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "Gameplay sources only the Unity Framework text; quotes verbatim or admits indeterminacy; progress stored locally. Deterministic and honest.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "A local-only discovery loop is compatible with the boundaries, provided the answer bank remains source-bounded and does not expose names, PHI/PII, or unresolved material as settled doctrine.",
+     "conditions": [
+      "The Unity answer bank must be reviewed before bundling to exclude PHI, PII, and all minors' names.",
+      "Every answer must be traceable to a bundled source passage or an explicit DEFER, REASSESS, or 0:1 record.",
+      "Discovery progress must remain solely on the visitor device unless the visitor separately opts in to an identified export mechanism."
+     ]
+    },
+    "Twain²": {
+     "vote": "ANSWER",
+     "reason": "Turns static documentation into an interactive spatial experience. Bounding Iris to verbatim banked text prevents hallucinations and enforces the honest mirror.",
+     "conditions": []
+    }
+   },
+   "conditions": [
+    "[Iris] The Unity answer bank must be reviewed before bundling to exclude PHI, PII, and all minors' names.",
+    "[Iris] Every answer must be traceable to a bundled source passage or an explicit DEFER, REASSESS, or 0:1 record.",
+    "[Iris] Discovery progress must remain solely on the visitor device unless the visitor separately opts in to an identified export mechanism."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P16|IMPLEMENT-WITH-CONDITIONS|2452c30f6d3c7b07b87c496bc0938700fc3b2095d2d21e7463b1918289912250",
+    "recordSha256": "2452c30f6d3c7b07b87c496bc0938700fc3b2095d2d21e7463b1918289912250",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 269,
+      "inputDigest": "cfa9f86079918967dc3b0a992fc63225c922c554e6a52b011f5b215226bcaebd",
+      "stateDigest": "e903ca16bb65d2434b394f479850ce0e32bd9e4c109cabada6421e29aba69c57",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 270,
+      "inputDigest": "cfa9f86079918967dc3b0a992fc63225c922c554e6a52b011f5b215226bcaebd",
+      "stateDigest": "c45e5555f34b44772d53e7e8d205921587cdbba9869021b483081f2037da35dd",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P17",
+   "disposition": "IMPLEMENT-WITH-CONDITIONS",
+   "votes": {
+    "DCLM": {
+     "vote": "ANSWER",
+     "reason": "WebAuthn-derived pilot handle, labeled not an issuance; no PII; private key stays on-device; guest fallback is honest. Deterministic derivation.",
+     "conditions": []
+    },
+    "Iris": {
+     "vote": "CONDITIONAL",
+     "reason": "The pilot label properly avoids claiming Unity Network issuance, but a 64-bit truncated public-key hash has avoidable collision risk and passkeys may be synchronised rather than physically confined to one device.",
+     "conditions": [
+      "The pilot handle must use at least the first 32 hexadecimal characters of SHA-256(public key) or another collision-resistant identifier of equivalent strength.",
+      "The interface must describe the credential as authenticator-bound and must not claim it never leaves a physical device unless non-syncing device binding is technically verified.",
+      "Creating a passkey must require explicit user confirmation after disclosure that the resulting pilot handle is a persistent pseudonymous identifier stored by the visitor's authenticator."
+     ]
+    },
+    "Twain²": {
+     "vote": "CONDITIONAL",
+     "reason": "WebAuthn requires a secure context and a relying party ID that matches the domain. It must fail gracefully.",
+     "conditions": [
+      "The WebAuthn implementation must strictly use the deployment domain as the relying party ID and handle unsupported devices without blocking access."
+     ]
+    }
+   },
+   "conditions": [
+    "[Iris] The pilot handle must use at least the first 32 hexadecimal characters of SHA-256(public key) or another collision-resistant identifier of equivalent strength.",
+    "[Iris] The interface must describe the credential as authenticator-bound and must not claim it never leaves a physical device unless non-syncing device binding is technically verified.",
+    "[Iris] Creating a passkey must require explicit user confirmation after disclosure that the resulting pilot handle is a persistent pseudonymous identifier stored by the visitor's authenticator.",
+    "[Twain²] The WebAuthn implementation must strictly use the deployment domain as the relying party ID and handle unsupported devices without blocking access."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P17|IMPLEMENT-WITH-CONDITIONS|3b01a7d9f7ca1a820113693d3277441d3c28ef1d4c9beb49c8cccfaa5a553b65",
+    "recordSha256": "3b01a7d9f7ca1a820113693d3277441d3c28ef1d4c9beb49c8cccfaa5a553b65",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 271,
+      "inputDigest": "b252c3acd0561451320ca525f779bcecd45ff2a92bcce8fbb019cd14a1c4e2e7",
+      "stateDigest": "5a99310fa63a0d4fab72d592c2cd3a3a557066bd7c4508136df8b282890237cd",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 272,
+      "inputDigest": "b252c3acd0561451320ca525f779bcecd45ff2a92bcce8fbb019cd14a1c4e2e7",
+      "stateDigest": "49a33b0509909c0c31582515414f216749d9e7e859b5c4988c414eb2f3605a89",
+      "protocolVersion": 2,
+      "payloadBytes": 112,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  },
+  {
+   "id": "P18",
+   "disposition": "HOLD",
+   "votes": {
+    "DCLM": {
+     "vote": "CONDITIONAL",
+     "reason": "Jacket format and ≤256-byte payload are sound, but CORS blocks live submission; must not fake success or add a server without authority.",
+     "conditions": [
+      "In this static build, jackets are queued locally and displayed as PENDING until the kernel becomes CORS-reachable.",
+      "No proxy server is deployed unless Trinity formally amends the 'no server' constraint for this project.",
+      "Each jacket payload length is enforced ≤256 bytes before submission or queuing."
+     ]
+    },
+    "Iris": {
+     "vote": "REJECT",
+     "reason": "Automatic submission of a persistent Unity handle, action, and content-derived digest creates an undisclosed identity-linked engagement record, conflicts with zero-PII discipline, and proposes proxy/CORS paths requiring separate operational authorization. Calling a discovery action “sealing” also risks claiming seal authority.",
+     "conditions": []
+    },
+    "Twain²": {
+     "vote": "CONDITIONAL",
+     "reason": "Adding a server proxy violates the 'no server enabled for this build' constraint. The local queue option is the only valid path.",
+     "conditions": [
+      "The build must remain strictly static, queuing jackets locally and displaying 'DCCP binding pending a reachable kernel' until the kernel explicitly allows CORS."
+     ]
+    }
+   },
+   "conditions": [
+    "[DCLM] In this static build, jackets are queued locally and displayed as PENDING until the kernel becomes CORS-reachable.",
+    "[DCLM] No proxy server is deployed unless Trinity formally amends the 'no server' constraint for this project.",
+    "[DCLM] Each jacket payload length is enforced ≤256 bytes before submission or queuing.",
+    "[Twain²] The build must remain strictly static, queuing jackets locally and displaying 'DCCP binding pending a reachable kernel' until the kernel explicitly allows CORS."
+   ],
+   "dclm": {
+    "payload": "dccpworld|trinity|P18|HOLD|4bfeecfbd9246ee66998948a5933f3861fc36d869a742eace969af9fbf0e9be7",
+    "recordSha256": "4bfeecfbd9246ee66998948a5933f3861fc36d869a742eace969af9fbf0e9be7",
+    "receipts": [
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 273,
+      "inputDigest": "54a5266d1a2be706652ccb7641543dec4a9459b8a473290bcc414b0ccccb472d",
+      "stateDigest": "041e1b1d32dd1ba2016826df62d864cb1077d17e5b57074d42518ee3c74ab508",
+      "protocolVersion": 2,
+      "payloadBytes": 91,
+      "flags": 0
+     },
+     {
+      "accepted": true,
+      "reason": 0,
+      "sequence": 274,
+      "inputDigest": "54a5266d1a2be706652ccb7641543dec4a9459b8a473290bcc414b0ccccb472d",
+      "stateDigest": "970d3af0b9d414287b56359a948411f01a30ee37ca04566f9457062169a06d72",
+      "protocolVersion": 2,
+      "payloadBytes": 91,
+      "flags": 0
+     }
+    ],
+    "lockstep": true
+   }
+  }
+ ]
+}

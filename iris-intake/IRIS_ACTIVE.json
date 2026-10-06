@@ -1,0 +1,49 @@
+{
+  "activated_at": "2026-10-06T08:10:53+0000",
+  "activated_at_epoch": 1791274253,
+  "canon_version": "1.5.0",
+  "directives": 10,
+  "integration": {
+    "iris_arbiter.py": "HONEST-PENDING",
+    "iris_laws.py": "HONEST-PENDING",
+    "iris_patterns.py": "HONEST-PENDING",
+    "neural.py": "INTEGRATED"
+  },
+  "iris_core_sha256": "eaecd92eae95e6da439763377d27d60e1d032d9a5fd0e19ccfc729f8c0da2d06",
+  "label": "IRIS MAX INTAKE",
+  "receipt_id": "rcpt:4e8a54dcc881bf579f64db476c6784042f6447a21688011d96a716b04d5b58a6",
+  "receipt_kind": "IRIS_ACTIVE",
+  "standards": "testnet only",
+  "tests": {
+    "result": "GREEN",
+    "suites": [
+      {
+        "failed": 0,
+        "passed": 44,
+        "ran": 44,
+        "returncode": 0,
+        "suite": "test_iris_core.py",
+        "tail": [
+          "Ran 44 tests in 0.118s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "failed": 0,
+        "passed": 2,
+        "ran": 2,
+        "returncode": 0,
+        "suite": "test_iris_persistence.py",
+        "tail": [
+          "Ran 2 tests in 2.193s",
+          "",
+          "OK"
+        ]
+      }
+    ],
+    "total_failed": 0,
+    "total_passed": 46,
+    "total_ran": 46
+  }
+}

@@ -1,0 +1,37 @@
+
+===== 3b. Unity double-credit recheck =====
+  [HELD] unity double-credit same receipt (recheck) — balance 5 -> 5; idempotent
+
+===== 1. eFuse gauntlet =====
+  PASS  receive_emission throughput [n=200] — REPORTED 2,325.0 ops/sec (0.430 ms/op)
+  PASS  receive_emission throughput [n=1000] — REPORTED 5,502.8 ops/sec (0.182 ms/op)
+  PASS  receive_emission throughput [n=3000] — REPORTED 1,478.3 ops/sec (0.676 ms/op)
+  ....  eFuse emission knee: no degradation knee observed up to 3000 ops — per-op cost flat (2,325 -> 1,478 ops/sec); bottleneck is not in the emission path (pure Python, no subprocess signing)
+  PASS  receipt chain verifies after volume emission [n=4200] — ReceiptChain.verify() True
+  PASS  emission balances exact after volume [n=4203] — balance=4203
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=0.5: eFuse == merit_value/E exactly, 4/4 conversions exact
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=3.7: eFuse == merit_value/E exactly, 4/4 conversions exact
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=10.0: eFuse == merit_value/E exactly, 4/4 conversions exact
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=1000.0: eFuse == merit_value/E exactly, 4/4 conversions exact
+  [HELD] peg set without David authority — TokenizeRefused: tokenize refused [PEG_AUTHORITY_REFUSED]: set_peg_ratio requires authority {'authority': 'david'} — E is HELD_FOR_DAVID 
+  [HELD] emission with peg E unset (HELD) — TokenizeRefused: tokenize refused [PEG_E_UNSET]: peg ratio E is HELD_FOR_DAVID — the pipeline refuses to emit eFuse until his word sets i
+  PASS  reserve-regulation movement path inventory — functions with 'reserve' in name: ['_reserve_identity', '_require_reserve_balance', 'reserve_balance'] — no executable reserve-regulation movement exists; reserve is reporting-only (economic_state peg_reserve section). N/A at volume, not a bypass.
+  PASS  donate-to-lock throughput [n=200] — REPORTED 405.4 ops/sec (2.467 ms/op)
+  PASS  donation-to-lock at volume: every movement receipted + Honor-bound [n=201] — 201 donation receipts; 201 honor records; merit_accrued==0 on all; donor exclusion hashes recorded
+  PASS  chain verifies after donation volume — ReceiptChain.verify() True
+  PASS  fuse ARMED -> TRIGGERED -> SPENT — genesis Unity credited once; receipt chained; in-memory only
+  [HELD] fuse second trigger — FuseNotArmed: fuse is SPENT: the launch happened exactly once
+  [HELD] fuse nonce replay — FuseReplay: authorization nonce already used
+  [HELD] fuse unauthorized trigger — FuseRefused: founder signature FAILED — only David's signed authorization can trigger the fuse
+  [HELD] fuse trigger missing nonce — FuseRefused: authorization carries no nonce
+  ....  fuse tests used ephemeral test keys; in-memory ledgers; nothing persisted
+
+===== 5. Cross-coin pipeline (work->merit->eFuse->transfer->donation->Honor) =====
+  PASS  full pipeline end-to-end [n=5] — REPORTED 0.1 cycles/sec (7368 ms/cycle); work->receipt->merit->emission->eFuse->Merit transfer->donation->Honor all receipted
+Traceback (most recent call last):
+  File "/home/hatch/workspace/unity-world/economics/gauntlet/run_rest.py", line 29, in <module>
+    G.sec_pipeline()
+  File "/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py", line 856, in sec_pipeline
+    assert eng.merit_balance(earner["uid"]) == N * 5.0
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

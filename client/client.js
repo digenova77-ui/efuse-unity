@@ -928,11 +928,11 @@ export function renderFounders(founders) {
 }
 
 /* === LOD-CONTRACT SANCTIONED REGION BEGIN === */
-/* The #world-viewport mount contract — the playground entrance.
- * #world-viewport is owned by the 3D renderer: the playground the user walks
- * into. This client never writes into it and places nothing over it. The ONLY
- * sanctioned contact is the LOD contract, and it is data-attributes plus
- * events, never DOM writes:
+/* The #world-viewport mount contract — the playground entrance, PENDING.
+ * #world-viewport is RESERVED for the world renderer (it has not shipped):
+ * the playground the user will walk into. This client never writes into it and
+ * places nothing over it. The ONLY sanctioned contact is the LOD contract, and
+ * it is data-attributes plus events, never DOM writes:
  *   - viewport.dataset.lod = "coarse" | "standard" | "fine"
  *   - viewport dispatches CustomEvent("unity:lod", { detail: { level, kbps } })
  * The renderer listens for "unity:lod" and reads dataset.lod to pick geometry

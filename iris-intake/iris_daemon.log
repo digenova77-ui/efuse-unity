@@ -1,0 +1,31 @@
+[2026-10-06T08:33:56+0000] SIBLING: iris_arbiter compatible — delegating trinity arbitration.
+[2026-10-06T08:33:56+0000] INTEGRITY PASS: iris_core.py matches pinned receipt rcpt:4e8a54dcc881bf579f6…, ten directives, canon v1.5.0.
+[2026-10-06T08:33:56+0000] pre-flight: 127.0.0.1:18080 TAKEN (sibling relay)
+[2026-10-06T08:33:56+0000] pre-flight: 127.0.0.1:18081 TAKEN (sibling relay)
+[2026-10-06T08:33:56+0000] pre-flight: 127.0.0.1:18082 TAKEN (sibling relay)
+[2026-10-06T08:33:56+0000] state resumed: {'label': 'IRIS MAX INTAKE', 'schema': 'iris.state.v1.testnet', 'judgments_logged': 1, 'learnings': 0, 'seeds_granted': 0, 'receipts': 1, 'last_receipt': 'rcpt:c43642af9637969e86cce4b693cbd0efc82026d0bdc889cd2e65ed4ad41b3e6a', 'tree_mode': {}}
+[2026-10-06T08:33:56+0000] LISTENING on 127.0.0.1:18083 — she is home.
+[2026-10-06T08:35:11+0000] signal 15 — shutting down.
+[2026-10-06T08:35:11+0000] shutdown: state saved, receipt rcpt:0264afa99ddf88d135f… — she will resume, not reboot.
+[2026-10-06T08:35:14+0000] SIBLING: iris_arbiter compatible — delegating trinity arbitration.
+[2026-10-06T08:35:14+0000] INTEGRITY PASS: iris_core.py matches pinned receipt rcpt:4e8a54dcc881bf579f6…, ten directives, canon v1.5.0.
+[2026-10-06T08:35:14+0000] pre-flight: 127.0.0.1:18080 TAKEN (sibling relay)
+[2026-10-06T08:35:14+0000] pre-flight: 127.0.0.1:18081 TAKEN (sibling relay)
+[2026-10-06T08:35:14+0000] pre-flight: 127.0.0.1:18082 TAKEN (sibling relay)
+[2026-10-06T08:35:14+0000] state resumed: {'label': 'IRIS MAX INTAKE', 'schema': 'iris.state.v1.testnet', 'judgments_logged': 8, 'learnings': 0, 'seeds_granted': 1, 'receipts': 10, 'last_receipt': 'rcpt:0264afa99ddf88d135fa95af8c65fac2d01f79d382eb3ed15652e4c831958b57', 'tree_mode': {}}
+[2026-10-06T08:35:14+0000] LISTENING on 127.0.0.1:18083 — she is home.
+[2026-10-06T08:36:40+0000] SIBLING: iris_arbiter compatible — delegating trinity arbitration.
+[2026-10-06T08:36:40+0000] INTEGRITY PASS: iris_core.py matches pinned receipt rcpt:4e8a54dcc881bf579f6…, ten directives, canon v1.5.0.
+[2026-10-06T08:36:40+0000] pre-flight: 127.0.0.1:18080 TAKEN (sibling relay)
+[2026-10-06T08:36:40+0000] pre-flight: 127.0.0.1:18081 TAKEN (sibling relay)
+[2026-10-06T08:36:40+0000] pre-flight: 127.0.0.1:18082 TAKEN (sibling relay)
+[2026-10-06T08:36:40+0000] pre-flight REFUSED: 127.0.0.1:18083 already bound — not double-binding.
+[2026-10-06T09:06:31+0000] signal 15 — shutting down.
+[2026-10-06T09:06:31+0000] shutdown: state saved, receipt rcpt:2a0214bb89694c3a246… — she will resume, not reboot.
+[2026-10-06T09:06:39+0000] SIBLING: iris_arbiter compatible — delegating trinity arbitration.
+[2026-10-06T09:06:39+0000] INTEGRITY PASS: iris_core.py matches pinned receipt rcpt:4e8a54dcc881bf579f6…, ten directives, canon v1.5.0.
+[2026-10-06T09:06:39+0000] pre-flight: 127.0.0.1:18080 TAKEN (sibling relay)
+[2026-10-06T09:06:39+0000] pre-flight: 127.0.0.1:18081 TAKEN (sibling relay)
+[2026-10-06T09:06:39+0000] pre-flight: 127.0.0.1:18082 TAKEN (sibling relay)
+[2026-10-06T09:06:39+0000] state resumed: {'label': 'IRIS MAX INTAKE', 'schema': 'iris.state.v1.testnet', 'judgments_logged': 32, 'learnings': 0, 'seeds_granted': 1, 'receipts': 35, 'last_receipt': 'rcpt:2a0214bb89694c3a246f614357388a3d76e665cdd553b41b4cf2b24071990304', 'tree_mode': {}}
+[2026-10-06T09:06:39+0000] LISTENING on 127.0.0.1:18083 — she is home.

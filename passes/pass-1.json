@@ -1,0 +1,177 @@
+{
+  "pass": 1,
+  "at_utc": "2026-10-06T07:24:07.836131+00:00",
+  "suites": [
+    {
+      "suite": "dclm/test_compute.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 6.21,
+      "counts": {
+        "tests_mentioned": 10
+      },
+      "tail": "red_state_fails_verification (__main__.TestSigning.test_tampered_state_fails_verification) ... ok\ntest_empty_candidate_list_is_undecided (__main__.TestUndecidedBucket.test_empty_candidate_list_is_undecided) ... ok\ntest_no_survivors_means_undecided_not_forced (__main__.TestUndecidedBucket.test_no_survivors_means_undecided_not_forced)\nStrict rings reject every candidate -> no forced collapse. ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 5.244s\n\nOK\n"
+    },
+    {
+      "suite": "dclm/test_data.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 2.62,
+      "counts": {
+        "tests_mentioned": 0
+      },
+      "tail": "ount_matches_prices_md (__main__.TestPricingParsing.test_parsed_count_matches_prices_md) ... ok\ntest_rte_decision_rows (__main__.TestPricingParsing.test_rte_decision_rows) ... ok\ntest_every_rte_metric_has_source_note (__main__.TestRteTelemetry.test_every_rte_metric_has_source_note) ... ok\ntest_headline_figures_match_memory_md (__main__.TestRteTelemetry.test_headline_figures_match_memory_md) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 2.202s\n\nOK\n"
+    },
+    {
+      "suite": "dclm/test_meter.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 29.49,
+      "counts": {
+        "tests_mentioned": 20
+      },
+      "tail": "fusals.test_non_testnet_identity_refused)\nAnything not starting with unity:testnet: is refused at metering. ... ok\ntest_refusal_is_not_cached_but_balance_is (__main__.TestRefusals.test_refusal_is_not_cached_but_balance_is)\nA refusal does not consume the intent: after funding, the same ... ok\ntest_unknown_action_is_honest_refusal (__main__.TestRefusals.test_unknown_action_is_honest_refusal) ... ok\n\n----------------------------------------------------------------------\nRan 20 tests in 29.211s\n\nOK\n"
+    },
+    {
+      "suite": "dclm/test_rights_writes.py",
+      "kind": "py",
+      "ok": false,
+      "seconds": 0.15,
+      "counts": {},
+      "tail": "ne 5, in <module>\n    import inspect\n  File \"/usr/lib/python3.12/inspect.py\", line 151, in <module>\n    import linecache\n  File \"/usr/lib/python3.12/linecache.py\", line 11, in <module>\n    import tokenize\n  File \"/home/hatch/workspace/unity-world/dclm/tokenize.py\", line 60, in <module>\n    from dataclasses import dataclass, field\nImportError: cannot import name 'dataclass' from partially initialized module 'dataclasses' (most likely due to a circular import) (/usr/lib/python3.12/dataclasses.py)\n"
+    },
+    {
+      "suite": "dclm/test_tap.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 96.53,
+      "counts": {
+        "tests_mentioned": 21
+      },
+      "tail": "_surplus_refused (__main__.TapTestCase.test_unscorable_surplus_refused)\nUnverifiable surplus: never assumed, never tapped. ... ok\ntest_winter_protection_mode_function_refused (__main__.TapTestCase.test_winter_protection_mode_function_refused)\nThe winter worker's own protection test takes precedence. ... ok\ntest_winter_protection_refused (__main__.TapTestCase.test_winter_protection_refused) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 95.988s\n\nOK\n"
+    },
+    {
+      "suite": "dclm/test_tokenize.py",
+      "kind": "py",
+      "ok": false,
+      "seconds": 99.48,
+      "counts": {
+        "tests_mentioned": 49
+      },
+      "tail": "True(assert_single_transfer_path())\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/hatch/workspace/unity-world/dclm/token_engine.py\", line 552, in assert_single_transfer_path\n    assert not violations, (\n           ^^^^^^^^^^^^^^\nAssertionError: TRANSFER PATH VIOLATION: unity registry mutated outside tokenize()/bound_sale(): [('_bind_genesis', 'subscript-store')]\n\n----------------------------------------------------------------------\nRan 49 tests in 99.082s\n\nFAILED (failures=2)\n"
+    },
+    {
+      "suite": "dclm/test_winter.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 20.06,
+      "counts": {
+        "tests_mentioned": 28
+      },
+      "tail": "st; the mechanism reads the gradient. A gradient ... ok\ntest_perfect_summer_zero_gradient (__main__.TriggerTests.test_perfect_summer_zero_gradient) ... ok\ntest_unknown_signal_stays_summer (__main__.TriggerTests.test_unknown_signal_stays_summer)\nUNKNOWN never PASS: unreadable signal -> SUMMER, never winter. ... ok\ntest_verified_crisis_tilts (__main__.TriggerTests.test_verified_crisis_tilts) ... ok\n\n----------------------------------------------------------------------\nRan 28 tests in 18.880s\n\nOK\n"
+    },
+    {
+      "suite": "economics/test_economic_state.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 11.59,
+      "counts": {
+        "tests_mentioned": 41
+      },
+      "tail": "nown_to_engine_falls_back_to_input) ... ok\ntest_engine_priced_decision_uses_engine (__main__.TestWorker1Adapter.test_engine_priced_decision_uses_engine) ... ok\ntest_fusion_applies_stricter_pays_rule (__main__.TestWorker1Adapter.test_fusion_applies_stricter_pays_rule) ... ok\ntest_worker_modules_absent_does_not_block (__main__.TestWorkerCoordination.test_worker_modules_absent_does_not_block) ... ok\n\n----------------------------------------------------------------------\nRan 41 tests in 10.553s\n\nOK\n"
+    },
+    {
+      "suite": "economics/test_fuse.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 21.33,
+      "counts": {
+        "tests_mentioned": 19
+      },
+      "tail": "or_admin_function_by_construction)\nAST scan of both modules: no function whose name suggests a ... ok\ntest_spent_has_no_outgoing_transitions (__main__.TestNoFounderControl.test_spent_has_no_outgoing_transitions) ... ok\ntest_unity_only_via_fuse_or_merit_receipt (__main__.TestUnityMintPaths.test_unity_only_via_fuse_or_merit_receipt)\nBehavioral: the only ways a Unity balance increases are the ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 20.555s\n\nOK\n"
+    },
+    {
+      "suite": "economics/test_pricing.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 0.79,
+      "counts": {
+        "tests_mentioned": 20
+      },
+      "tail": "....................\n----------------------------------------------------------------------\nRan 20 tests in 0.173s\n\nOK\n"
+    },
+    {
+      "suite": "economics/test_tokenomics.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 0.72,
+      "counts": {
+        "tests_mentioned": 55
+      },
+      "tail": "kinds (__main__.TestTokenClasses.test_trinity_kinds) ... ok\ntest_unity_non_transferable (__main__.TestTokenClasses.test_unity_non_transferable) ... ok\ntest_blank_unity_id_refused_at_runtime (__main__.TestUnityBinding.test_blank_unity_id_refused_at_runtime) ... ok\ntest_every_movement_requires_unity_id_by_signature (__main__.TestUnityBinding.test_every_movement_requires_unity_id_by_signature) ... ok\n\n----------------------------------------------------------------------\nRan 55 tests in 0.126s\n\nOK\n"
+    },
+    {
+      "suite": "economics/test_wallet.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 45.12,
+      "counts": {
+        "tests_mentioned": 33
+      },
+      "tail": "natures (__main__.TestTierEnforcement.test_kin_proof_requires_both_signatures) ... ok\ntest_share_without_tier_refused (__main__.TestTierEnforcement.test_share_without_tier_refused) ... ok\ntest_tier_can_be_raised_by_regrant (__main__.TestTierEnforcement.test_tier_can_be_raised_by_regrant) ... ok\ntest_unsigned_tier_grant_refused (__main__.TestTierEnforcement.test_unsigned_tier_grant_refused) ... ok\n\n----------------------------------------------------------------------\nRan 33 tests in 44.018s\n\nOK\n"
+    },
+    {
+      "suite": "gate/test_gate.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 2.35,
+      "counts": {
+        "tests_mentioned": 9
+      },
+      "tail": "refused (__main__.GateTest.test_non_testnet_refused) ... ok\ntest_server_side_truth_unforgeable (__main__.GateTest.test_server_side_truth_unforgeable) ... ok\ntest_unknown_never_pass (__main__.GateTest.test_unknown_never_pass) ... ok\ntest_wallet_wired_never_faked (__main__.GateTest.test_wallet_wired_never_faked) ... ok\ntest_world_needs_no_binding (__main__.GateTest.test_world_needs_no_binding) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 1.520s\n\nOK\n"
+    },
+    {
+      "suite": "purity/test_index.py",
+      "kind": "py",
+      "ok": true,
+      "seconds": 13.25,
+      "counts": {
+        "tests_mentioned": 27
+      },
+      "tail": "test_fail_dominates_unknown) ... ok\ntest_no_averaging_away_failure (__main__.TestJudge.test_no_averaging_away_failure) ... ok\ntest_unknown_is_never_pure (__main__.TestJudge.test_unknown_is_never_pure) ... ok\ntest_judge_runs_on_live_report (__main__.TestLive.test_judge_runs_on_live_report) ... ok\ntest_score_live_runs_without_crashing (__main__.TestLive.test_score_live_runs_without_crashing) ... ok\n\n----------------------------------------------------------------------\nRan 27 tests in 12.691s\n\nOK\n"
+    },
+    {
+      "suite": "relay/relay-unity.test.mjs",
+      "kind": "mjs-test",
+      "ok": true,
+      "seconds": 1.36,
+      "counts": {},
+      "tail": "mismatch REJECTED at parse\n  PASS secret-like payload key found by the guard\n  PASS KEY_OFFER carrying a private key refused at build\n  PASS KEY_OFFER with public key only accepted\n  PASS receipt round-trips\n  PASS DELIVERED without receipt refused (never invented)\n  PASS HOLE receipt accepted\n  PASS export dedupes by manifest_hash\n  PASS export schema is testnet\n  PASS canonicalJson sorts keys\n  PASS bundleHash is stable\n  PASS sha256Hex of empty string is the known digest\n\n42 passed, 0 failed\n"
+    },
+    {
+      "suite": "client/validate-client.mjs",
+      "kind": "mjs-validate",
+      "ok": true,
+      "seconds": 0.39,
+      "counts": {
+        "passed": 63,
+        "total": 63
+      },
+      "tail": "\nvalidate-client: 63/63 checks passing\nall checks pass\n"
+    }
+  ],
+  "suites_ok": 14,
+  "suites_total": 16,
+  "index": {
+    "present": true,
+    "exit": 1,
+    "verdict": "FAIL",
+    "dimensions": {},
+    "tail": "purity index \u2014 measured 2026-10-06T07:24:07Z\n\n  D1 Unity binding          score=1.000  PASS\n  D2 Label honesty          score=1.000  PASS\n  D3 Client purity          score=1.000  PASS\n  D4 Receipt completeness   score=0.873  FAIL (coverage 1.00)\n  D5 Isolation              score=1.000  PASS\n\naggregate verdict: FAIL\nreasons: D4 FAIL\n"
+  },
+  "seconds": 364.0,
+  "termination": {
+    "consecutive_pure": 0,
+    "loop_end": false
+  }
+}

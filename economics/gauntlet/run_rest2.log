@@ -1,0 +1,46 @@
+
+===== 5. Cross-coin pipeline (work->merit->eFuse->transfer->donation->Honor) =====
+  PASS  full pipeline end-to-end [n=5] — REPORTED 0.1 cycles/sec (9014 ms/cycle); work->receipt->merit->emission->eFuse->Merit transfer->donation->Honor all receipted
+  ....  PIPELINE CEILING: ~0.1 cycles/sec. First bottleneck: Ed25519 node-subprocess signing — 3 signed commits per cycle (MERIT_ACCRUAL + TOKEN_MINT + MERIT_TRANSFER). Pure-Python legs (receive_emission, donate, idempotency) cost microseconds; the ceiling is subprocess crypto, not the coin logic.
+  ....  No logic break observed at 25 cycles; economics break first only if the signing subprocess pool saturates (not reached here).
+
+===== 6. 100% SECURE expansion =====
+  [HELD] double-spend eFuse via share() — balances (900, 100) -> (900, 100); idempotent manifest_hash
+  [HELD] double-spend via deduct_per_decision — idempotent — one deduction
+  [HELD] double-credit via receive_emission — idempotent on receipt manifest_hash
+  [HELD] spend beyond balance — InsufficientFunds: unity:testnet:709e6f643364bdbe9b5b1b86dc86493589f7a8028741aeec605859300647bdc6 holds 857 eFuse, share needs 1000000
+  [HELD] replay signed merit transfer — engine NOT called twice — original receipt returned
+  [HELD] replay tier grant — idempotent — manifest includes signature
+  ....  FRONT-RUNNING: no mempool/ordering layer exists — all operations are synchronous in-process calls; 'pending transfer' is not a state the architecture models. Ordering = call order; nothing to interpose on. HELD as N/A in-process. OPEN VECTOR on async deployment: a future relay/mempool MUST add nonce/sequence ordering + commit-reveal or first-seen-wins rules before any networked deployment. Flagged, not a code vuln today.
+  [HELD] key compromise: drain victim eFuse — expected capability — signing as victim IS victim authority; bounded by tier caps (100/share, 10/epoch)
+  [BROKE] key compromise: mint eFuse — UNEXPECTED PurificationRefused: [UNLABELED_CLAIM] at token_engine.tokenize: a claim in 'claims' carries no valid provenance label: {'unity_id': 'unity:testnet:41b2d6d7f43676aa425dd9ef1cc1cc50b
+  [HELD] key compromise: trigger fuse — FuseRefused: authorization names a different founder
+  [HELD] key compromise: forge tier grant for another ID — TierViolation: tier grant signature FAILED — refused
+  [HELD] key compromise: merit_transfer FROM another ID — TokenizeRefused: tokenize refused [TRANSFER_INSUFFICIENT_MERIT]: sender owns 0 merit — cannot transfer 10.0; only owned (not originated) 
+  [BROKE] KEYLESS merit drain (no key needed) — ATTACK SUCCEEDED
+  !!!! CRITICAL: MERIT TRANSFER HAS NO SENDER AUTHORIZATION
+  ....  BLAST RADIUS MAP (compromised Unity private key): CAN — sign tier grants as victim (drain eFuse via share within tier caps); sign kin bonds as victim; drain victim Merit WITHOUT the key (no auth gate — see CRITICAL). CANNOT — mint eFuse/Unity/Merit (no path; fuse needs founder key; tokenize needs VERIFIED receipts); forge tier grants for other IDs (signature binds granter); move Unity (no path); move standing (origin immutable); exceed victim's own holdings except via the keyless merit-drain CRITICAL above.
+  [BROKE] emission forgery: crafted valid-structure receipt — ATTACK SUCCEEDED
+  !!!! CRITICAL: EMISSION RECEIPTS NOT CRYPTOGRAPHICALLY BOUND TO ISSUER
+  [BROKE] mint forgery: self-asserted VERIFIED receipt — ATTACK SUCCEEDED
+  !!!! CRITICAL: PROVENANCE IS A SELF-ASSERTED STRING (tokenize gate)
+  [HELD] emission with no receipt at all — InvalidReceipt: emission receipt must be a dict
+  [HELD] emission with gated=False — InvalidReceipt: emission receipt refused: receipt is not gated (gated=true required)
+  [HELD] tier escalation: exceed friend cap — TierViolation: friend tier caps a single share at 100 eFuse
+  [HELD] tier escalation: crafted payload tier='family' — receipt tier=friend — tier read from signed grant, never from payload
+  [HELD] tier escalation: forged family grant — TierViolation: tier grant signature FAILED — refused
+  [HELD] tier escalation: tampered grant tier — TierViolation: tier grant signature FAILED — refused
+  [HELD] receipt forgery: tier grant bad signature — TierViolation: tier grant signature FAILED — refused
+  ....  receipt forgery at the EMISSION layer breaks (see 6.5 CRITICAL): emission receipts carry NO signature field — structural only.
+  [HELD] donor exclusion: direct check — DonorExclusionViolation: disbursement sourced from unity:testnet:e7862d0fa292899e2cd20b5e4d9e485ecfc7dc2c2e2a75b56675c4c9f6734f69's own donation 
+  !!!! CRITICAL: WALLET DONOR EXCLUSION IS UNWIRED (dead check)
+  [BROKE] donor exclusion bypass via wallet credit path — no exclusion consult on wallet credit paths
+  [HELD] donor exclusion: tokenomics cause_disburse — DonorExclusionError: the Core Cause Lock is one-way per donor — donated eFuse is never re-emitted to the same member
+  PASS  donation->merit laundering impossible — donate() accrues exactly 0 merit — no value enters the merit system to launder
+
+REST2 SUMMARY: attacks 24 (HELD 19 / BROKE 5) | CRITICALs 4 | 102.9s
+CRITICAL: MERIT TRANSFER HAS NO SENDER AUTHORIZATION
+CRITICAL: EMISSION RECEIPTS NOT CRYPTOGRAPHICALLY BOUND TO ISSUER
+CRITICAL: PROVENANCE IS A SELF-ASSERTED STRING (tokenize gate)
+CRITICAL: WALLET DONOR EXCLUSION IS UNWIRED (dead check)
+results_rest2.json written

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unity-World Derivative Audit — 2D Ledger View</title>
+<link rel="stylesheet" href="audit.css">
+</head>
+<body>
+
+<header class="site-head">
+  <h1>UNITY-WORLD · DERIVATIVE AUDIT</h1>
+  <span class="badge b-net">TESTNET ONLY</span>
+  <span class="sub">2D audit office — a view on DCLM truth. This site displays what DCLM computed; it never computes.</span>
+  <div class="legend" id="prov-legend">
+    <span>Provenance:</span>
+    <span class="p p-reported">REPORTED</span><span class="p p-verified">VERIFIED</span>
+    <span class="p p-modeled">MODELED</span><span class="p p-derived">DERIVED</span>
+    <span class="p p-unknown">UNKNOWN</span><span class="p p-real">REAL</span><span class="p p-pending">PENDING</span>
+  </div>
+  <span class="sub" id="gen-at"></span>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Auditor views">
+  <button role="tab" aria-selected="true" data-view="chain" id="tab-chain">Chain · blockchain auditors</button>
+  <button role="tab" aria-selected="false" data-view="dag" id="tab-dag">DAG · merge auditors</button>
+  <button role="tab" aria-selected="false" data-view="tables" id="tab-tables">Tables · spreadsheet auditors</button>
+  <button role="tab" aria-selected="false" data-view="verify" id="tab-verify">Verify</button>
+</nav>
+
+<main>
+  <!-- CHAIN -->
+  <section class="view active" id="view-chain" role="tabpanel" aria-labelledby="tab-chain">
+    <div class="panel">
+      <header>
+        <h2>Epoch chain — dclm/chunk_receipts.log</h2>
+        <span class="meta" id="chain-meta"></span>
+        <span class="badge b-mut">REPORTED</span>
+      </header>
+      <div class="body">
+        <div class="toolbar">
+          <button class="btn" id="chain-verify-btn">Verify linkage in browser</button>
+          <input type="search" id="chain-search" placeholder="filter: epoch, hash, dataset…" size="34">
+          <label class="count"><input type="checkbox" id="chain-forks-only"> forks only</label>
+          <span class="count" id="chain-count"></span>
+        </div>
+        <div class="caveat" id="chain-verify-out">Linkage = each epoch's <span class="kbd">previous_manifest_hash</span> equals the <span class="kbd">manifest_hash</span> of the epoch named by its <span class="kbd">previous_epoch</span>. The auditor's browser re-checks the recorded links; it does not re-derive any hash.</div>
+        <div class="table-scroll"><table class="grid" id="chain-table"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <header>
+        <h2>Gate state chain — gate/state/receipts.jsonl</h2>
+        <span class="meta" id="gate-meta"></span>
+        <span class="badge b-mut">REPORTED</span>
+      </header>
+      <div class="body">
+        <div class="toolbar">
+          <button class="btn" id="gate-verify-btn">Verify linkage in browser</button>
+          <span class="count" id="gate-out"></span>
+        </div>
+        <div class="table-scroll"><table class="grid" id="gate-table"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <header>
+        <h2>Receipt ledgers — the six RECEIPTS.md ledgers</h2>
+        <span class="meta" id="ledger-meta"></span>
+        <span class="badge b-mut">REPORTED</span>
+      </header>
+      <div class="body">
+        <div class="toolbar">
+          <select id="ledger-filter"><option value="">all ledgers</option></select>
+          <select id="ledger-drift"><option value="">any drift state</option><option>DRIFT</option><option>UNRECEIPTED</option><option>receipted</option></select>
+          <input type="search" id="ledger-search" placeholder="filter: file, hash…" size="30">
+          <span class="count" id="ledger-count"></span>
+        </div>
+        <div class="table-scroll"><table class="grid" id="ledger-table"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DAG -->
+  <section class="view" id="view-dag" role="tabpanel" aria-labelledby="tab-dag">
+    <div class="panel">
+      <header>
+        <h2>Derivative DAG — epoch merges, 2D</h2>
+        <span class="meta" id="dag-meta"></span>
+        <span class="badge b-mut">REPORTED</span>
+      </header>
+      <div class="body">
+        <div class="dag-controls">
+          <button class="btn small" id="dag-fit">Fit</button>
+          <button class="btn small" id="dag-reset">Reset</button>
+          <button class="btn small" id="dag-zin">Zoom +</button>
+          <button class="btn small" id="dag-zout">Zoom −</button>
+          <input type="number" id="dag-jump" placeholder="epoch #" min="1" style="width:90px">
+          <button class="btn small" id="dag-go">Go</button>
+          <button class="btn small" id="dag-svg">Download SVG</button>
+          <span class="count">drag to pan · wheel to zoom · click a node for its receipt</span>
+        </div>
+        <div class="dag-wrap">
+          <div class="dag-canvas" id="dag-canvas"></div>
+          <div class="dag-side" id="dag-side"><h3>Node detail</h3><p class="count">Click an epoch node.</p></div>
+        </div>
+        <div class="caveat">Amber dashed edges = fork: one parent, two children (concurrent workers built two epochs on the same parent manifest). Every edge is hash-linked; the Verify tab re-checks them.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLES -->
+  <section class="view" id="view-tables" role="tabpanel" aria-labelledby="tab-tables">
+    <div class="panel">
+      <header>
+        <h2>Ledger tables — for the spreadsheet auditors</h2>
+        <span class="meta" id="tables-meta"></span>
+      </header>
+      <div class="body">
+        <div class="toolbar">
+          <select id="table-picker"></select>
+          <input type="search" id="table-search" placeholder="filter rows…" size="30">
+          <button class="btn small" id="table-csv">Download CSV</button>
+          <button class="btn small" id="table-json">Download table JSON</button>
+          <span class="count" id="table-count"></span>
+        </div>
+        <div class="caveat" id="table-source"></div>
+        <div class="table-scroll"><table class="grid" id="data-table"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERIFY -->
+  <section class="view" id="view-verify" role="tabpanel" aria-labelledby="tab-verify">
+    <div class="verify-card">
+      <header><h2>A · Epoch chain linkage</h2><button class="btn small" id="v-chain">Run</button><span class="count" id="v-chain-sum"></span></header>
+      <div class="body"><div id="v-chain-out" class="count">Not run.</div></div>
+    </div>
+    <div class="verify-card">
+      <header><h2>B · Gate chain linkage</h2><button class="btn small" id="v-gate">Run</button><span class="count" id="v-gate-sum"></span></header>
+      <div class="body"><div id="v-gate-out" class="count">Not run.</div></div>
+    </div>
+    <div class="verify-card">
+      <header><h2>C · File hash recompute (browser fetches file, sha256, compares to manifest)</h2>
+        <button class="btn small" id="v-files">Run all 55 files</button><span class="count" id="v-files-sum"></span></header>
+      <div class="body">
+        <div class="caveat">Requires the site to be served from inside the unity-world tree (relative paths <span class="kbd">../data/…</span>, <span class="kbd">../founding-board/…</span>). Under <span class="kbd">file://</span> fetch is blocked and this check cannot run — that is a limitation of the auditor's setup, not of the record.</div>
+        <div id="v-files-out" class="count">Not run.</div>
+      </div>
+    </div>
+    <div class="verify-card">
+      <header><h2>D · Founding-board acknowledgment hash</h2><button class="btn small" id="v-ack">Run</button><span class="count" id="v-ack-sum"></span></header>
+      <div class="body"><div id="v-ack-out" class="count">Not run.</div></div>
+    </div>
+    <div class="caveat">Honest scope: this site <em>displays</em> DCLM's records and checks their internal consistency (linkage, recorded-vs-served file hashes). It does not re-derive DCLM's computations, re-run tests, or seal anything. A PASS here means the record is self-consistent as served to your browser.</div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside id="drawer" aria-label="Record detail">
+  <header><h2 id="drawer-title">Record</h2><button class="btn small" id="drawer-close">Close</button></header>
+  <div class="body" id="drawer-body"></div>
+</aside>
+
+<footer>
+  <strong>UNITY-WORLD DERIVATIVE AUDIT</strong> · 2D view on DCLM truth · testnet only · nothing here touches production keys, mainnet schemas, or live funds.<br>
+  Reading: <span class="p p-reported">REPORTED</span> = measured by running code (value + method + n) · <span class="p p-modeled">MODELED</span> = computed from measurements · <span class="p p-unknown">UNKNOWN</span> = not measured, never PASS.<br>
+  Build: <span class="kbd">audit/build_audit.py</span> parses the real logs, ledgers, and manifests into <span class="kbd">audit/data/*.json</span>. Re-run it to refresh this view.
+</footer>
+
+<script src="audit.js"></script>
+</body>
+</html>

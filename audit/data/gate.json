@@ -1,0 +1,37 @@
+{
+ "source": "gate/state/receipts.jsonl + gate/state/gate-state.json",
+ "provenance": "REPORTED",
+ "label": "Recorded by gate/gate.py during the binding ceremony (test stub verifier).",
+ "generated_at": "2026-10-06 08:41 UTC",
+ "chain_tip": "7b399fa4df90ae4a76c3fd026f1dd52bd7b4dfc2683a4af9f98b0a1c67c685dc",
+ "mutations": 2,
+ "receipts": [
+  {
+   "identity": "unity:testnet:1e26f0d9e8c46818",
+   "new_state_sha256": "47b978186772d4ece208945a93fd08bedcac917f395d063f251aeefa90517505",
+   "note": "binding ceremony started; awaiting WebAuthn proof",
+   "prev_state_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+   "receipt_id": "10cd821a21d0bfdd90a890918f9692fa381ffc6184a6942e3866f8c150b2cf4e",
+   "schema": "unity.gate.v1.testnet",
+   "transition": "BINDING",
+   "ts": "2026-10-06T06:54:15.187218+00:00",
+   "link_status": "GENESIS"
+  },
+  {
+   "identity": "unity:testnet:1e26f0d9e8c46818",
+   "new_state_sha256": "7b399fa4df90ae4a76c3fd026f1dd52bd7b4dfc2683a4af9f98b0a1c67c685dc",
+   "note": "binding proof VERIFIED; identity bound to Unity gate",
+   "prev_state_sha256": "47b978186772d4ece208945a93fd08bedcac917f395d063f251aeefa90517505",
+   "receipt_id": "f7ba75dfbe0d2166b1584d07e5dfb48bcfac230eb4978253e196b0f49e9c3110",
+   "schema": "unity.gate.v1.testnet",
+   "transition": "BOUND",
+   "ts": "2026-10-06T06:54:15.191579+00:00",
+   "link_status": "OK"
+  }
+ ],
+ "verify_summary": {
+  "checked": 2,
+  "ok": 1,
+  "broken": 0
+ }
+}

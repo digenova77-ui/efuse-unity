@@ -1,0 +1,379 @@
+{
+ "source": "deploy/TELEMETRY.md section 4 (from the six RECEIPTS.md ledgers)",
+ "provenance": "REPORTED",
+ "as_of": "2026-10-06 ~08:08 UTC (point in time; drift accelerates under concurrent edits)",
+ "generated_at": "2026-10-06 08:41 UTC",
+ "rows": [
+  {
+   "ledger": "economics",
+   "file": "tokenomics.py",
+   "receipted_sha256": "b5fba554252ff0f854fbe10565529093785cc25a7df5f0eb9ef646781e06f7eb",
+   "time": "07:52 (winter-wire + Merit-transferable)",
+   "drift": "—"
+  },
+  {
+   "ledger": "economics",
+   "file": "test_tokenomics.py",
+   "receipted_sha256": "7e40546d408b3449f063df731c617387fb46bd5555cc2747c4134f68048f57ee",
+   "time": "07:52",
+   "drift": "edited after (89 tests now)"
+  },
+  {
+   "ledger": "economics",
+   "file": "wallet.py",
+   "receipted_sha256": "b35e606103f59943c5a0180737674718ddcf8db898c13d0734ad2ba5fd72f6b6",
+   "time": "07:10",
+   "drift": "DRIFT — disk `872c77df…`"
+  },
+  {
+   "ledger": "economics",
+   "file": "test_wallet.py",
+   "receipted_sha256": "14628cafe921659449a86daf610432c77fba5b46e59f5312540fc15c73f81803",
+   "time": "07:10",
+   "drift": "DRIFT — disk `873a7c0b…` (41 tests now)"
+  },
+  {
+   "ledger": "economics",
+   "file": "fuse.py",
+   "receipted_sha256": "33cfaea537e28cc297dfb655cfdafccc7f15d74134c38952cc6c8579a904e75b",
+   "time": "07:10",
+   "drift": "—"
+  },
+  {
+   "ledger": "economics",
+   "file": "test_fuse.py",
+   "receipted_sha256": "9e7f2d2002574c1c62f71c4d29c429bd68250854ff0d973dc450b137ebf3ad27",
+   "time": "07:10",
+   "drift": "—"
+  },
+  {
+   "ledger": "economics",
+   "file": "economic_state.py",
+   "receipted_sha256": "f017c8518d47fd4c5a309ded059940d8b4ba941130fa31074c821e6d1b546a45",
+   "time": "07:15 (D4 repair)",
+   "drift": "—"
+  },
+  {
+   "ledger": "economics",
+   "file": "pricing.py",
+   "receipted_sha256": "4baa6fb1914dc4a39e7d2f3b996048a1be2e900208b7bda9c0537965cc528015",
+   "time": "07:15 (D4 repair)",
+   "drift": "DRIFT — disk `b4b19180…`"
+  },
+  {
+   "ledger": "economics",
+   "file": "test_economic_state.py",
+   "receipted_sha256": "1efee7d9504e459b71ef258afa4d8bc7cf08b5373d2cd9db7f8ce670cc1fe738",
+   "time": "07:15 (D4 repair)",
+   "drift": "—"
+  },
+  {
+   "ledger": "economics",
+   "file": "test_pricing.py",
+   "receipted_sha256": "60a3ebed3ab968fc5961f2baad8d5e96a560ac6208fc5454636de713ebb06833",
+   "time": "07:15 (D4 repair)",
+   "drift": "—"
+  },
+  {
+   "ledger": "economics",
+   "file": "NEW_ECONOMIC_MODEL.md",
+   "receipted_sha256": "83c91a72b44b0d25f5599d8293694fc707956056c9d1639eecef21978a6456f2",
+   "time": "07:15 (D4 repair)",
+   "drift": "DRIFT — disk `7cf514d8…`"
+  },
+  {
+   "ledger": "economics",
+   "file": "PARAMS.md",
+   "receipted_sha256": "b7d6dc3a55dbcf26de33cff33b4bd4aef0de61375e8e2e95c9d648bbf1cad2ce",
+   "time": "07:06",
+   "drift": "DRIFT — disk `1e28f421…`"
+  },
+  {
+   "ledger": "economics",
+   "file": "DECISIONS.md",
+   "receipted_sha256": "11d1a6404d3bb4ac58b33a2065bf5c43c49f3e68b60b6039edecb1b6970ae30c",
+   "time": "07:06",
+   "drift": "DRIFT — disk `62f35c9c…`"
+  },
+  {
+   "ledger": "economics",
+   "file": "PURITY_AUDIT.md",
+   "receipted_sha256": "fdd966610d473ec22d6a681b288358313fe9b3d69ceba7b4c047a6b9461f099a",
+   "time": "07:15 (D4 repair)",
+   "drift": "—"
+  },
+  {
+   "ledger": "economics",
+   "file": "PRICES_ADDENDUM.md",
+   "receipted_sha256": "8133bfa3a08fba5e1edea009f64598126390cac1f649db0e37b39ecd7373b2dc",
+   "time": "07:15 (D4 repair)",
+   "drift": "—"
+  },
+  {
+   "ledger": "dclm",
+   "file": "compute.py",
+   "receipted_sha256": "daa0b73a7d1a549193522b52d074b523b2361a27434e67edc782d3654065fccb",
+   "time": "06:58",
+   "drift": "—"
+  },
+  {
+   "ledger": "dclm",
+   "file": "test_compute.py",
+   "receipted_sha256": "ea7c2a62520e259cbd75dd832717787847542442f31923f32058573ee0dbec17",
+   "time": "06:59",
+   "drift": "—"
+  },
+  {
+   "ledger": "dclm",
+   "file": "meter.py",
+   "receipted_sha256": "4c6b134edc3de3fe2a504a3342a13ba7bad5d65b71016dc24e89d9f386f210e4",
+   "time": "07:40 (merit-regen evolution)",
+   "drift": "DRIFT — disk `5ccf630f…` (purify wiring)"
+  },
+  {
+   "ledger": "dclm",
+   "file": "data.py",
+   "receipted_sha256": "5af85e54fb1d5c66bc8e52eb6440901a3b2693352b636cbadb2fccba6ef64cd6",
+   "time": "07:15 (file-handle fix)",
+   "drift": "DRIFT — disk `50b3bed0…` (purify wiring)"
+  },
+  {
+   "ledger": "dclm",
+   "file": "rights.py",
+   "receipted_sha256": "a059e531f542c9fa2ad268be610ca6f4421d8d57e5e59858eb85556a45789bd5",
+   "time": "07:34 (onboarder)",
+   "drift": "—"
+  },
+  {
+   "ledger": "dclm",
+   "file": "writes.py",
+   "receipted_sha256": "7a82f55e20c583f197446d3a0f45a45ec9d631e17c0e964ead9d631e17c0e…",
+   "time": "07:34 (onboarder)",
+   "drift": "—"
+  },
+  {
+   "ledger": "dclm",
+   "file": "tap.py",
+   "receipted_sha256": "ec73b2f0dd3844421f7f9dc053bbd30692291ebebcf2d7fc8a5fc05dc52e9493",
+   "time": "07:45",
+   "drift": "DRIFT — disk `a93af65f…`"
+  },
+  {
+   "ledger": "dclm",
+   "file": "winter.py",
+   "receipted_sha256": "42ee632e1f316995509f7b4cbee1405d841cb437a2dbaaa44018b00070fcaa98",
+   "time": "07:19",
+   "drift": "DRIFT — disk `f44169be…`"
+  },
+  {
+   "ledger": "dclm",
+   "file": "share.py",
+   "receipted_sha256": "78a219d230840b0acab64527d843ee48aa99d4cccc50dfba55294bc28a2f1721",
+   "time": "07:23",
+   "drift": "DRIFT — disk `df85202a…`"
+  },
+  {
+   "ledger": "dclm",
+   "file": "onboard.py",
+   "receipted_sha256": "c0665e0d1c454884abeccf49550d6dbcffb0c47f46ea52bded6c2571456caf10",
+   "time": "07:34",
+   "drift": "DRIFT — disk `64c3a5fd…`"
+  },
+  {
+   "ledger": "dclm",
+   "file": "token_engine.py",
+   "receipted_sha256": "ca3db2ea6e3e14b42e2af53d9bb37fd81c26353798bf62d177ab0cde7efd7736",
+   "time": "07:20",
+   "drift": "DRIFT — disk `40ef8185…`"
+  },
+  {
+   "ledger": "dclm",
+   "file": "tokenize.py",
+   "receipted_sha256": "da3a5f4be764d7a6383bb78081faaf7f213ba635836486bc229175e3057f5113",
+   "time": "07:20",
+   "drift": "DRIFT — disk `2e6a3503…`"
+  },
+  {
+   "ledger": "dclm",
+   "file": "test_tokenize.py",
+   "receipted_sha256": "2087c740387c50104138bbff5e6f5a61ec7c2d86b59dfec06c0d0749ca437e6d",
+   "time": "07:25",
+   "drift": "DRIFT — disk `7cddb4bc…`"
+  },
+  {
+   "ledger": "dclm",
+   "file": "test_merit_regen.py",
+   "receipted_sha256": "2f5f78eee8b746e3db4d825e6d5a5d450db645f7591690cd2383ad82bdb8fe1b",
+   "time": "07:40",
+   "drift": "DRIFT — disk `e8e97081…` (27 tests now)"
+  },
+  {
+   "ledger": "dclm",
+   "file": "ed25519.js",
+   "receipted_sha256": "bb0be18c36c3cd9c90237e117301c0272620b2e57945d2fb19b6e32cfbfa397c",
+   "time": "06:56",
+   "drift": "—"
+  },
+  {
+   "ledger": "gate",
+   "file": "gate.py",
+   "receipted_sha256": "77ad1d1a9d95adf436c228905a75d494cab8eb48150ddda82c58f44cb8cbc3f6",
+   "time": "07:00 (reframe)",
+   "drift": "—"
+  },
+  {
+   "ledger": "gate",
+   "file": "test_gate.py",
+   "receipted_sha256": "54fc8a91308698370b48bad86546708997a2456826fbf10c3012706d72525656",
+   "time": "07:00 (reframe)",
+   "drift": "—"
+  },
+  {
+   "ledger": "gate",
+   "file": "CEREMONY.md",
+   "receipted_sha256": "c9c519779b1d25e587cc2d3e977d06e0fd8eca59ade81c31a7db5180a5c35748",
+   "time": "07:00 (reframe)",
+   "drift": "—"
+  },
+  {
+   "ledger": "gate",
+   "file": "RECEIPTS.md (self-seal)",
+   "receipted_sha256": "b1fb584f74928d9c8994a1ebc3f31323764f6d056026b5ec38492371280e33ff",
+   "time": "07:00",
+   "drift": "—"
+  },
+  {
+   "ledger": "gate",
+   "file": "state chain",
+   "receipted_sha256": "2 mutations, hash-chained, tip `7b399fa4df90ae4a76c3fd026f1dd52bd7b4dfc2683a4af9f98b0a1c67c685dc",
+   "time": "06:54 (seed)",
+   "drift": "—"
+  },
+  {
+   "ledger": "relay",
+   "file": "relay-unity.mjs",
+   "receipted_sha256": "26b8612dc46c9662695fc7bfefc43c9d0381b8a24acde4601acda64343ffb4ee",
+   "time": "creation",
+   "drift": "—"
+  },
+  {
+   "ledger": "relay",
+   "file": "relay-unity.test.mjs",
+   "receipted_sha256": "9fbc946271759116a48609afd41c79a7b259f6697066bbf07e615d263de16b5c",
+   "time": "creation",
+   "drift": "—"
+  },
+  {
+   "ledger": "relay",
+   "file": "RECEIPTS.md (self-seal)",
+   "receipted_sha256": "a3577901191742a4d05268b05459dcf74e9e20f4494d7b44f07766872998246f",
+   "time": "07:15 (D4 repair)",
+   "drift": "—"
+  },
+  {
+   "ledger": "relay",
+   "file": "wrap-chunk.mjs",
+   "receipted_sha256": "**UNRECEIPTED**",
+   "time": "landed 07:54",
+   "drift": "no receipt row exists"
+  },
+  {
+   "ledger": "client",
+   "file": "index.html",
+   "receipted_sha256": "03d5ea8ef0f6d5417bf6a8f0ea0fc30b63c860a8dce649739d0055efc9525f77",
+   "time": "~03:00 EDT",
+   "drift": "DRIFT — disk `9a158a4b…`"
+  },
+  {
+   "ledger": "client",
+   "file": "client.js",
+   "receipted_sha256": "2ee9818ce5216142ba6a4aa3fd429e3a3b75ef768499f36a30e600d49c479b4c",
+   "time": "~03:00 EDT",
+   "drift": "DRIFT — disk `55232557…` (edited 08:10)"
+  },
+  {
+   "ledger": "client",
+   "file": "validate-client.mjs",
+   "receipted_sha256": "37c31d4f60446283807e22442182b8919ef017067a62e3ed1d9559baf745737a",
+   "time": "~03:00 EDT",
+   "drift": "DRIFT — disk `7c92d63e…` (141 checks now)"
+  },
+  {
+   "ledger": "client",
+   "file": "chunks.js",
+   "receipted_sha256": "**UNRECEIPTED**",
+   "time": "landed 08:02",
+   "drift": "no receipt row exists"
+  },
+  {
+   "ledger": "purity",
+   "file": "index.py",
+   "receipted_sha256": "bef5da1cc76167d9f742acc854b94837e22784b6378dc87394cd55fce622372b",
+   "time": "07:42 (clarity layer)",
+   "drift": "DRIFT — disk `baf4f46b…`"
+  },
+  {
+   "ledger": "purity",
+   "file": "test_index.py",
+   "receipted_sha256": "a1a81b2c2e7c9f3fbbd6895b34c659175e6ef89e8cd5aba387467be5e965c627",
+   "time": "07:42",
+   "drift": "DRIFT — disk `10109cec…`"
+  },
+  {
+   "ledger": "purity",
+   "file": "PURITY_INDEX.md",
+   "receipted_sha256": "709840c8443bf810b6759972f5d803d222f4950a16bd87daa235eef8e67e0c57",
+   "time": "07:42",
+   "drift": "—"
+  },
+  {
+   "ledger": "purity",
+   "file": "RECEIPTS.md (self-seal)",
+   "receipted_sha256": "774d3cd6a3dd932bbbac85ee1df96037c2340f3573625d01ad8011b83de751db",
+   "time": "07:42",
+   "drift": "—"
+  },
+  {
+   "ledger": "root",
+   "file": "CANON.md",
+   "receipted_sha256": "68cd7c4e1d3a5d5bc58b13f9e1878a224c70c5150e86f0fcf8f7dc05aaebfe57",
+   "time": "",
+   "drift": ""
+  },
+  {
+   "ledger": "root",
+   "file": "LOOP.md",
+   "receipted_sha256": "82a3570ba1578d3bf08ba03311b871065a89cfd36a52a2d89760504e97f4e509",
+   "time": "",
+   "drift": ""
+  },
+  {
+   "ledger": "root",
+   "file": "loop.py",
+   "receipted_sha256": "2cec80f0350d2edc7eb70ed688a17604d3cbac9155fcdf4f02569ac24b32fb8f",
+   "time": "",
+   "drift": ""
+  },
+  {
+   "ledger": "root",
+   "file": "DIAMOND_ARCHITECTURE_FLOOR.md",
+   "receipted_sha256": "749547ca74a70d2f7f11de82b2f97d8995bc081f00a44da4f250fe9a70e398b0",
+   "time": "",
+   "drift": ""
+  },
+  {
+   "ledger": "root",
+   "file": "GOVERNANCE_ELEVATION.md",
+   "receipted_sha256": "305446c97fec736c326cd2e42373f87c8a120a8e5a48670ead128bc81ad9b868",
+   "time": "",
+   "drift": ""
+  },
+  {
+   "ledger": "root",
+   "file": "PLUS_ONE_INCENTIVE.md",
+   "receipted_sha256": "de8bd268bc58a9e912a0db2ccdd98fd7ee346cad702c733e5f51b12701100ea2",
+   "time": "",
+   "drift": ""
+  }
+ ]
+}

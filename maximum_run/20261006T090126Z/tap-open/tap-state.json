@@ -1,0 +1,13 @@
+{
+  "schema": "unity.tap.v1.testnet",
+  "seasons": {
+    "2026-tapping": {
+      "members": {
+        "unity:testnet:cdae4320e00c4f202868145fde8bf7c29da0791fa48f7c7de1850766f4e473aa": 20
+      },
+      "outflow_total": 20,
+      "replenishment": 400.0,
+      "replenishment_provenance": "DERIVED"
+    }
+  }
+}

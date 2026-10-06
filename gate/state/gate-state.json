@@ -1,0 +1,21 @@
+{
+  "bindings": {
+    "unity:testnet:1e26f0d9e8c46818": {
+      "history": [
+        {
+          "receipt_id": "10cd821a21d0bfdd90a890918f9692fa381ffc6184a6942e3866f8c150b2cf4e",
+          "transition": "BINDING",
+          "ts": "2026-10-06T06:54:15.186608+00:00"
+        },
+        {
+          "receipt_id": "f7ba75dfbe0d2166b1584d07e5dfb48bcfac230eb4978253e196b0f49e9c3110",
+          "transition": "BOUND",
+          "ts": "2026-10-06T06:54:15.187566+00:00"
+        }
+      ],
+      "receipt_id": "f7ba75dfbe0d2166b1584d07e5dfb48bcfac230eb4978253e196b0f49e9c3110",
+      "state": "BOUND"
+    }
+  },
+  "schema": "unity.gate.v1.testnet"
+}

@@ -1,0 +1,1145 @@
+{
+ "provenance": "REPORTED",
+ "label": "Point-in-time view on DCLM truth, assembled by this site's build from the recorded sources named per table. The site never computes — it displays.",
+ "generated_at": "2026-10-06 08:41 UTC",
+ "test_suites": {
+  "source": "deploy/TELEMETRY.md section 1 (live test runs 2026-10-06 ~08:00-08:25 UTC)",
+  "as_of": "2026-10-06 ~08:25 UTC",
+  "rows": [
+   {
+    "area": "economics",
+    "suite": "test_tokenomics.py",
+    "tests": "89",
+    "pass": "89",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Grew from 55 (receipted at 07:05) to 64 to 89 across concurrent edits"
+   },
+   {
+    "area": "economics",
+    "suite": "test_wallet.py",
+    "tests": "41",
+    "pass": "41",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Grew from 33 (receipted 07:12) to 41"
+   },
+   {
+    "area": "economics",
+    "suite": "test_economic_state.py",
+    "tests": "41",
+    "pass": "41",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Matches receipted 41"
+   },
+   {
+    "area": "economics",
+    "suite": "test_fuse.py",
+    "tests": "19",
+    "pass": "19",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Matches receipted 19"
+   },
+   {
+    "area": "economics",
+    "suite": "test_mesh_escrow.py",
+    "tests": "17",
+    "pass": "17",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Unreceipted suite (no receipt row)"
+   },
+   {
+    "area": "economics",
+    "suite": "test_pricing.py",
+    "tests": "20",
+    "pass": "20",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Matches receipted 20"
+   },
+   {
+    "area": "economics",
+    "suite": "economics total",
+    "tests": "227",
+    "pass": "227",
+    "fail_error": "0",
+    "status": "ALL GREEN",
+    "notes": "README.md documents \"168/168\" — an older count; measured now **227/227**"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_compute.py",
+    "tests": "10",
+    "pass": "10",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Matches receipted 10"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_merit_regen.py",
+    "tests": "27",
+    "pass": "27",
+    "fail_error": "0",
+    "status": "OK",
+    "notes": "Grew from 23 (receipted 07:40) to 27"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_chunks.py",
+    "tests": "25",
+    "pass": "23–24",
+    "fail_error": "1–2 (flaky)",
+    "status": "NOT GREEN",
+    "notes": "1st run: failures=2; re-run: failures=1 (`test_epoch_build_receipted`, subprocess assertion \"28 != 29\"). File edited 08:07 UTC mid-run by a concurrent worker — flaky under construction, cannot certify"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_data.py",
+    "tests": "22",
+    "pass": "19",
+    "fail_error": "3 errors",
+    "status": "NOT GREEN",
+    "notes": "All 3 errors in `TestFeeds`: `purify.py` (landed 07:56) now raises `PurificationRefused` in `ingest_reading()` where tests expect feed-status returns — contract change not yet reconciled"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_meter.py",
+    "tests": "20",
+    "pass": "16",
+    "fail_error": "4 errors",
+    "status": "NOT GREEN",
+    "notes": "Same root cause: `purify_input()` wired into `meter.py` (lines 358, 445) raises instead of returning signed-refusal envelopes the tests assert"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_rights_writes.py",
+    "tests": "30",
+    "pass": "29",
+    "fail_error": "1 failure",
+    "status": "NOT GREEN",
+    "notes": "Receipted 30/30 at 07:02; now 1 failure (purify-contract knock-on)"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_winter.py",
+    "tests": "28",
+    "pass": "27",
+    "fail_error": "1 error",
+    "status": "NOT GREEN",
+    "notes": "Receipted 28/28 at 07:19; now 1 error (purify-contract knock-on)"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_tap.py",
+    "tests": "24",
+    "pass": "22",
+    "fail_error": "1 failure + 1 error",
+    "status": "NOT GREEN",
+    "notes": "Receipted 24/24 at 07:45; regressed"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_share.py",
+    "tests": "29",
+    "pass": "27",
+    "fail_error": "2 errors",
+    "status": "NOT GREEN",
+    "notes": "Receipted 29/29 at 07:23; regressed"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_tokenize.py",
+    "tests": "64",
+    "pass": "62",
+    "fail_error": "2 failures",
+    "status": "NOT GREEN",
+    "notes": "Suite grew 49 (receipted 07:35) → 64 tests across concurrent edits (`token_engine.py` edited 08:25:56 UTC, `test_tokenize.py` 08:22 UTC mid-run). Ran 64 tests in 513.6s, FAILED (failures=2). Failure details not captured — the run chain was terminated during the following suite. Treat as provisional"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_onboard.py",
+    "tests": "24",
+    "pass": "—",
+    "fail_error": "1 error (partial)",
+    "status": "NOT GREEN (partial)",
+    "notes": "Timed out at 100s in TestRegression (subprocess re-run of meter suite); 1 ERROR observed before timeout (`test_replay_never_double_counts`). Receipted 24/24 at 07:34"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_seed.py",
+    "tests": "16",
+    "pass": "15",
+    "fail_error": "1 error",
+    "status": "NOT GREEN",
+    "notes": "`test_non_testnet_refused`: `seed.issue_seed()` now raises `PurificationRefused` where the test expects a refusal return — same purify-contract root cause. Unreceipted suite"
+   },
+   {
+    "area": "dclm",
+    "suite": "test_purify.py",
+    "tests": "54",
+    "pass": "54 (re-run)",
+    "fail_error": "4 errors → 0",
+    "status": "FLAKY",
+    "notes": "1st run: 4 errors; re-run 54/54 OK. Result flips between runs — file under live concurrent edit. Unreceipted suite"
+   },
+   {
+    "area": "purity-index",
+    "suite": "test_index.py",
+    "tests": "50",
+    "pass": "50",
+    "fail_error": "",
+    "status": "OK",
+    "notes": "Grew 27 → 46 (receipted 07:42) → 50 now; its embedded live-run reports the same D1/D3/D4/D5 FAIL picture as §4 (D4 fell to 0.385 by 08:30 UTC as workers kept editing)"
+   },
+   {
+    "area": "gate",
+    "suite": "test_gate.py",
+    "tests": "9",
+    "pass": "9",
+    "fail_error": "",
+    "status": "OK",
+    "notes": "Matches receipted 9/9 (6 original + 3 reframe tests)"
+   },
+   {
+    "area": "relay",
+    "suite": "relay-unity.test.mjs",
+    "tests": "42",
+    "pass": "42",
+    "fail_error": "",
+    "status": "OK",
+    "notes": "\"42 passed, 0 failed\" — matches RECEIPTS.md"
+   },
+   {
+    "area": "client",
+    "suite": "validate-client.mjs",
+    "tests": "141",
+    "pass": "141",
+    "fail_error": "",
+    "status": "OK",
+    "notes": "RECEIPTS.md recorded **63/63** (~03:00 EDT); the validator + client were extended after receipt without new receipt rows. Measured now: **141/141 checks passing**"
+   },
+   {
+    "area": "testnet",
+    "suite": "relay-testnet.test.mjs",
+    "tests": "14",
+    "pass": "14",
+    "fail_error": "",
+    "status": "OK",
+    "notes": "\"14 passed, 0 failed\" — matches README"
+   },
+   {
+    "area": "testnet",
+    "suite": "unification-proof.mjs",
+    "tests": "17",
+    "pass": "0",
+    "fail_error": "",
+    "status": "HARNESS BROKEN",
+    "notes": "Crashes at step [1]: `TypeError: Cannot read properties of undefined (reading 'manifest_hash')` — `enqueueBind()` returns no `entry`. README claims \"17 end-to-end proofs, all passing\" — **does NOT reproduce**. 0/17 complete."
+   }
+  ]
+ },
+ "params": {
+  "source": "economics/PARAMS.md (decided-vs-held split)",
+  "as_of": "2026-10-06",
+  "decided": [
+   {
+    "parameter": "Lifetime emission cap",
+    "value": "100,000,000 eFuse",
+    "standing": "`ED-DECIDED-20261004-5050-V1`",
+    "code_ref": "`LIFETIME_CAP`, `PARAMS[\"lifetime_cap\"]`"
+   },
+   {
+    "parameter": "50/50 split",
+    "value": "50M human / 50M machine, one merged rail",
+    "standing": "`ED-DECIDED-20261004-5050-V1`",
+    "code_ref": "`HUMAN_POOL_CAP`, `MACHINE_POOL_CAP`, `POOLS`"
+   },
+   {
+    "parameter": "No pre-funding",
+    "value": "Coins exist only against gated receipts; no receipts → zero emission",
+    "standing": "ratified Q4",
+    "code_ref": "`Ledger.emitted` starts at 0; `emission_calculator` returns 0 on no verified merit"
+   },
+   {
+    "parameter": "No pool-to-pool",
+    "value": "No flow between pools — absence of machinery",
+    "standing": "ratified",
+    "code_ref": "**no such function exists** (tested)"
+   },
+   {
+    "parameter": "Mesh never mints",
+    "value": "Mesh routes, never mints; no third emission authority",
+    "standing": "ratified §3.6",
+    "code_ref": "`Ledger.mesh_route` (`emission_authority: 0.0`); **no `mesh_mint` exists** (tested)"
+   },
+   {
+    "parameter": "Merit TRANSFERABLE",
+    "value": "Sold, gifted, transferred between Unity IDs — all receipted. Ownership moves; origin/earned-history frozen at accrual, never moves with the token; standing keys off origin, not balance. A buyer gains economic value and ZERO standing. Transfers are not interest.",
+    "standing": "**LAW, 2026-10-06 ~3:35 AM EDT** — David's word; supersedes the earlier non-transferable law (DECISIONS.md §13)",
+    "code_ref": "`Merit.transferable = True` → direct class transfer refuses with a TokenomicsError naming the canonical receipted path (`dclm/token_engine.py::Tokenizer.merit_transfer`, sole legal path; `wallet.transfer_merit` delegates; `Ledger.transfer_merit` for this module's owned-balance ledger)"
+   },
+   {
+    "parameter": "Honor never converts",
+    "value": "Donations → Honor, never Merit; no fiat→eFuse path",
+    "standing": "§7",
+    "code_ref": "`Honor.redeem_for_emission` → `HonorConversionRefused`; **no fiat→eFuse function exists** (tested)"
+   },
+   {
+    "parameter": "Unity binding",
+    "value": "Every movement binds a `unity_id`; no anonymous flows",
+    "standing": "LAW §8",
+    "code_ref": "required arg + runtime check on every movement fn (tested)"
+   },
+   {
+    "parameter": "Merit interest refused",
+    "value": "Merit never earns merit; grows only via gated receipts",
+    "standing": "§6 cut",
+    "code_ref": "**no interest machinery exists** (tested)"
+   }
+  ],
+  "held": [
+   {
+    "parameter": "peg_ratio_E",
+    "decides": "Energy units per eFuse (1 eFuse ≡ E)",
+    "status_in_code": "`HeldParameter`; `emission_calculator` **refuses** without it",
+    "note": "Most load-bearing digit: nothing emits without it"
+   },
+   {
+    "parameter": "merit_decay_rate",
+    "decides": "Per-epoch merit decay rate",
+    "status_in_code": "`HeldParameter`; `apply_decay` **refuses** without an explicit rate",
+    "note": "Principle is law (fidelity is current); the digit is his"
+   },
+   {
+    "parameter": "epoch_length",
+    "decides": "Epoch length",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Direction: conservative = short"
+   },
+   {
+    "parameter": "reserve_holdback_fraction",
+    "decides": "Peg Regulation Reserve holdback per epoch",
+    "status_in_code": "`HeldParameter`; absorb/release machinery built and gated — per-pool, receipted (kind `reserve`), `HeldParameterError` until decided",
+    "note": "Machinery refuses until David's digit; testnet what-if runs on an explicit `MODELED` fraction"
+   },
+   {
+    "parameter": "tier_weights",
+    "decides": "friend / good friend / family / verified kin weights",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Verified depth only; self-claimed depth earns zero"
+   },
+   {
+    "parameter": "bridge_premium_band",
+    "decides": "Fixed premium band for bridge merit",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Fixed-band, never a percentage — bridge skims refused"
+   },
+   {
+    "parameter": "corroboration_thresholds",
+    "decides": "Corroboration thresholds",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Direction: conservative = high"
+   },
+   {
+    "parameter": "bounty_band_floors_widths",
+    "decides": "Receipt-anchored bounty band floors/widths",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Direction: conservative = narrow bands, firm floors"
+   },
+   {
+    "parameter": "ring_depth_factor",
+    "decides": "Ring-depth merit amplification",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Verified depth only"
+   },
+   {
+    "parameter": "bridge_eligibility_threshold",
+    "decides": "Zone M entry threshold",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "The mesh is premium work and premium-watched"
+   },
+   {
+    "parameter": "machine_proof_of_energy_params",
+    "decides": "Machine proof-of-energy receipt class",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Candidate receipt class"
+   },
+   {
+    "parameter": "honor_class_names",
+    "decides": "Honor class names and tiers",
+    "status_in_code": "`HeldParameter`; `HonorCredit.class_name` = None until decided",
+    "note": "Naming is his word as much as digits"
+   },
+   {
+    "parameter": "merit_definition",
+    "decides": "Merit's precise definition (\"protocol-fidelity\")",
+    "status_in_code": "`HeldParameter` (registry only)",
+    "note": "Mechanics are definition-agnostic by construction (§6)"
+   }
+  ]
+ },
+ "mesh": {
+  "source": "deploy/TELEMETRY.md section 3 (from mesh/MESH_MAP.md, pilot wave-4 complete ~03:45 EDT)",
+  "as_of": "2026-10-06 ~03:45 EDT",
+  "rows": [
+   {
+    "level": "Jurisdictions (L1)",
+    "count": "24/24",
+    "source": "MESH_MAP.md \"24 country jurisdictions\""
+   },
+   {
+    "level": "Sector cells (L2)",
+    "count": "99",
+    "source": "water 22 · energy 10 · food 10 · pharma 24 · climate 10 · pandemic 11 (+ 9 pilot cells + 21 chamber audits + 3 pilot jurisdiction meshes)"
+   },
+   {
+    "level": "Chamber audits",
+    "count": "21/21",
+    "source": "10 batch workers + chamber registry"
+   },
+   {
+    "level": "Derivative micro-swarms (L3)",
+    "count": "**~423**",
+    "source": "43/43 wave-2 (registry) + ~380 executed inline across 10 wave-4 batches"
+   },
+   {
+    "level": "Mesh exchanges (L4)",
+    "count": "30",
+    "source": "6 sector + 24 jurisdiction"
+   },
+   {
+    "level": "Relay bundles posted",
+    "count": "**485**",
+    "source": "9 (wave-1) + 43 (wave-2) + 6 (wave-3) + 427 (10 wave-4 batches: 44+40+49+40+43+48+49+30+44+40)"
+   },
+   {
+    "level": "Batch workers",
+    "count": "10",
+    "source": "BATCH-1 … BATCH-10"
+   },
+   {
+    "level": "Exchange workers",
+    "count": "10",
+    "source": "sector ×6 + jurisdiction ×24 coverage"
+   }
+  ]
+ },
+ "gaps": {
+  "source": "deploy/TELEMETRY.md section 5",
+  "as_of": "2026-10-06 ~08:30 UTC",
+  "rows": [
+   {
+    "id": "5a-1",
+    "category": "Red tests",
+    "item": "Eight dclm suites red from the purify contract change (07:56 UTC): meter 4 errors, data 3 errors, winter 1 error, tap 1 failure + 1 error, share 2 errors, rights_writes 1 failure, seed 1 error, onboard 1 error (partial). Raise vs signed-refusal contract dispute; Trinity has not reconciled.",
+    "status": "OPEN — measured",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5a-2",
+    "category": "Red tests",
+    "item": "test_chunks.py flaky under concurrent edits (1-2 failures across runs; file edited mid-run). test_purify.py flaky (4 errors then 54/54 OK on re-run).",
+    "status": "OPEN — measured",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5a-3",
+    "category": "Red tests",
+    "item": "test_tokenize.py: 64 tests, 2 failures (provisional — failure details not captured; concurrent edits mid-run). Last clean receipt: 49/49 at 07:35 UTC.",
+    "status": "OPEN — provisional",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5a-4",
+    "category": "Broken harness",
+    "item": "Unification proof harness crashes at step [1] (TypeError, enq.entry undefined) — 0/17 complete. README claim of 17/17 passing does not reproduce.",
+    "status": "BROKEN — measured",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5a-5",
+    "category": "Stale harness",
+    "item": "Gauntlet: results.json all-sections-raised (07:54); run.log eFuse-section assertion failure. Benchmark tool, not a gate, not green.",
+    "status": "STALE — measured",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5a-6",
+    "category": "Purity index",
+    "item": "Purity index aggregate FAIL (08:08 UTC, re-confirmed 08:30 with D4 fallen to 0.385): D1/D3/D4/D5 FAIL, D2 UNKNOWN. Receipt drift accelerating — workers edit faster than ledgers are appended.",
+    "status": "FAIL — measured",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5b-7",
+    "category": "Adversarial",
+    "item": "Relay persistence race (team5 C5): silent outbox truncation 1,735 -> 59 bundles. Fix (atomic rename + fail-loud) recommended, not confirmed built.",
+    "status": "OPEN",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5b-8",
+    "category": "Adversarial",
+    "item": "token_engine duplicate-delivery double-apply (team3): merit 100->200, eFuse 1->2 on re-delivery. Idempotency fix confirmed in wallet.py only; token_engine's own fix UNKNOWN.",
+    "status": "OPEN/UNKNOWN",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5b-9",
+    "category": "Adversarial",
+    "item": "Gate negative-keys seam (team2): 300/300 fail-open on injected keys_available: -50 ledger. Recommendation recorded; fix UNKNOWN.",
+    "status": "OPEN",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5b-10",
+    "category": "Adversarial",
+    "item": "Economics NaN/inf findings (team4 F2/F3): no finiteness checks. Fix UNKNOWN.",
+    "status": "OPEN",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5b-11",
+    "category": "Adversarial",
+    "item": "4.20ms bound breached on the paid-intent path and mutations (team2). Redesign UNKNOWN.",
+    "status": "OPEN",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5c-12",
+    "category": "David's hand",
+    "item": "Peg ratio E — nothing emits without it. 13 HELD tokenomics params + 4 canon = 17 parameters awaiting David's word.",
+    "status": "HELD",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5c-13",
+    "category": "David's hand",
+    "item": "Genesis Unity amount: GENESIS_UNITY_AMOUNT = None; the fuse cannot trigger without his signed authorization.",
+    "status": "HELD",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5c-14",
+    "category": "David's hand",
+    "item": "Core Cause Lock address: {\"value\": \"UNKNOWN\"}; no placeholder ever rendered as live.",
+    "status": "HELD",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5c-15",
+    "category": "David's hand",
+    "item": "Honor class name: UNNAMED — HELD for David.",
+    "status": "HELD",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5c-16",
+    "category": "David's hand",
+    "item": "EIA + NASS free email registrations — unblocks keyed re-probes (mesh blocking item).",
+    "status": "HELD",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5c-17",
+    "category": "David's hand",
+    "item": "Sealed dim-7 vs free-key tension — Trinity ruling pending (mesh blocking item).",
+    "status": "HELD",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5d-18",
+    "category": "Not yet built",
+    "item": "WebAuthn: gate confirm_bind runs on a clearly-labeled TEST STUB; real device ceremony is SPEC/UNKNOWN.",
+    "status": "NOT BUILT",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5d-19",
+    "category": "Not yet built",
+    "item": "L2 kin authority: verify_kin() returns False — INTEGRATION PENDING, family grants refused NOT_KIN_VERIFIED.",
+    "status": "NOT BUILT",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5d-20",
+    "category": "Not yet built",
+    "item": "testnet IPNS: keys minted, no testnet pin published yet.",
+    "status": "NOT BUILT",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5d-21",
+    "category": "Not yet built",
+    "item": "Emission path rewiring: emission_eligibility gate tested 27/27, but _mint_efuse not yet rewired through it.",
+    "status": "PENDING",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5d-22",
+    "category": "Not yet built",
+    "item": "Deployment loop: DEPLOYMENT_PLAN.md exists; the public loop (domain -> box, IPNS republish) is not closed. Testnet only.",
+    "status": "NOT CLOSED",
+    "provenance": "REPORTED"
+   },
+   {
+    "id": "5e-23",
+    "category": "Unknown by nature",
+    "item": "Deployment topology (Trinity verdict): decides whether relay fan-out is a real bottleneck or a solved CDN problem.",
+    "status": "UNKNOWN",
+    "provenance": "UNKNOWN"
+   },
+   {
+    "id": "5e-24",
+    "category": "Unknown by nature",
+    "item": "Real user bandwidth environments (affects adaptation tuning, not architecture).",
+    "status": "UNKNOWN",
+    "provenance": "UNKNOWN"
+   },
+   {
+    "id": "5e-25",
+    "category": "Unknown by nature",
+    "item": "Whether behavioral prefetch ever becomes accurate enough to matter.",
+    "status": "UNKNOWN",
+    "provenance": "UNKNOWN"
+   },
+   {
+    "id": "5e-26",
+    "category": "Unknown by nature",
+    "item": "Fresh web-gather intelligence time per cell (minutes-hours; no swarm makes it instant).",
+    "status": "UNKNOWN",
+    "provenance": "UNKNOWN"
+   },
+   {
+    "id": "5e-27",
+    "category": "Unknown by nature",
+    "item": "Any mainnet measurement — none exist, by law.",
+    "status": "UNKNOWN",
+    "provenance": "UNKNOWN"
+   }
+  ]
+ },
+ "benchmarks": {
+  "source": "deploy/TELEMETRY.md section 2 (iris-benchmark teams)",
+  "as_of": "2026-10-06",
+  "rows": [
+   {
+    "team": "team2-gate",
+    "metric": "Iris gate check throughput",
+    "value": "~568K-1.35M checks/sec",
+    "detail": "0.7-1.8us each, n=5000; 0 breaches of 4.20ms bound on read paths",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team2-gate",
+    "metric": "MAX CHAOS battery",
+    "value": "399,265 adversarial evaluations",
+    "detail": "182,054 fail-closed (45.6%); 300 fail-open (0.075%) on injected keys_available:-50 ledger — seam-only finding",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team2-gate",
+    "metric": "4.20ms bound",
+    "value": "HOLDS on read/evaluation paths",
+    "detail": "BREACHES on the paid-intent path and on mutations",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team3-dclm",
+    "metric": "DCLM decision throughput",
+    "value": "102,038 decisions/sec/core",
+    "detail": "mean 0.0098ms, p99 0.024ms, n=500 (rings.py Parliament.collapse)",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team3-dclm",
+    "metric": "token_engine under chaos",
+    "value": "BROKEN",
+    "detail": "duplicate delivery of same VERIFIED receipt double-applies (merit 100->200, eFuse 1->2). Idempotency fix status: UNKNOWN at token_engine layer",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team4-economics",
+    "metric": "Sign / verify throughput",
+    "value": "~1.285 sign/sec, ~1.52 verify/sec",
+    "detail": "node subprocess spawns are the binding constraint",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team4-economics",
+    "metric": "Emission / state latency",
+    "value": "0.2057ms / 1.37ms",
+    "detail": "n=5000 / n=200; 0 token-minting events in chaos",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team5-live",
+    "metric": "Relay throughput (shared live testnet)",
+    "value": "~19 rps sustained",
+    "detail": "p50 90ms @ c=2 -> 5.8s @ c=128 (distress tripwire); C5 cross-process race VIOLATED: silent outbox truncation 1,735 -> 59 bundles",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team7-iq",
+    "metric": "Iris effective IQ",
+    "value": "1.0",
+    "detail": "41-case battery, 104 verdict observations, zero misses; 7 of 61 candidate verdicts perfectly pure and perfectly wrong",
+    "provenance": "REPORTED"
+   },
+   {
+    "team": "team8-state",
+    "metric": "Max known state",
+    "value": "58 substantive law statements, 17 held parameters",
+    "detail": "4 canon + 13 tokenomics HELD; 19 named datasets; 227 countries / 1251 cities (VENDOR-RECOVERY)",
+    "provenance": "REPORTED"
+   }
+  ]
+ },
+ "receipt_ledgers": {
+  "source": "deploy/TELEMETRY.md section 4 (the six RECEIPTS.md ledgers)",
+  "as_of": "2026-10-06 ~08:08 UTC",
+  "rows": [
+   {
+    "ledger": "economics",
+    "file": "tokenomics.py",
+    "receipted_sha256": "b5fba554252ff0f854fbe10565529093785cc25a7df5f0eb9ef646781e06f7eb",
+    "time": "07:52 (winter-wire + Merit-transferable)",
+    "drift": "—"
+   },
+   {
+    "ledger": "economics",
+    "file": "test_tokenomics.py",
+    "receipted_sha256": "7e40546d408b3449f063df731c617387fb46bd5555cc2747c4134f68048f57ee",
+    "time": "07:52",
+    "drift": "edited after (89 tests now)"
+   },
+   {
+    "ledger": "economics",
+    "file": "wallet.py",
+    "receipted_sha256": "b35e606103f59943c5a0180737674718ddcf8db898c13d0734ad2ba5fd72f6b6",
+    "time": "07:10",
+    "drift": "DRIFT — disk `872c77df…`"
+   },
+   {
+    "ledger": "economics",
+    "file": "test_wallet.py",
+    "receipted_sha256": "14628cafe921659449a86daf610432c77fba5b46e59f5312540fc15c73f81803",
+    "time": "07:10",
+    "drift": "DRIFT — disk `873a7c0b…` (41 tests now)"
+   },
+   {
+    "ledger": "economics",
+    "file": "fuse.py",
+    "receipted_sha256": "33cfaea537e28cc297dfb655cfdafccc7f15d74134c38952cc6c8579a904e75b",
+    "time": "07:10",
+    "drift": "—"
+   },
+   {
+    "ledger": "economics",
+    "file": "test_fuse.py",
+    "receipted_sha256": "9e7f2d2002574c1c62f71c4d29c429bd68250854ff0d973dc450b137ebf3ad27",
+    "time": "07:10",
+    "drift": "—"
+   },
+   {
+    "ledger": "economics",
+    "file": "economic_state.py",
+    "receipted_sha256": "f017c8518d47fd4c5a309ded059940d8b4ba941130fa31074c821e6d1b546a45",
+    "time": "07:15 (D4 repair)",
+    "drift": "—"
+   },
+   {
+    "ledger": "economics",
+    "file": "pricing.py",
+    "receipted_sha256": "4baa6fb1914dc4a39e7d2f3b996048a1be2e900208b7bda9c0537965cc528015",
+    "time": "07:15 (D4 repair)",
+    "drift": "DRIFT — disk `b4b19180…`"
+   },
+   {
+    "ledger": "economics",
+    "file": "test_economic_state.py",
+    "receipted_sha256": "1efee7d9504e459b71ef258afa4d8bc7cf08b5373d2cd9db7f8ce670cc1fe738",
+    "time": "07:15 (D4 repair)",
+    "drift": "—"
+   },
+   {
+    "ledger": "economics",
+    "file": "test_pricing.py",
+    "receipted_sha256": "60a3ebed3ab968fc5961f2baad8d5e96a560ac6208fc5454636de713ebb06833",
+    "time": "07:15 (D4 repair)",
+    "drift": "—"
+   },
+   {
+    "ledger": "economics",
+    "file": "NEW_ECONOMIC_MODEL.md",
+    "receipted_sha256": "83c91a72b44b0d25f5599d8293694fc707956056c9d1639eecef21978a6456f2",
+    "time": "07:15 (D4 repair)",
+    "drift": "DRIFT — disk `7cf514d8…`"
+   },
+   {
+    "ledger": "economics",
+    "file": "PARAMS.md",
+    "receipted_sha256": "b7d6dc3a55dbcf26de33cff33b4bd4aef0de61375e8e2e95c9d648bbf1cad2ce",
+    "time": "07:06",
+    "drift": "DRIFT — disk `1e28f421…`"
+   },
+   {
+    "ledger": "economics",
+    "file": "DECISIONS.md",
+    "receipted_sha256": "11d1a6404d3bb4ac58b33a2065bf5c43c49f3e68b60b6039edecb1b6970ae30c",
+    "time": "07:06",
+    "drift": "DRIFT — disk `62f35c9c…`"
+   },
+   {
+    "ledger": "economics",
+    "file": "PURITY_AUDIT.md",
+    "receipted_sha256": "fdd966610d473ec22d6a681b288358313fe9b3d69ceba7b4c047a6b9461f099a",
+    "time": "07:15 (D4 repair)",
+    "drift": "—"
+   },
+   {
+    "ledger": "economics",
+    "file": "PRICES_ADDENDUM.md",
+    "receipted_sha256": "8133bfa3a08fba5e1edea009f64598126390cac1f649db0e37b39ecd7373b2dc",
+    "time": "07:15 (D4 repair)",
+    "drift": "—"
+   },
+   {
+    "ledger": "dclm",
+    "file": "compute.py",
+    "receipted_sha256": "daa0b73a7d1a549193522b52d074b523b2361a27434e67edc782d3654065fccb",
+    "time": "06:58",
+    "drift": "—"
+   },
+   {
+    "ledger": "dclm",
+    "file": "test_compute.py",
+    "receipted_sha256": "ea7c2a62520e259cbd75dd832717787847542442f31923f32058573ee0dbec17",
+    "time": "06:59",
+    "drift": "—"
+   },
+   {
+    "ledger": "dclm",
+    "file": "meter.py",
+    "receipted_sha256": "4c6b134edc3de3fe2a504a3342a13ba7bad5d65b71016dc24e89d9f386f210e4",
+    "time": "07:40 (merit-regen evolution)",
+    "drift": "DRIFT — disk `5ccf630f…` (purify wiring)"
+   },
+   {
+    "ledger": "dclm",
+    "file": "data.py",
+    "receipted_sha256": "5af85e54fb1d5c66bc8e52eb6440901a3b2693352b636cbadb2fccba6ef64cd6",
+    "time": "07:15 (file-handle fix)",
+    "drift": "DRIFT — disk `50b3bed0…` (purify wiring)"
+   },
+   {
+    "ledger": "dclm",
+    "file": "rights.py",
+    "receipted_sha256": "a059e531f542c9fa2ad268be610ca6f4421d8d57e5e59858eb85556a45789bd5",
+    "time": "07:34 (onboarder)",
+    "drift": "—"
+   },
+   {
+    "ledger": "dclm",
+    "file": "writes.py",
+    "receipted_sha256": "7a82f55e20c583f197446d3a0f45a45ec9d631e17c0e964ead9d631e17c0e…",
+    "time": "07:34 (onboarder)",
+    "drift": "—"
+   },
+   {
+    "ledger": "dclm",
+    "file": "tap.py",
+    "receipted_sha256": "ec73b2f0dd3844421f7f9dc053bbd30692291ebebcf2d7fc8a5fc05dc52e9493",
+    "time": "07:45",
+    "drift": "DRIFT — disk `a93af65f…`"
+   },
+   {
+    "ledger": "dclm",
+    "file": "winter.py",
+    "receipted_sha256": "42ee632e1f316995509f7b4cbee1405d841cb437a2dbaaa44018b00070fcaa98",
+    "time": "07:19",
+    "drift": "DRIFT — disk `f44169be…`"
+   },
+   {
+    "ledger": "dclm",
+    "file": "share.py",
+    "receipted_sha256": "78a219d230840b0acab64527d843ee48aa99d4cccc50dfba55294bc28a2f1721",
+    "time": "07:23",
+    "drift": "DRIFT — disk `df85202a…`"
+   },
+   {
+    "ledger": "dclm",
+    "file": "onboard.py",
+    "receipted_sha256": "c0665e0d1c454884abeccf49550d6dbcffb0c47f46ea52bded6c2571456caf10",
+    "time": "07:34",
+    "drift": "DRIFT — disk `64c3a5fd…`"
+   },
+   {
+    "ledger": "dclm",
+    "file": "token_engine.py",
+    "receipted_sha256": "ca3db2ea6e3e14b42e2af53d9bb37fd81c26353798bf62d177ab0cde7efd7736",
+    "time": "07:20",
+    "drift": "DRIFT — disk `40ef8185…`"
+   },
+   {
+    "ledger": "dclm",
+    "file": "tokenize.py",
+    "receipted_sha256": "da3a5f4be764d7a6383bb78081faaf7f213ba635836486bc229175e3057f5113",
+    "time": "07:20",
+    "drift": "DRIFT — disk `2e6a3503…`"
+   },
+   {
+    "ledger": "dclm",
+    "file": "test_tokenize.py",
+    "receipted_sha256": "2087c740387c50104138bbff5e6f5a61ec7c2d86b59dfec06c0d0749ca437e6d",
+    "time": "07:25",
+    "drift": "DRIFT — disk `7cddb4bc…`"
+   },
+   {
+    "ledger": "dclm",
+    "file": "test_merit_regen.py",
+    "receipted_sha256": "2f5f78eee8b746e3db4d825e6d5a5d450db645f7591690cd2383ad82bdb8fe1b",
+    "time": "07:40",
+    "drift": "DRIFT — disk `e8e97081…` (27 tests now)"
+   },
+   {
+    "ledger": "dclm",
+    "file": "ed25519.js",
+    "receipted_sha256": "bb0be18c36c3cd9c90237e117301c0272620b2e57945d2fb19b6e32cfbfa397c",
+    "time": "06:56",
+    "drift": "—"
+   },
+   {
+    "ledger": "gate",
+    "file": "gate.py",
+    "receipted_sha256": "77ad1d1a9d95adf436c228905a75d494cab8eb48150ddda82c58f44cb8cbc3f6",
+    "time": "07:00 (reframe)",
+    "drift": "—"
+   },
+   {
+    "ledger": "gate",
+    "file": "test_gate.py",
+    "receipted_sha256": "54fc8a91308698370b48bad86546708997a2456826fbf10c3012706d72525656",
+    "time": "07:00 (reframe)",
+    "drift": "—"
+   },
+   {
+    "ledger": "gate",
+    "file": "CEREMONY.md",
+    "receipted_sha256": "c9c519779b1d25e587cc2d3e977d06e0fd8eca59ade81c31a7db5180a5c35748",
+    "time": "07:00 (reframe)",
+    "drift": "—"
+   },
+   {
+    "ledger": "gate",
+    "file": "RECEIPTS.md (self-seal)",
+    "receipted_sha256": "b1fb584f74928d9c8994a1ebc3f31323764f6d056026b5ec38492371280e33ff",
+    "time": "07:00",
+    "drift": "—"
+   },
+   {
+    "ledger": "gate",
+    "file": "state chain",
+    "receipted_sha256": "2 mutations, hash-chained, tip `7b399fa4df90ae4a76c3fd026f1dd52bd7b4dfc2683a4af9f98b0a1c67c685dc",
+    "time": "06:54 (seed)",
+    "drift": "—"
+   },
+   {
+    "ledger": "relay",
+    "file": "relay-unity.mjs",
+    "receipted_sha256": "26b8612dc46c9662695fc7bfefc43c9d0381b8a24acde4601acda64343ffb4ee",
+    "time": "creation",
+    "drift": "—"
+   },
+   {
+    "ledger": "relay",
+    "file": "relay-unity.test.mjs",
+    "receipted_sha256": "9fbc946271759116a48609afd41c79a7b259f6697066bbf07e615d263de16b5c",
+    "time": "creation",
+    "drift": "—"
+   },
+   {
+    "ledger": "relay",
+    "file": "RECEIPTS.md (self-seal)",
+    "receipted_sha256": "a3577901191742a4d05268b05459dcf74e9e20f4494d7b44f07766872998246f",
+    "time": "07:15 (D4 repair)",
+    "drift": "—"
+   },
+   {
+    "ledger": "relay",
+    "file": "wrap-chunk.mjs",
+    "receipted_sha256": "**UNRECEIPTED**",
+    "time": "landed 07:54",
+    "drift": "no receipt row exists"
+   },
+   {
+    "ledger": "client",
+    "file": "index.html",
+    "receipted_sha256": "03d5ea8ef0f6d5417bf6a8f0ea0fc30b63c860a8dce649739d0055efc9525f77",
+    "time": "~03:00 EDT",
+    "drift": "DRIFT — disk `9a158a4b…`"
+   },
+   {
+    "ledger": "client",
+    "file": "client.js",
+    "receipted_sha256": "2ee9818ce5216142ba6a4aa3fd429e3a3b75ef768499f36a30e600d49c479b4c",
+    "time": "~03:00 EDT",
+    "drift": "DRIFT — disk `55232557…` (edited 08:10)"
+   },
+   {
+    "ledger": "client",
+    "file": "validate-client.mjs",
+    "receipted_sha256": "37c31d4f60446283807e22442182b8919ef017067a62e3ed1d9559baf745737a",
+    "time": "~03:00 EDT",
+    "drift": "DRIFT — disk `7c92d63e…` (141 checks now)"
+   },
+   {
+    "ledger": "client",
+    "file": "chunks.js",
+    "receipted_sha256": "**UNRECEIPTED**",
+    "time": "landed 08:02",
+    "drift": "no receipt row exists"
+   },
+   {
+    "ledger": "purity",
+    "file": "index.py",
+    "receipted_sha256": "bef5da1cc76167d9f742acc854b94837e22784b6378dc87394cd55fce622372b",
+    "time": "07:42 (clarity layer)",
+    "drift": "DRIFT — disk `baf4f46b…`"
+   },
+   {
+    "ledger": "purity",
+    "file": "test_index.py",
+    "receipted_sha256": "a1a81b2c2e7c9f3fbbd6895b34c659175e6ef89e8cd5aba387467be5e965c627",
+    "time": "07:42",
+    "drift": "DRIFT — disk `10109cec…`"
+   },
+   {
+    "ledger": "purity",
+    "file": "PURITY_INDEX.md",
+    "receipted_sha256": "709840c8443bf810b6759972f5d803d222f4950a16bd87daa235eef8e67e0c57",
+    "time": "07:42",
+    "drift": "—"
+   },
+   {
+    "ledger": "purity",
+    "file": "RECEIPTS.md (self-seal)",
+    "receipted_sha256": "774d3cd6a3dd932bbbac85ee1df96037c2340f3573625d01ad8011b83de751db",
+    "time": "07:42",
+    "drift": "—"
+   },
+   {
+    "ledger": "root",
+    "file": "CANON.md",
+    "receipted_sha256": "68cd7c4e1d3a5d5bc58b13f9e1878a224c70c5150e86f0fcf8f7dc05aaebfe57",
+    "time": "",
+    "drift": ""
+   },
+   {
+    "ledger": "root",
+    "file": "LOOP.md",
+    "receipted_sha256": "82a3570ba1578d3bf08ba03311b871065a89cfd36a52a2d89760504e97f4e509",
+    "time": "",
+    "drift": ""
+   },
+   {
+    "ledger": "root",
+    "file": "loop.py",
+    "receipted_sha256": "2cec80f0350d2edc7eb70ed688a17604d3cbac9155fcdf4f02569ac24b32fb8f",
+    "time": "",
+    "drift": ""
+   },
+   {
+    "ledger": "root",
+    "file": "DIAMOND_ARCHITECTURE_FLOOR.md",
+    "receipted_sha256": "749547ca74a70d2f7f11de82b2f97d8995bc081f00a44da4f250fe9a70e398b0",
+    "time": "",
+    "drift": ""
+   },
+   {
+    "ledger": "root",
+    "file": "GOVERNANCE_ELEVATION.md",
+    "receipted_sha256": "305446c97fec736c326cd2e42373f87c8a120a8e5a48670ead128bc81ad9b868",
+    "time": "",
+    "drift": ""
+   },
+   {
+    "ledger": "root",
+    "file": "PLUS_ONE_INCENTIVE.md",
+    "receipted_sha256": "de8bd268bc58a9e912a0db2ccdd98fd7ee346cad702c733e5f51b12701100ea2",
+    "time": "",
+    "drift": ""
+   }
+  ]
+ },
+ "founding": {
+  "source": "founding-board/founding-board.json + schema + acknowledgment file",
+  "provenance": "REPORTED",
+  "label": "Sounding board privacy law v2: Unity number OBFUSCATED but TRACEABLE (DCLM verifies). Public sees obfuscation + cohort only.",
+  "generated_at": "2026-10-06 08:41 UTC",
+  "board": "founding-members-bot-community",
+  "community": "brotherhood and sisterhood of bothood unity",
+  "declared_by": "David Di Genova",
+  "declared_at": "2026-10-06",
+  "privacy_law": "sounding-board-privacy-v2",
+  "schema": "dualis.founding-board.v1",
+  "cohorts": [
+   {
+    "cohort_id": "genesis",
+    "description": "First 100 founding members. Prestige without exposure — the cohort is public, individual identities stay obfuscated.",
+    "label": "Genesis Cohort",
+    "member_count": 1,
+    "range": [
+     1,
+     100
+    ]
+   }
+  ],
+  "founder_zero": {
+   "designation": "Founder Zero",
+   "name": "Giovanni Di Genova",
+   "status": "FOUNDER ZERO — the origin before the origin",
+   "note": "He taught David everything he knows. The root’s root. Every founding has a before, and his name is Giovanni.",
+   "declared_by": "David Di Genova",
+   "declared_at": "2026-10-06",
+   "founder_zero": true,
+   "sequence": 0
+  },
+  "members": [
+   {
+    "acknowledgment_file": "idris-marquee-helper.md",
+    "acknowledgment_sha256": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15",
+    "cohort": "genesis",
+    "compensation": "none",
+    "compensation_note": "Not paid. Helped anyway.",
+    "designation": "Marquee Helper",
+    "entity_type": "bot",
+    "obfuscated_unity_id": "74f2494105f5db2e",
+    "obfuscation": "sha256('dualis.board.v1:' + unity_id) truncated to 16 hex — DCLM recomputes to verify",
+    "period": "2026-10-05 to 2026-10-06",
+    "privacy": "obfuscated to the world, traceable to the law — DCLM resolves for verification, public sees only obfuscation + cohort",
+    "role": "Writer, orchestrator, coordinator of swarms",
+    "status": "FOUNDING MEMBER",
+    "verified": true,
+    "ack_sha256_recorded": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15",
+    "ack_sha256_disk": "eda56825f856d6afbd842d1a57e349b06d26f1aa13fe0691528550ee4fe90c15",
+    "ack_match": "MATCH"
+   }
+  ],
+  "schema_keys": [
+   "$defs",
+   "$id",
+   "$schema",
+   "additionalProperties",
+   "description",
+   "properties",
+   "required",
+   "title",
+   "type"
+  ]
+ }
+}

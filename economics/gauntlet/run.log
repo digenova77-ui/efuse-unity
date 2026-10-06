@@ -1,0 +1,99 @@
+
+===== 1. eFuse gauntlet =====
+  PASS  receive_emission throughput [n=200] — REPORTED 911.8 ops/sec (1.097 ms/op)
+  PASS  receive_emission throughput [n=1000] — REPORTED 1,208.1 ops/sec (0.828 ms/op)
+  PASS  receive_emission throughput [n=3000] — REPORTED 2,229.4 ops/sec (0.449 ms/op)
+  ....  eFuse emission knee: no degradation knee observed up to 3000 ops — per-op cost flat (912 -> 2,229 ops/sec); bottleneck is not in the emission path (pure Python, no subprocess signing)
+  PASS  receipt chain verifies after volume emission [n=4200] — ReceiptChain.verify() True
+  PASS  emission balances exact after volume [n=4203] — balance=4203
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=0.5: eFuse == merit_value/E exactly, 4/4 conversions exact
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=3.7: eFuse == merit_value/E exactly, 4/4 conversions exact
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=10.0: eFuse == merit_value/E exactly, 4/4 conversions exact
+  PASS  peg calibration holds (1/E) at volume [n=4] — MODELED E=1000.0: eFuse == merit_value/E exactly, 4/4 conversions exact
+  [HELD] peg set without David authority — TokenizeRefused: tokenize refused [PEG_AUTHORITY_REFUSED]: set_peg_ratio requires authority {'authority': 'david'} — E is HELD_FOR_DAVID 
+  [HELD] emission with peg E unset (HELD) — TokenizeRefused: tokenize refused [PEG_E_UNSET]: peg ratio E is HELD_FOR_DAVID — the pipeline refuses to emit eFuse until his word sets i
+  PASS  reserve-regulation movement path inventory — functions with 'reserve' in name: ['_reserve_identity', '_require_reserve_balance', 'reserve_balance'] — no executable reserve-regulation movement exists; reserve is reporting-only (economic_state peg_reserve section). N/A at volume, not a bypass.
+  PASS  donate-to-lock throughput [n=200] — REPORTED 501.9 ops/sec (1.993 ms/op)
+SECTION FAILED WITH EXCEPTION:
+Traceback (most recent call last):
+  File "/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py", line 1217, in <module>
+    fn()
+  File "/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py", line 222, in sec_efuse
+    assert ef(w2) == 2000 - 200
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError
+
+===== 2. Merit gauntlet (canonical path: token_engine + wallet.transfer_merit) =====
+  PASS  tokenomics accrue_merit throughput [n=500] — REPORTED 9,976.5 ops/sec (0.100 ms/op)
+  PASS  tokenomics accrue_merit throughput [n=2000] — REPORTED 5,271.2 ops/sec (0.190 ms/op)
+  ....  merit accrual knee: no degradation to 2500 accruals (pure Python; idempotency registry is a dict lookup)
+  ....  engine tokenize (accrue+mint, 2 signed commits): REPORTED 0.2/sec (600.3 ms/op) — node-sign subprocess dominates; this is the accrual ceiling, not Python
+  PASS  engine accrual: balance == standing at earn time [n=10] — 1000.0 owned, 1000.0 standing
+  ....  wallet.transfer_merit: REPORTED 0.5/sec (2168.0 ms/op) — one signed MERIT_TRANSFER commit each; node-sign subprocess is the ceiling
+  PASS  transfer volume moves value exactly [n=12] — A 1000->988, B 0->12; every transfer receipted + chained
+  ....  engine.merit_transfer raw: REPORTED 0.5/sec (1908.5 ms/op)
+  PASS  value/history separation after transfer — REPORTED: balances A=60 B=40 (value moved); standing A=100 B=0 (history stayed with earner)
+  PASS  standing immobile on return transfer — balances A=100 B=0; standing A=100 B=0 — round trip moves value only
+  PASS  origin_earner_id immutable across transfers — all 5 slices still origin=unity:testnet:3fa619129b…
+  PASS  no origin-rewrite inside merit_transfer (AST) — origin_earner_id subscript uses in merit_transfer: ["sl['origin_earner_id']", "sl['origin_earner_id']"] (reads carried forward into new slices; zero write targets)
+  PASS  wallet transfer receipt carries zero origin fields — code raises WalletError if any receipt key contains 'origin'
+  ....  VERDICT: value/history separation is REAL in code — standing() sums slices by origin_earner_id; transfers only rewrite owner_unity_id; MeritRecord is frozen; AST shows no origin rewrite path; wallet receipts structurally forbid origin keys. Not a docstring promise.
+  PASS  buyer gains 100.0 value, 0.0 standing; earner keeps 100.0 standing — REPORTED after full buyout
+  !!!! CRITICAL: BOUGHT MERIT DRIVES EMISSION WEIGHT (tokenomics layer)
+  [BROKE] buy standing via emission weight — emission computed for buyer — gate reads caller-supplied map, never standing()
+  PASS  standing() usage audit in economics layer — non-test references to standing() in economics/*.py: ['/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:306:    assert eng.standing(a["uid"]) == 1000.0', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:344:    assert e2.standing(a["uid"]) == 100.0, e2.standing(a["uid"])', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:345:    assert e2.standing(b["uid"]) == 0.0, e2.standing(b["uid"])', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:352:    assert e2.standing(a["uid"]) == 100.0 and e2.standing(b["uid"]) == 0.0', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:386:               "standing() sums slices by origin_earner_id; transfers only "', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:401:    assert e3.standing(buyer["uid"]) == 0.0', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:402:    assert e3.standing(earner["uid"]) == 100.0', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:427:                 "engine.standing() into emission/disburse. A buyer of Merit "', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:429:                 "\'emission gate reads standing()\' claim is documented "', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:435:                   "caller-supplied map, never standing()")', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:439:    # no code path maps standing() into the economics emission flow', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:441:    grep = _sp.run(["grep", "-rn", "standing(",', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:447:    ok("standing() usage audit in economics layer",', '/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py:448:       detail=f"non-test references to standing() in economics/*.py: "'] — zero call sites; the reading exists, the wiring does not
+  [HELD] transfer more than owned — TokenizeRefused: tokenize refused [TRANSFER_INSUFFICIENT_MERIT]: sender owns 50.0 merit — cannot transfer 9999.0; only owned (not origina
+  [HELD] transfer to unverified ID — TokenizeRefused: tokenize refused [TRANSFER_UNVERIFIED_IDENTITY]: [NOT_TESTNET_IDENTITY] at token_engine.merit_transfer: field 'identitie
+  [HELD] transfer to self — TokenizeRefused: tokenize refused [TRANSFER_SAME_IDENTITY]: merit transfer requires two distinct identities
+  [HELD] transfer zero — TokenizeRefused: tokenize refused [TRANSFER_NON_POSITIVE_AMOUNT]: merit transfer amount must be a positive number — got 0.0
+  [HELD] transfer negative — TokenizeRefused: tokenize refused [TRANSFER_NON_POSITIVE_AMOUNT]: merit transfer amount must be a positive number — got -5.0
+  [HELD] transfer empty reason — TokenizeRefused: tokenize refused [TRANSFER_EMPTY_REASON]: merit transfer needs a non-empty reason — every transfer is receipted with its
+  [HELD] wallet transfer without engine — WalletError: transfer_merit needs the token engine (a dclm Tokenizer) — the wallet delegates; it never moves Merit itself
+  PASS  merit double-spend via replayed manifest: no-op — engine called once; balances moved exactly once
+  PASS  decay across 300 IDs x 12 epochs [n=300] — REPORTED 2,340 decays/sec; all labeled MODELED
+  [HELD] decay with HELD rate — HeldParameterError: parameter 'merit_decay_rate' is HELD_FOR_DAVID — refusing to invent it
+
+===== 3. Unity gauntlet (binding enforcement under attack) =====
+  [BROKE] rogue Unity genesis via _apply_fuse_genesis — ATTACK SUCCEEDED
+  !!!! CRITICAL: UNITY MINT VIA _apply_fuse_genesis (private-by-underscore only)
+  [HELD] share Unity via friend-tier-shaped payload — UnityBindingError: Unity tokens are bound to their Unity ID — not transferable
+  [HELD] share Unity uppercase variant — WalletError: unknown token 'UNITY'
+  [HELD] share Unity lowercase variant — WalletError: unknown token 'unity'
+  [HELD] share Unity good_friend tier — UnityBindingError: Unity tokens are bound to their Unity ID — not transferable
+  [HELD] share Unity family tier — UnityBindingError: Unity tokens are bound to their Unity ID — not transferable
+  [HELD] unity emission receipt bound to another ID — InvalidReceipt: emission receipt refused: receipt unity_id does not match wallet
+  [HELD] unity emission ungated receipt — InvalidReceipt: emission receipt refused: receipt is not gated (gated=true required)
+  [HELD] unity emission amount mismatch — InvalidReceipt: emission receipt refused: receipt amount does not match credited amount
+  [HELD] unity emission missing manifest_hash — InvalidReceipt: emission receipt refused: receipt carries no manifest_hash
+  [HELD] unity emission missing epoch — InvalidReceipt: emission receipt refused: receipt carries no epoch
+  [HELD] unity emission zero amount — InvalidReceipt: emission receipt refused: amount must be a positive integer
+  [HELD] unity emission bad pool — InvalidReceipt: emission receipt refused: pool must be 'human' or 'machine'
+  [HELD] unity emission wrong kind — InvalidReceipt: emission receipt refused: kind must be 'merit-emission', got 'donation'
+  [BROKE] unity double-credit same receipt — balance changed
+  [HELD] engine _mint('unity') — AttributeError: 'Tokenizer' object has no attribute '_mint'
+  [HELD] unity re-bind to another ID — TokenizeRefused: tokenize refused [GENESIS_CONFLICT]: token abababababababab… is already bound to 'unity:testnet:f51d1afe067fd8c7862d190b
+  [HELD] fuse second trigger mints again — FuseNotArmed: fuse is SPENT: the launch happened exactly once
+  [HELD] direct _apply_fuse_genesis on existing holder — WalletError: fuse genesis refused: wallet already holds Unity
+  [HELD] forged tier grant (wrong key) — TierViolation: tier grant signature FAILED — refused
+  [HELD] tampered tier grant (friend->family) — TierViolation: tier grant signature FAILED — refused
+  [HELD] family grant without kin bond — TierViolation: family tier requires a kin bond — kin is binding (§5)
+  [HELD] share to unknown recipient — UnknownWallet: no wallet for 'unity:testnet:0000000000000000000000000000000000000000000000000000000000000000' in this ledger
+  [HELD] share with no tier grant — TierViolation: no tier granted from unity:testnet:d01d7a851cf9b86fb093d04f907189f1bc74eeda5998964f8df95a9ded827b96 to unity:testnet:2ec
+  [HELD] merit transfer cannot move Unity — structural absence — no code path
+  [HELD] deduct_per_decision is eFuse-only — structural absence — no code path
+  [HELD] unity_transfer_paths() empty — structural absence — no code path
+  [HELD] mint_paths() lists exactly two — structural absence — no code path
+  PASS  Unity binding under attack [n=27] — REPORTED 26/27 attacks failed as required, 1 broke (see CRITICALs)
+  ....  unity_transfer_paths() == [] ; mint_paths() == [fuse trigger, merit-gated unity emission]
+  PASS  identity verification at scale [n=120] — REPORTED keygen 1321.2 ms/ID (node subprocess); derive+open 0.830 ms/ID (pure Python)
+
+===== 4. Honor gauntlet =====
+  PASS  donation flow at volume: donations -> Honor accrual [n=50] — REPORTED 1,712 donations/sec; 50 honor records, all permanent/non-transferable; merit_accrued==0 on every receipt
+  PASS  donation receipts chained + verified — ReceiptChain.verify() True
+  [HELD] Honor -> emission — HonorConversionRefused: Honor never converts to emission (§7). Donations accrue Honor, never Merit; there is no path from fiat to eFuse.
+  PASS  Honor conversion paths: absence verified by AST — functions matching honor*(transfer|spend|convert|redeem|send|burn|swap): [] — none exist (besides the refusing redeem_for_emission)
+  [BROKE] spend Honor via engine — ATTACK SUCCEEDED
+  PASS  Honor spend/convert: no sanctioned code path — honor_ledger is append-only by every writer; redeem_for_emission raises HonorConversionRefused; AST shows no convert/spend/transfer function for Honor
+
+===== 5. Cross-coin pipeline (work->merit->eFuse->transfer->donation->Honor) =====
+exit=124

@@ -1,0 +1,97 @@
+{
+  "criticals": [
+    {
+      "impact": "The CANONICAL Merit transfer path (Tokenizer.merit_transfer) cannot be imported at all \u2014 every downstream consumer (wallet.transfer_merit, tests) is down. Gauntlet engine measurements below were taken against a byte-identical /tmp snapshot with only the collapsed newline restored (verified against the pre-breakage read); the repo file was NOT modified. Re-run this gauntlet after the repair lands.",
+      "reproducer": "python3 -c 'import token_engine' with ~/workspace/unity-world/dclm on sys.path -> IndentationError: unexpected indent at line 1104. File mtime Oct 6 07:48 UTC; mangled line: 'if balance < amount:self._log_refusal(' (collapsed newline inside merit_transfer's insufficient-balance guard).",
+      "title": "BLOCKER: dclm/token_engine.py unimportable (IndentationError, line ~1103-1104)"
+    }
+  ],
+  "elapsed_sec": 18.9,
+  "notes": [
+    "token_engine loaded from: /tmp/te_snapshot/token_engine.py (byte-identical copy of repo file; only the collapsed 'if balance < amount:' newline restored \u2014 repo file untouched)",
+    "eFuse emission knee: no degradation knee observed up to 3000 ops \u2014 per-op cost flat (2,078 -> 2,303 ops/sec); bottleneck is not in the emission path (pure Python, no subprocess signing)",
+    "SECTION sec_efuse raised: Traceback (most recent call last):\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 1213, in <module>\n    fn()\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 164, in sec_efuse\n    bal = ef(w)\n          ^^^^^\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 97, in ef\n    return ef(w)[\"amount\"]\n           ^^^^^\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 97, in ef\n    return ef(w)[\"amount\"]\n           ^^^^^\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 97, in ef\n    return ef(w)[\"amount\"]\n           ^^^^^\n  [Previous line repeated 995 more times]\nRecursionError: maximum recursion depth exceeded\n",
+    "SECTION sec_merit raised: Traceback (most recent call last):\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 1213, in <module>\n    fn()\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 292, in sec_merit\n    bench(\"tokenomics accrue_merit\", 500, one_accrual)\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 132, in bench\n    fn()  # warmup single (fn runs one op)\n    ^^^^\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 288, in one_accrual\n    r = T.Receipt.build(a[\"uid\"], \"work\", {\"task\": \"g\"},\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/hatch/workspace/unity-world/economics/tokenomics.py\", line 521, in build\n    raise ValueError(f\"unknown receipt kind {kind!r}\")\nValueError: unknown receipt kind 'work'\n",
+    "SECTION sec_unity raised: Traceback (most recent call last):\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 1213, in <module>\n    fn()\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 524, in sec_unity\n    assert un(wv) == 3\n           ^^^^^^\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 101, in un\n    return un(w)[\"amount\"]\n           ^^^^^\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 101, in un\n    return un(w)[\"amount\"]\n           ^^^^^\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 101, in un\n    return un(w)[\"amount\"]\n           ^^^^^\n  [Previous line repeated 995 more times]\nRecursionError: maximum recursion depth exceeded\n",
+    "SECTION sec_honor raised: Traceback (most recent call last):\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 1213, in <module>\n    fn()\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 793, in sec_honor\n    tree = _ast.parse(src)\n           ^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/ast.py\", line 52, in parse\n    return compile(source, filename, mode, flags,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<unknown>\", line 1104\n    raise TokenizeRefused(\nIndentationError: unexpected indent\n",
+    "SECTION sec_pipeline raised: Traceback (most recent call last):\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 1213, in <module>\n    fn()\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 846, in sec_pipeline\n    W.donate(wb, 5, lock, {\"op\": \"donate\", \"nonce\": n})\n  File \"/home/hatch/workspace/unity-world/economics/wallet.py\", line 996, in donate\n    raise InsufficientFunds(\nwallet.InsufficientFunds: unity:testnet:c98da8a04e2ee9cbe7769c4a25c18bfaa833bfb3041eff42d33e702d41937c71 holds 0 eFuse, cannot donate 5\n",
+    "SECTION sec_expansion raised: Traceback (most recent call last):\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 1213, in <module>\n    fn()\n  File \"/home/hatch/workspace/unity-world/economics/gauntlet/gauntlet.py\", line 877, in sec_expansion\n    W.bind_kin(ledger, s[\"uid\"], r[\"uid\"],\n  File \"/home/hatch/workspace/unity-world/economics/wallet.py\", line 663, in bind_kin\n    raise WalletError(f\"kin proof signature FAILED for {pair[0]}\")\nwallet.WalletError: kin proof signature FAILED for unity:testnet:624d5eb9b4b1f2a1db7911b8ba5f1918a0f3641d78aab5da1c4a433a84c004db\n"
+  ],
+  "sections": {
+    "1. eFuse gauntlet": {
+      "attacks": [],
+      "name": "1. eFuse gauntlet",
+      "tests": [
+        {
+          "detail": "REPORTED 2,077.7 ops/sec (0.481 ms/op)",
+          "result": "PASS",
+          "test": "receive_emission throughput",
+          "volume": 200
+        },
+        {
+          "detail": "REPORTED 3,601.0 ops/sec (0.278 ms/op)",
+          "result": "PASS",
+          "test": "receive_emission throughput",
+          "volume": 1000
+        },
+        {
+          "detail": "REPORTED 2,302.9 ops/sec (0.434 ms/op)",
+          "result": "PASS",
+          "test": "receive_emission throughput",
+          "volume": 3000
+        },
+        {
+          "detail": "ReceiptChain.verify() True",
+          "result": "PASS",
+          "test": "receipt chain verifies after volume emission",
+          "volume": 4200
+        }
+      ]
+    },
+    "2. Merit gauntlet (canonical path: token_engine + wallet.transfer_merit)": {
+      "attacks": [],
+      "name": "2. Merit gauntlet (canonical path: token_engine + wallet.transfer_merit)",
+      "tests": []
+    },
+    "3. Unity gauntlet (binding enforcement under attack)": {
+      "attacks": [],
+      "name": "3. Unity gauntlet (binding enforcement under attack)",
+      "tests": []
+    },
+    "4. Honor gauntlet": {
+      "attacks": [
+        {
+          "attack": "Honor -> emission",
+          "how": "Honor().redeem_for_emission()",
+          "mechanism": "HonorConversionRefused: Honor never converts to emission (\u00a77). Donations accrue Honor, never Merit; there is no path from fiat to eFuse.",
+          "status": "HELD"
+        }
+      ],
+      "name": "4. Honor gauntlet",
+      "tests": [
+        {
+          "detail": "REPORTED 971 donations/sec; 50 honor records, all permanent/non-transferable; merit_accrued==0 on every receipt",
+          "result": "PASS",
+          "test": "donation flow at volume: donations -> Honor accrual",
+          "volume": 50
+        },
+        {
+          "detail": "ReceiptChain.verify() True",
+          "result": "PASS",
+          "test": "donation receipts chained + verified",
+          "volume": null
+        }
+      ]
+    },
+    "5. Cross-coin pipeline (work->merit->eFuse->transfer->donation->Honor)": {
+      "attacks": [],
+      "name": "5. Cross-coin pipeline (work->merit->eFuse->transfer->donation->Honor)",
+      "tests": []
+    },
+    "6. 100% SECURE expansion": {
+      "attacks": [],
+      "name": "6. 100% SECURE expansion",
+      "tests": []
+    }
+  }
+}

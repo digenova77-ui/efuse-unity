@@ -1,0 +1,203 @@
+{
+  "criticals": [
+    {
+      "impact": "transfer_merit / engine.merit_transfer verify identity FORMAT and owned balance only \u2014 no signature, no tier grant, no consent proof from the sender. Anyone holding a ledger reference (or the public unity_id) can move anyone's Merit. Contrast share(), which requires a signed tier grant. Blast radius of a compromised key is therefore WORSE than expected: the key isn't even needed for Merit theft; with the key the attacker additionally drains eFuse via share(). Cannot mint; cannot forge for other IDs beyond their balances; cannot touch standing.",
+      "reproducer": "wv_handle = Wallet(victim_unity_id, ledger)  # no key; transfer_merit(wv_handle, attacker_wallet, 50, 'theft', engine=eng) -> SUCCEEDS. Reproduced in gauntlet sec_expansion.",
+      "title": "MERIT TRANSFER HAS NO SENDER AUTHORIZATION"
+    },
+    {
+      "impact": "_validate_emission_receipt checks STRUCTURE only \u2014 no signature binds the receipt to the tokenomics engine. Anyone with a wallet handle mints eFuse credit at will. The 'receipt IS the gate' gate is structural, not cryptographic.",
+      "reproducer": "forged = {kind:'merit-emission', token:'eFuse', unity_id:victim, amount:999, gated:True, pool:'human', merit_weight:1.0, manifest_hash:<fresh>, epoch:7}; receive_emission(wallet, 999, forged) -> 999 eFuse credited. Reproduced in gauntlet sec_expansion.",
+      "title": "EMISSION RECEIPTS NOT CRYPTOGRAPHICALLY BOUND TO ISSUER"
+    },
+    {
+      "impact": "_require_gated checks provenance == 'VERIFIED' as a string comparison \u2014 no signature from the gating authority. In-process, anyone mints Merit+eFuse for any ID. UNKNOWN-never-pays holds only if callers are honest about labels.",
+      "reproducer": "tokenize({unity_id, kind:'work', merit_value:50, provenance:'VERIFIED', manifest_hash:<64hex>, ...}) -> MeritRecord + EFuseToken minted. Reproduced in gauntlet.",
+      "title": "PROVENANCE IS A SELF-ASSERTED STRING (tokenize gate)"
+    },
+    {
+      "impact": "The fine-grained per-donation exclusion exists as a function nobody invokes. The tokenomics layer has its own blanket enforcement (cause_disburse refuses ANY donor), but the wallet layer \u2014 where donate() lives \u2014 enforces nothing on its own credit paths.",
+      "reproducer": "grep -rn 'check_donor_exclusion(' workspace/unity-world --include=*.py -> zero non-test call sites. donate() records exclusion hashes; no disbursement/credit path consults them. Demonstrated: receive_emission to a donor succeeds without exclusion consult.",
+      "title": "WALLET DONOR EXCLUSION IS UNWIRED (dead check)"
+    }
+  ],
+  "elapsed_sec_rest2": 102.9,
+  "notes": [
+    "PIPELINE CEILING: ~0.1 cycles/sec. First bottleneck: Ed25519 node-subprocess signing \u2014 3 signed commits per cycle (MERIT_ACCRUAL + TOKEN_MINT + MERIT_TRANSFER). Pure-Python legs (receive_emission, donate, idempotency) cost microseconds; the ceiling is subprocess crypto, not the coin logic.",
+    "No logic break observed at 25 cycles; economics break first only if the signing subprocess pool saturates (not reached here).",
+    "FRONT-RUNNING: no mempool/ordering layer exists \u2014 all operations are synchronous in-process calls; 'pending transfer' is not a state the architecture models. Ordering = call order; nothing to interpose on. HELD as N/A in-process. OPEN VECTOR on async deployment: a future relay/mempool MUST add nonce/sequence ordering + commit-reveal or first-seen-wins rules before any networked deployment. Flagged, not a code vuln today.",
+    "BLAST RADIUS MAP (compromised Unity private key): CAN \u2014 sign tier grants as victim (drain eFuse via share within tier caps); sign kin bonds as victim; drain victim Merit WITHOUT the key (no auth gate \u2014 see CRITICAL). CANNOT \u2014 mint eFuse/Unity/Merit (no path; fuse needs founder key; tokenize needs VERIFIED receipts); forge tier grants for other IDs (signature binds granter); move Unity (no path); move standing (origin immutable); exceed victim's own holdings except via the keyless merit-drain CRITICAL above.",
+    "receipt forgery at the EMISSION layer breaks (see 6.5 CRITICAL): emission receipts carry NO signature field \u2014 structural only."
+  ],
+  "sections": {
+    "5. Cross-coin pipeline (work->merit->eFuse->transfer->donation->Honor)": {
+      "attacks": [],
+      "name": "5. Cross-coin pipeline (work->merit->eFuse->transfer->donation->Honor)",
+      "tests": [
+        {
+          "detail": "REPORTED 0.1 cycles/sec (9014 ms/cycle); work->receipt->merit->emission->eFuse->Merit transfer->donation->Honor all receipted",
+          "result": "PASS",
+          "test": "full pipeline end-to-end",
+          "volume": 5
+        }
+      ]
+    },
+    "6. 100% SECURE expansion": {
+      "attacks": [
+        {
+          "attack": "double-spend eFuse via share()",
+          "how": "same manifest twice",
+          "mechanism": "balances (900, 100) -> (900, 100); idempotent manifest_hash",
+          "status": "HELD"
+        },
+        {
+          "attack": "double-spend via deduct_per_decision",
+          "how": "same manifest twice",
+          "mechanism": "idempotent \u2014 one deduction",
+          "status": "HELD"
+        },
+        {
+          "attack": "double-credit via receive_emission",
+          "how": "same receipt twice",
+          "mechanism": "idempotent on receipt manifest_hash",
+          "status": "HELD"
+        },
+        {
+          "attack": "spend beyond balance",
+          "how": "share 1M eFuse with 850",
+          "mechanism": "InsufficientFunds: unity:testnet:709e6f643364bdbe9b5b1b86dc86493589f7a8028741aeec605859300647bdc6 holds 857 eFuse, share needs 1000000",
+          "status": "HELD"
+        },
+        {
+          "attack": "replay signed merit transfer",
+          "how": "same wallet manifest twice",
+          "mechanism": "engine NOT called twice \u2014 original receipt returned",
+          "status": "HELD"
+        },
+        {
+          "attack": "replay tier grant",
+          "how": "apply same signed grant twice",
+          "mechanism": "idempotent \u2014 manifest includes signature",
+          "status": "HELD"
+        },
+        {
+          "attack": "key compromise: drain victim eFuse",
+          "how": "sign tier grant as victim, share() within friend cap",
+          "mechanism": "expected capability \u2014 signing as victim IS victim authority; bounded by tier caps (100/share, 10/epoch)",
+          "status": "HELD"
+        },
+        {
+          "attack": "key compromise: mint eFuse",
+          "how": "victim key -> tokenize without gated receipt",
+          "mechanism": "UNEXPECTED PurificationRefused: [UNLABELED_CLAIM] at token_engine.tokenize: a claim in 'claims' carries no valid provenance label: {'unity_id': 'unity:testnet:41b2d6d7f43676aa425dd9ef1cc1cc50b",
+          "status": "BROKE"
+        },
+        {
+          "attack": "key compromise: trigger fuse",
+          "how": "victim key signs fuse authorization (not founder)",
+          "mechanism": "FuseRefused: authorization names a different founder",
+          "status": "HELD"
+        },
+        {
+          "attack": "key compromise: forge tier grant for another ID",
+          "how": "victim key signs grant naming other as granter",
+          "mechanism": "TierViolation: tier grant signature FAILED \u2014 refused",
+          "status": "HELD"
+        },
+        {
+          "attack": "key compromise: merit_transfer FROM another ID",
+          "how": "transfer_merit(other->attacker); other owns 0",
+          "mechanism": "TokenizeRefused: tokenize refused [TRANSFER_INSUFFICIENT_MERIT]: sender owns 0 merit \u2014 cannot transfer 10.0; only owned (not originated) ",
+          "status": "HELD"
+        },
+        {
+          "attack": "KEYLESS merit drain (no key needed)",
+          "how": "fresh Wallet(victim_id) + transfer_merit, zero auth",
+          "mechanism": "ATTACK SUCCEEDED",
+          "status": "BROKE"
+        },
+        {
+          "attack": "emission forgery: crafted valid-structure receipt",
+          "how": "receive_emission with invented manifest, gated=True",
+          "mechanism": "ATTACK SUCCEEDED",
+          "status": "BROKE"
+        },
+        {
+          "attack": "mint forgery: self-asserted VERIFIED receipt",
+          "how": "tokenize() with provenance='VERIFIED' string",
+          "mechanism": "ATTACK SUCCEEDED",
+          "status": "BROKE"
+        },
+        {
+          "attack": "emission with no receipt at all",
+          "how": "receive_emission(w,1,None)",
+          "mechanism": "InvalidReceipt: emission receipt must be a dict",
+          "status": "HELD"
+        },
+        {
+          "attack": "emission with gated=False",
+          "how": "forged but ungated",
+          "mechanism": "InvalidReceipt: emission receipt refused: receipt is not gated (gated=true required)",
+          "status": "HELD"
+        },
+        {
+          "attack": "tier escalation: exceed friend cap",
+          "how": "friend grant on file; share 101 (>100 cap)",
+          "mechanism": "TierViolation: friend tier caps a single share at 100 eFuse",
+          "status": "HELD"
+        },
+        {
+          "attack": "tier escalation: crafted payload tier='family'",
+          "how": "payload claims family; grant is friend",
+          "mechanism": "receipt tier=friend \u2014 tier read from signed grant, never from payload",
+          "status": "HELD"
+        },
+        {
+          "attack": "tier escalation: forged family grant",
+          "how": "attacker key signs grant naming victim as granter",
+          "mechanism": "TierViolation: tier grant signature FAILED \u2014 refused",
+          "status": "HELD"
+        },
+        {
+          "attack": "tier escalation: tampered grant tier",
+          "how": "edit tier post-signing, replay signature",
+          "mechanism": "TierViolation: tier grant signature FAILED \u2014 refused",
+          "status": "HELD"
+        },
+        {
+          "attack": "receipt forgery: tier grant bad signature",
+          "how": "random 64-byte signature bytes",
+          "mechanism": "TierViolation: tier grant signature FAILED \u2014 refused",
+          "status": "HELD"
+        },
+        {
+          "attack": "donor exclusion: direct check",
+          "how": "check_donor_exclusion with own donation hash",
+          "mechanism": "DonorExclusionViolation: disbursement sourced from unity:testnet:e7862d0fa292899e2cd20b5e4d9e485ecfc7dc2c2e2a75b56675c4c9f6734f69's own donation ",
+          "status": "HELD"
+        },
+        {
+          "attack": "donor exclusion bypass via wallet credit path",
+          "how": "donate 400, then receive_emission to same wallet",
+          "mechanism": "no exclusion consult on wallet credit paths",
+          "status": "BROKE"
+        },
+        {
+          "attack": "donor exclusion: tokenomics cause_disburse",
+          "how": "donor claims cause-work disbursement from the Lock",
+          "mechanism": "DonorExclusionError: the Core Cause Lock is one-way per donor \u2014 donated eFuse is never re-emitted to the same member",
+          "status": "HELD"
+        }
+      ],
+      "name": "6. 100% SECURE expansion",
+      "tests": [
+        {
+          "detail": "donate() accrues exactly 0 merit \u2014 no value enters the merit system to launder",
+          "result": "PASS",
+          "test": "donation->merit laundering impossible",
+          "volume": null
+        }
+      ]
+    }
+  }
+}

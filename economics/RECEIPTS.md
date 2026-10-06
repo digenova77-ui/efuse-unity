@@ -201,3 +201,62 @@ Notes:
 - F4 is closed: a repo-wide sweep finds no `billable_amount_m` or
   `CURRENCY_DEFAULT` outside the reinvestigation's historical record and
   comments describing the retired bug.
+
+## Wallet-alignment worker (2026-10-06 ~09:00 UTC)
+
+Alignment audit (tokenomics ↔ mechanics ↔ code) + the wallet: dead-simple
+send/receive, biometric auth via Grok's implementation, full-flow test.
+Testnet only.
+
+| time (UTC)        | file | before (sha256) | after (sha256) |
+|-------------------|------|-----------------|----------------|
+| 2026-10-06 ~09:00 | economics/wallet.py | unrecorded (prior edit, pre-audit state) | 897efb11fe79efc1473ddfa886bb611de98647bfedd50872977771bb4f6af102 |
+| 2026-10-06 ~09:00 | economics/wallet_auth.py | N/A (new) | 5d2cd5651056b6008b4d3a8d34bfd509c3dab03a7cff98f3a32aa09be38158d2 |
+| 2026-10-06 ~09:00 | economics/biometric_adapter.mjs | N/A (new) | cce14ed0a11c9ad2dadbfa00e1720286cec529ef09e973ca7207333ccd867b32 |
+| 2026-10-06 ~09:00 | economics/test_wallet_flow.py | N/A (new) | 134322a7976295c06437c8ea5b2ebc98a15606f7e91e6ac73fbd82074a0b3ced → c4875f12f4c2286c972f6f6564e20f4b056e141c0b232b216ab05aa755e34afa (docstring correction) |
+| 2026-10-06 ~09:00 | economics/ALIGNMENT_AUDIT.md | N/A (new) | 448777f5ba198265fd1aed823906e61905013f28759f182f1579492af4e95621 → 61417d14c0a84539e526c3f536d2627f0b7477eed09ca5439b3995cede2017c4 (O2 correction) |
+| 2026-10-06 ~09:00 | economics/WALLET_SURFACE.md | N/A (new) | 540e904ceb0ed790a3b305f4e169e494ac8de46cc17bfcb7507d0b3f54b25396 |
+| 2026-10-06 ~09:00 | gate/gate.py | unrecorded (prior edit, pre-audit state) | 0a96d0c313c841e81a9df3d2d6475d26aac21c2e932a9af55cfae7f985af4147 |
+
+Notes:
+- M1 (CODE WRONG, fixed): wallet.py was missing `import sys` — `_token_engine()`
+  raised NameError, so the entire wallet→engine Merit transfer delegation
+  (CANON §V) was dead at runtime. Added the import; delegation verified live.
+- wallet.py: added `Wallet.send_merit(to_id, amount, reason, signer, engine,
+  manifest)` (delegates through transfer_merit → engine.merit_transfer — the
+  sole legal path, no second route) and `Wallet.receive_merit()` (read-only
+  inbound transfer view). No passwords, no keys, no seed phrases in the
+  wallet: the signer is the sender's own device capability.
+- M2 (DOC WRONG, fixed): gate.py carried two stale comments calling the
+  dclm/meter.py wallet-ledger integration "PENDING" after it had landed;
+  comments corrected to the live WIRED state (no behavior change).
+- Biometric: Grok's implementation FOUND and CALLED, not rebuilt —
+  `~/workspace/user/files/unity-id-issuer_4_y3wp.js` (UnityIdIssuer,
+  webauthn.create ceremony; unmodified) via biometric_adapter.mjs, plus a
+  protocol symlink at `~/workspace/user/protocol/dclm-machine-v2.mjs`
+  (Grok's own dependency, untouched). In this sandbox Grok's issuer
+  honestly reports HOLE (verifier NOT_CONFIGURED); wallet_auth raises
+  BiometricNotWired rather than faking a biometric. The hardware handoff
+  line is marked in wallet_auth.py::biometric_auth (Grok's client code:
+  dccp-world/src/dccp/unity/unityid.ts::createPilotHandle). Tests inject a
+  clearly-labeled TEST-DOUBLE. Nothing was deleted: no biometric
+  implementation had been written before David's correction arrived.
+- The four laws of the website (David, 2026-10-06 ~04:36 EDT) recorded in
+  economics/ALIGNMENT_AUDIT.md: biometric_auth is beat (2) of the doorway
+  card; the eFuse ignition (beat 3) is the fuse worker's lane,
+  HONEST-PENDING here.
+- Test runs 2026-10-06 ~09:00 UTC: `test_wallet_flow.py` → 5/5 OK
+  (biometric auth → wallet open → send Merit → receive Merit; standing
+  unchanged for the buyer; every step receipted; chain verifies).
+  `test_wallet.py` → 71 tests, 1 transient error in test_wallet.TestMeritTransfer:
+  the sibling max-purity worker was editing token_engine.py CONCURRENTLY
+  (their _verify_gate change in flux mid-run); re-run of
+  test_wallet.TestMeritTransfer alone → 14/14 OK. Not this worker's
+  change (wallet.py edits cannot affect the engine's gate-signature
+  check); flagged as concurrent-edit interference.
+- Alignment checklist (ALIGNMENT_AUDIT.md): Merit transferable, Unity
+  non-transferable, one seed per Unity ID, D13 (meter reads standing),
+  81/19 split, winter/tap rules, flat-5 test-key pricing executable in
+  code — all ALIGNED. +1 deterioration + Affinity: honest gap (design-only
+  doc, code not landed — G4, tokenization worker's build item). No
+  2D card chrome on the wallet surface: indicator-only design, recorded.

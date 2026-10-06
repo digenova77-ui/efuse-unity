@@ -1,0 +1,1 @@
+{"actor": "build-20261006-worker1", "after_hash": "603a9e7704984358544e5effd220e120d69c1f17254995d54d7d3e9314fe0f03", "before_hash": "16f693fff1ffdeed362503ba8634c546b3f7d8b0d013d8397f7e1bf163250344", "row_count_after": 53, "row_count_before": 51, "rows_added": ["factory-101", "factory-102"], "ts": "2026-10-06T06:56:40Z"}
