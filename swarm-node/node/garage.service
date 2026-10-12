@@ -1,0 +1,17 @@
+[Unit]
+Description=Garage S3-compatible object store (Amsterdam object authority)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/garage -c /etc/dualis/garage.toml server
+Restart=always
+RestartSec=5
+# Config holds secrets (root-only, mode 600); never log them.
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
