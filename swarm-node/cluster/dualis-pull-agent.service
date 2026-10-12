@@ -1,0 +1,15 @@
+[Unit]
+Description=DualisCapax pull-agent — lane self-updater (outbound-only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/dualis/pull-agent/pull-agent.py
+Restart=always
+RestartSec=60
+# Outbound-only by design: the agent makes HTTPS GETs (manifest, bundles)
+# and writes local state. It opens no inbound ports and needs no SSH.
+
+[Install]
+WantedBy=multi-user.target

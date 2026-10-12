@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 # swarm-status — show this swarm node's state. Read-only. Never changes anything.
+# Honors DUALIS_PREFIX (test/fixture redirect of the install tree); empty = production.
 set -u
-STATE_DIR="/var/lib/dualis"
+P="${DUALIS_PREFIX:-}"
+STATE_DIR="$P/var/lib/dualis"
+ETC_DIR="$P/etc/dualis"
 LOG="$STATE_DIR/heartbeat.jsonl"
 
 echo "== swarm node =="
-if [ -f /etc/dualis/node-id ]; then
-  echo "node-id : $(cat /etc/dualis/node-id)"
+if [ -f "$ETC_DIR/node-id" ]; then
+  echo "node-id : $(cat "$ETC_DIR/node-id")"
 else
   echo "node-id : (not initialized — run node-heartbeat.py --init as root)"
+fi
+if [ -f "$ETC_DIR/version" ]; then
+  echo "version : $(cat "$ETC_DIR/version")"
 fi
 echo "host    : $(hostname)"
 echo "time    : $(date -u +%Y-%m-%dT%H:%M:%SZ) (UTC)"
@@ -27,15 +33,27 @@ echo "== scheduler =="
 if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
   systemctl is-active dualis-heartbeat.timer 2>/dev/null | sed 's/^/timer   : /'
   systemctl is-enabled dualis-heartbeat.timer 2>/dev/null | sed 's/^/enabled : /'
-elif grep -q "node-heartbeat.py" /etc/cron.d/dualis-heartbeat 2>/dev/null; then
-  echo "cron    : installed (/etc/cron.d/dualis-heartbeat, every 5 min)"
+elif grep -q "node-heartbeat.py" "$P/etc/cron.d/dualis-heartbeat" 2>/dev/null; then
+  echo "cron    : installed ($P/etc/cron.d/dualis-heartbeat, every 5 min)"
 else
   echo "scheduler: none found"
 fi
 echo
 echo "== code mirror =="
-if [ -d /opt/dualis/code/.git ]; then
-  git -C /opt/dualis/code log -1 --format='repo    : %H%nupdated : %ci' 2>/dev/null || echo "repo    : present (log unreadable)"
+if [ -d "$P/opt/dualis/code/.git" ]; then
+  git -C "$P/opt/dualis/code" log -1 --format='repo    : %H%nupdated : %ci' 2>/dev/null || echo "repo    : present (log unreadable)"
 else
   echo "repo    : not present"
+fi
+echo
+echo "== pull-agent =="
+if [ -f "$P/opt/dualis/pull-agent/pull-agent.py" ]; then
+  echo "agent   : installed ($P/opt/dualis/pull-agent/pull-agent.py)"
+  if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
+    systemctl is-active dualis-pull-agent.service 2>/dev/null | sed 's/^/service : /' || echo "service : not active"
+  else
+    echo "service : staged (no systemd here)"
+  fi
+else
+  echo "agent   : not installed"
 fi

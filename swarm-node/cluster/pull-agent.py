@@ -36,6 +36,8 @@ from datetime import datetime, timezone
 STATE_DIR = "/var/lib/dualis"
 ETC_DIR = "/etc/dualis"
 NODE_DIR = "/opt/dualis/node"
+PULL_DIR = "/opt/dualis/pull-agent"
+PULL_UNIT = "/etc/systemd/system/dualis-pull-agent.service"
 STAGE_DIR = "/opt/dualis/stage"
 VERSION_FILE = os.path.join(ETC_DIR, "version")
 MANIFEST_DEFAULT = ("https://raw.githubusercontent.com/digenova77-ui/efuse-unity"
@@ -122,31 +124,66 @@ def selftest(stage_dir):
     return r.returncode == 0
 
 
-def apply_bundle(stage_dir, version):
-    """Swap staged -> live, keeping state. Keeps previous for rollback."""
-    prev = os.path.join("/opt/dualis", "node.prev")
-    if os.path.exists(NODE_DIR):
+def _swap_dir(src, live):
+    """Move staged dir -> live, keeping the previous live dir for rollback.
+    Returns the previous dir path (or None if there was none)."""
+    prev = live + ".prev"
+    if os.path.exists(live):
         if os.path.exists(prev):
             shutil.rmtree(prev)
-        shutil.move(NODE_DIR, prev)
-    shutil.move(os.path.join(stage_dir, "node"), NODE_DIR)
+        shutil.move(live, prev)
+    else:
+        prev = None
+    shutil.move(src, live)
+    return prev
+
+
+def apply_bundle(stage_dir, version):
+    """Swap staged -> live, keeping state. Keeps previous for rollback.
+
+    Fused bundle layout (v1.1.0+): stage_dir contains node/ (the lane
+    runtime), pull-agent/ (the self-updater), and dualis-pull-agent.service
+    (its systemd unit). Older bundles with only node/ still apply."""
+    moved = {}
+    for name, live in (("node", NODE_DIR), ("pull-agent", PULL_DIR)):
+        src = os.path.join(stage_dir, name)
+        if os.path.isdir(src):
+            moved[name] = _swap_dir(src, live)
+    unit_src = os.path.join(stage_dir, "dualis-pull-agent.service")
+    if os.path.isfile(unit_src):
+        os.makedirs(os.path.dirname(PULL_UNIT), exist_ok=True)
+        if os.path.exists(PULL_UNIT):
+            shutil.copy2(PULL_UNIT, PULL_UNIT + ".prev")
+        shutil.copy2(unit_src, PULL_UNIT)
+        subprocess.run(["systemctl", "daemon-reload"], capture_output=True)
     with open(VERSION_FILE, "w", encoding="utf-8") as f:
         f.write(version + "\n")
     # Restart the lane's services so the new code breathes.
     for unit in ("dualis-heartbeat.timer", "dualis-pull-agent.service"):
         subprocess.run(["systemctl", "restart", unit], capture_output=True)
-    return prev
+    return moved
 
 
-def rollback_bundle(prev):
-    if prev and os.path.exists(prev):
-        if os.path.exists(NODE_DIR):
-            shutil.rmtree(NODE_DIR)
-        shutil.move(prev, NODE_DIR)
+def rollback_bundle(moved):
+    """Restore previous dirs after a failed apply. Returns True if anything
+    was restored."""
+    restored = False
+    for name, live in (("node", NODE_DIR), ("pull-agent", PULL_DIR)):
+        prev = (moved or {}).get(name)
+        if prev and os.path.exists(prev):
+            if os.path.exists(live):
+                shutil.rmtree(live)
+            shutil.move(prev, live)
+            restored = True
+    unit_prev = PULL_UNIT + ".prev"
+    if os.path.exists(unit_prev):
+        shutil.copy2(unit_prev, PULL_UNIT)
+        subprocess.run(["systemctl", "daemon-reload"], capture_output=True)
+        restored = True
+    if restored:
         for unit in ("dualis-heartbeat.timer", "dualis-pull-agent.service"):
             subprocess.run(["systemctl", "restart", unit], capture_output=True)
-        return True
-    return False
+    return restored
 
 
 def poll_once(manifest_url, rendezvous_dir=None):
@@ -193,8 +230,10 @@ def poll_once(manifest_url, rendezvous_dir=None):
     # Post-apply sanity: heartbeat still ticks under the new code.
     time.sleep(2)
     attest("pull-healthy", "lane on %s, previous kept for rollback" % want)
+    rolled_back = [k for k, p in (prev or {}).items()
+                   if p and os.path.exists(p)]
     return {"poll": "applied", "from": cur, "to": want,
-            "rollback_available": bool(prev and os.path.exists(prev))}
+            "rollback_available": bool(rolled_back)}
 
 
 def main(argv):

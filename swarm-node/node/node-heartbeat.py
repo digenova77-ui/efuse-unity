@@ -22,8 +22,8 @@ import sys
 import time
 from datetime import datetime, timezone
 
-STATE_DIR = "/var/lib/dualis"
-ETC_DIR = "/etc/dualis"
+STATE_DIR = os.environ.get("DUALIS_STATE_DIR", "/var/lib/dualis")
+ETC_DIR = os.environ.get("DUALIS_ETC_DIR", "/etc/dualis")
 LOG = os.path.join(STATE_DIR, "heartbeat.jsonl")
 NODE_ID_FILE = os.path.join(ETC_DIR, "node-id")
 TICK_FILE = os.path.join(STATE_DIR, "tick")

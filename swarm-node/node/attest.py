@@ -25,9 +25,11 @@ import socket
 import sys
 from datetime import datetime, timezone
 
-STATE_DIR = "/var/lib/dualis"
+STATE_DIR = os.environ.get("DUALIS_STATE_DIR", "/var/lib/dualis")
+ETC_DIR = os.environ.get("DUALIS_ETC_DIR", "/etc/dualis")
 CHAIN = os.path.join(STATE_DIR, "attestations.jsonl")
-NODE_ID_FILE = "/etc/dualis/node-id"
+NODE_ID_FILE = os.path.join(ETC_DIR, "node-id")
+LANE_FILE = os.path.join(ETC_DIR, "lane")
 GENESIS = "GENESIS"
 
 
@@ -63,7 +65,7 @@ def node_id():
 
 def lane_name():
     return (os.environ.get("DUALIS_LANE")
-            or read_first("/etc/dualis/lane")
+            or read_first(LANE_FILE)
             or socket.gethostname())
 
 
