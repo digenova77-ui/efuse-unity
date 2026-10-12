@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python3
 """swarm-merge — merge two lane attestation chains into one verdict log.
 
 The merge point of the two-lane loop. Reads two exported chains

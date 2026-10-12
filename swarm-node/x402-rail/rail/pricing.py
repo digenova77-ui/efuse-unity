@@ -67,7 +67,7 @@ haven't been decided and need rotation"):
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from .economy import Price, PriceCatalog

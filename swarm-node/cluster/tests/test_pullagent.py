@@ -41,22 +41,25 @@ class ApplyTest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
+    def _write(self, path, content):
+        with open(path, "w") as f:
+            f.write(content)
+
     def _live(self):
         os.makedirs(self.pa.NODE_DIR)
-        open(os.path.join(self.pa.NODE_DIR, "old.txt"), "w").write("old")
+        self._write(os.path.join(self.pa.NODE_DIR, "old.txt"), "old")
         os.makedirs(self.pa.PULL_DIR)
-        open(os.path.join(self.pa.PULL_DIR, "old.txt"), "w").write("old")
+        self._write(os.path.join(self.pa.PULL_DIR, "old.txt"), "old")
 
     def _stage(self, fused=True):
         stage = os.path.join(self.tmp, "stage")
         os.makedirs(os.path.join(stage, "node"))
-        open(os.path.join(stage, "node", "new.txt"), "w").write("new")
+        self._write(os.path.join(stage, "node", "new.txt"), "new")
         if fused:
             os.makedirs(os.path.join(stage, "pull-agent"))
-            open(os.path.join(stage, "pull-agent", "new.txt"),
-                 "w").write("new")
-            open(os.path.join(stage, "dualis-pull-agent.service"),
-                 "w").write("[Unit]\n")
+            self._write(os.path.join(stage, "pull-agent", "new.txt"), "new")
+            self._write(os.path.join(stage, "dualis-pull-agent.service"),
+                        "[Unit]\n")
         return stage
 
     def _read(self, *parts):

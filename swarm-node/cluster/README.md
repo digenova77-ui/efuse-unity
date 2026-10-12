@@ -33,7 +33,7 @@ computes one routing table; GeoDNS answers and the HTTP proxy publish it.
 | `manifest.json` | Version manifest the pull-agent polls. Bundle URLs curl-verified; sha256 enforced. |
 | `geodns/` | BIND9 views + per-view zone answers + `geodns-agent.py` (health → answers → rndc). |
 | `bundles/` | Versioned node bundles the pull-agent applies. |
-| `tests/` | 24 tests, stdlib unittest. Run: `python3 tests/test_balancer.py` etc. |
+| `tests/` | 27 tests, stdlib unittest. Run: `python3 tests/test_balancer.py` etc. The bootstrap fusion is a fixture script: `python3 tests/test_bootstrap_fusion.py` (one paste, run twice — proves idempotency). |
 
 ## The law, in one paragraph
 

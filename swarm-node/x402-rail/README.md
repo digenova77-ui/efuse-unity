@@ -16,6 +16,7 @@ serves, and writes a hash-chained payment receipt.
 | `rail/verifier.py` | server-side verification (fail-closed; replay protection) |
 | `rail/facilitator.py` | settlement: `LocalTestFacilitator` (simulated) / `CoinbaseFacilitator` (real, designed) |
 | `rail/economy.py` | Merit-denominated pricing, the 1% residual split |
+| `rail/pricing.py` | Energy-indexed pricing (`EnergyIndex`, `DynamicPriceCatalog`) + rotation premium with anti-gaming (`RotationLedger`) — prices move only on fresh, honestly-graded Joule markers, fail-closed to base |
 | `rail/receipts.py` | payment receipts as hash-chained collapse traces |
 | `rail/middleware.py` | framework-agnostic WSGI 402 gate |
 | `rail/client.py` | pay-and-retry HTTP client (stdlib) |
@@ -25,7 +26,7 @@ serves, and writes a hash-chained payment receipt.
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install eth-account pytest
-.venv/bin/python -m pytest tests/ -q   # 14 tests, simulated settlement
+.venv/bin/python -m pytest tests/ -q   # 47 tests, simulated settlement
 .venv/bin/python -m rail.demo --port 8099
 ```
 
@@ -49,5 +50,10 @@ status, body, receipt = x402_get("http://127.0.0.1:8099/metered", private_key=KE
 - **No receipt = no payment.** The middleware refuses to serve unless the
   receipt was appended to the hash-chained ledger. Receipts are public at
   `/receipts`.
+- **Energy-indexed pricing.** `DynamicPriceCatalog` moves prices with measured
+  Joule markers per lane (REAL/REPORTED grades only, clamped to [0.5x, 3.0x],
+  15-min marker TTL); the rotation premium prices deliberation difficulty with
+  anti-gaming certification. Both fail closed to the base Merit price — pricing
+  never raises, blocks, or invents.
 - **Merit is a unit of account, not a token.** Settlement is USDC on a real
   rail. No fiat on/off ramps — that's the adopter's department.
