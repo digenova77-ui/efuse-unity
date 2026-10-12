@@ -1,8 +1,0 @@
-[Unit]
-Description=DualisCapax swarm node heartbeat (one tick)
-After=network-online.target
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/python3 /opt/dualis/node/node-heartbeat.py
-User=root
