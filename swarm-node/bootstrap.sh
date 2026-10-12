@@ -2,7 +2,13 @@
 # DualisCapax swarm node bootstrap — pull-based, idempotent, non-destructive.
 #
 # Run ONCE per server (safe to run twice — it repairs, never wipes):
-#   curl -fsSL https://raw.githubusercontent.com/digenova77-ui/efuse-unity/main/swarm-node/bootstrap.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/digenova77-ui/efuse-unity/main/swarm-node/bootstrap.sh | sudo bash -s -- DCLM
+# (lane label is the first argument: DCLM on the NJ box, EUROPE on the Amsterdam box)
+#
+# Two lanes, not a relay: each box runs its own loop autonomously. Lanes
+# exchange ONLY hash-chained attestations (see node/attest.py); the merge
+# happens asynchronously via node/swarm-merge. If a lane goes dark, the other
+# keeps working — the loop degrades to one lane, never halts.
 #
 # What it does:
 #   1. Checks python3 (Ubuntu 22.04 ships it); installs git if missing.
@@ -22,6 +28,7 @@ INSTALL_DIR="/opt/dualis"
 NODE_DIR="$INSTALL_DIR/node"
 STATE_DIR="/var/lib/dualis"
 CODE_DIR="$INSTALL_DIR/code"
+LANE="${1:-}"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "ERROR: run as root (or with sudo)." >&2
@@ -40,15 +47,22 @@ echo "[2/7] directories"
 mkdir -p "$NODE_DIR" "$STATE_DIR" /etc/dualis /usr/local/bin
 
 echo "[3/7] node files"
-for f in node-heartbeat.py swarm-status dualis-heartbeat.service dualis-heartbeat.timer; do
+for f in node-heartbeat.py swarm-status dualis-heartbeat.service dualis-heartbeat.timer attest.py swarm-merge; do
   curl -fsSL "$RAW_BASE/node/$f" -o "$NODE_DIR/$f"
 done
-chmod +x "$NODE_DIR/node-heartbeat.py" "$NODE_DIR/swarm-status"
+chmod +x "$NODE_DIR/node-heartbeat.py" "$NODE_DIR/swarm-status" "$NODE_DIR/attest.py" "$NODE_DIR/swarm-merge"
 cp -f "$NODE_DIR/swarm-status" /usr/local/bin/swarm-status
-chmod +x /usr/local/bin/swarm-status
+cp -f "$NODE_DIR/swarm-merge" /usr/local/bin/swarm-merge
+chmod +x /usr/local/bin/swarm-status /usr/local/bin/swarm-merge
 
 echo "[4/7] node identity (kept if it exists)"
 "$NODE_DIR/node-heartbeat.py" --init >/dev/null
+if [ -n "$LANE" ]; then
+  echo "$LANE" > /etc/dualis/lane
+  echo "  lane: $LANE"
+else
+  echo "  lane: (none given — pass DCLM or EUROPE as first argument)"
+fi
 
 echo "[5/7] code mirror"
 if [ -d "$CODE_DIR/.git" ]; then
@@ -76,7 +90,11 @@ else
 fi
 
 echo "[7/7] first heartbeat"
-"$NODE_DIR/node-heartbeat.py"
+if [ -n "$LANE" ]; then
+  DUALIS_LANE="$LANE" "$NODE_DIR/node-heartbeat.py"
+else
+  "$NODE_DIR/node-heartbeat.py"
+fi
 echo
 echo "== swarm node live =="
 swarm-status

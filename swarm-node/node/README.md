@@ -4,7 +4,10 @@
 the Vultr web console as root:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/digenova77-ui/efuse-unity/main/swarm-node/bootstrap.sh | sudo bash
+# NJ box (lane DCLM):
+curl -fsSL https://raw.githubusercontent.com/digenova77-ui/efuse-unity/main/swarm-node/bootstrap.sh | sudo bash -s -- DCLM
+# Amsterdam box (lane EUROPE):
+curl -fsSL https://raw.githubusercontent.com/digenova77-ui/efuse-unity/main/swarm-node/bootstrap.sh | sudo bash -s -- EUROPE
 ```
 
 ## What "swarms live" means here (honest scope)
@@ -40,7 +43,38 @@ needs David's call.
 
 | File | Job |
 |---|---|
-| `bootstrap.sh` | idempotent installer (the one-liner target) |
+| `bootstrap.sh` | idempotent installer (the one-liner target; takes lane label as arg) |
 | `node/node-heartbeat.py` | stdlib-only heartbeat, one tick per run |
 | `node/swarm-status` | read-only status command |
 | `node/dualis-heartbeat.service` / `.timer` | systemd units (5-min ticks) |
+| `node/attest.py` | append a hash-chained shift attestation to the local ledger |
+| `node/swarm-merge` | merge two lanes' attestation chains into one verdict log |
+
+## The two lanes (dual-pipeline loop)
+
+The NJ box (lane `DCLM`) and the Amsterdam box (lane `EUROPE`) are **two lanes
+of one loop, not primary/backup**. Each lane runs full shifts autonomously —
+never blocks on the other. No lockstep, ever.
+
+Lanes exchange ONLY proofs: hash-chained attestations (shift id, claims
+touched, verdict hashes, timestamps) — deltas, never bulk state. Record format:
+
+```json
+{"lane":"DCLM","node_id":"node-…","shift_id":"20261012-0001","seq":7,
+ "prev_hash":"…","at_utc":"…","claims_touched":["…"],
+ "verdict_hashes":{"claim":"sha256…"},"note":"…","hash":"sha256…"}
+```
+
+The merge point is `swarm-merge`: it verifies each chain, interleaves by
+(at_utc, lane, seq), and applies the standing law — **proof wins, newer
+attestations chain to older, disputed items elevate, never silently
+overwrite**. A broken chain is quarantined past the break, never trusted.
+
+Degraded mode: each lane's heartbeat + ledger are local and independent. If a
+lane goes dark, the other keeps working — the loop degrades to one lane,
+never halts. The merge is asynchronous.
+
+Transport (honest): no lane-to-lane transport exists yet. Each lane writes its
+chain to `/var/lib/dualis/attestations.jsonl`; exchange is by hand (copy the
+file via the Vultr console) until a rendezvous exists. `attest.py --export`
+prints a lane's chain for handoff.
