@@ -2,6 +2,8 @@
 
 *How the farmbots' work is like staking — for the eFuse / Merit / Unity registry.*
 
+**Design only:** The farming, reward, and audit flows below describe a proposed model. They are not currently deployed or available.
+
 ## The analogy
 
 **Staking** (as the world knows it): you lock tokens to secure the network. Honest validation earns rewards. Dishonesty gets slashed. The chain remembers everything.
