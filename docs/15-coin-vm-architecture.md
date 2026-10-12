@@ -23,16 +23,60 @@ the computer is not the hardware, it's the code.
 | Field | Meaning |
 |---|---|
 | `tx_id` | Unique identifier of the transition (hash of the transition's canonical bytes) |
-| `invariant_hash` | Hash of the invariants the transition must preserve (balances sum, no double-spend, grant validity). If the invariants break, the hash won't match and the transition dies. |
+| `invariant_hash` | Hash committing to the invariants the transition must preserve **and to the candidate state** (canonical inputs specified below). If the invariants break, the hash won't match and the transition dies. |
 | `signature` | The signer's proof — who authorized this transition, verified against their Unity ID grant |
+
+**`invariant_hash` — canonical inputs.** The hash commits to the *candidate state*
+(the state as the transition claims it will become), never to the transition's
+description of itself. Canonical input bytes, in this order:
+
+1. `prev_state_hash` — the hash of the ledger state the transition builds on.
+2. `tx_canonical_bytes` — the transition's canonical serialization (the same bytes
+   `tx_id` commits to).
+3. `candidate_state_hash` — the hash of the state the transition *claims* results
+   from applying it.
+4. `invariant_version` — the version of the invariant predicate set, so a rule
+   change can never be mistaken for a rule violation.
+
+`invariant_hash = sha256(prev_state_hash | tx_canonical_bytes | candidate_state_hash | invariant_version)`.
+
+**Candidate-state validation.** A validator never trusts the candidate state —
+it recomputes it: run `apply(state, tx)` locally, hash the result, and compare
+against the claimed `candidate_state_hash`. Then it evaluates three predicates
+against the recomputed candidate state:
+
+- **Balances sum** — every conserved quantity is conserved; nothing created, nothing destroyed.
+- **No double-spend** — no input is consumed twice within the candidate state.
+- **Grant validity** — every authorization the transition relies on is valid against
+  the signer's Unity ID grant at this state.
+
+If any predicate fails — or the recomputed candidate hash mismatches the claim —
+the validator rejects: `apply(state, tx) → reject`. The ledger sync daemon (§4)
+treats a rejected transition as a full stop: it does not advance local state past
+it, it does not skip it, and it receipts the rejection. A chain that cannot
+validate does not sync — UNKNOWN is never PASS, not for ledgers either.
 
 The **transition function** is pure: `apply(state, tx) → new_state | reject`. No wall-clock reads,
 no randomness, no host fingerprints inside the function — anything non-deterministic (time,
 entropy, telemetry) enters only as signed input data, stamped by the oracle, so every node
 replays the same inputs and lands on the same state.
 
-**What "deterministic" guarantees:** any two honest nodes agree on the ledger without trusting
-each other — agreement comes from the math, not from voting or from authority.
+**What "deterministic" guarantees:** given the same state and the same ordered inputs,
+any two honest nodes compute the same new state — deterministic *replay*, no trust
+required. Agreement on the *result* comes from the math, not from voting or from authority.
+
+**What it does not guarantee:** determinism does not establish *shared input ordering* —
+two nodes that see different transaction orders compute different (each deterministic)
+histories. It does not resolve *competing histories*.
+
+**Where ordering comes from:** the memory architecture's ordering rule (the lane merge
+law): within one node, order is chain position — one chain, no forks by construction;
+across lanes, merge order is `(measured_at, node_id)`; where two traces collapse the same
+possibility space with different outcomes, **both persist** — a `dispute` trace cites
+both, and the conflict elevates to the Trinity (fresh-seat re-verdict → second seat →
+UNRESOLVED-DISPUTE terminal). Proof wins; disputes elevate; nothing is silently
+overwritten. Determinism is the replay guarantee — the merge law is the ordering answer.
+No separate consensus mechanism is invented here; the claim is narrowed to what exists.
 
 **What it doesn't guarantee:** it doesn't guarantee the inputs were true (that's the oracle's
 job and the witnesses' job); it doesn't guarantee liveness (a node that's off computes nothing —

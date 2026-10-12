@@ -38,8 +38,11 @@ cryptography.
 4. **Reveal.** Maker claims the taker's lock by revealing the preimage `s` on-chain.
    The reveal is public — the taker reads `s` from the maker's claim transaction.
 5. **Settle.** Taker claims the maker's lock with the now-known `s`. Both sides settled.
-   **Or refund:** if either side never reveals, the timelocks expire and each side's funds
-   return to their owner. No intermediary ever holds both sides. There is no one to rob.
+   **Or refund:** if *neither side has revealed*, the timelocks expire and each side's
+   funds return to their owner — no intermediary ever holds both sides, there is no
+   one to rob. **Once `s` is revealed on-chain, the refund promise narrows** (see
+   §4, "The response window"): safety after reveal belongs to whoever is awake.
+   The design promises safe refunds through sleep only where no secret exists yet.
 
 **The deterministic-kernel fit (DESIGN):** the coin's transition function is pure —
 `apply(state, tx) → new_state | reject` — and time is non-deterministic. So timelocks enter
@@ -67,13 +70,28 @@ The coin's finer divisibility reaches under both floors:
 | Layer | What happens |
 |---|---|
 | Above the counterparty's atomic unit | Normal swap. Nothing special. |
-| Below the counterparty's atomic unit but above its fee floor | The counterparty chain can't express it; the coin side can. Swap settles with the coin side carrying the precision. |
-| Below the counterparty's fee floor ("dust") | The counterparty chain can't move it economically at all. The coin side absorbs it at subatomic granularity — **the swap works at sizes the market's own rails can't afford.** |
+| Below the counterparty's atomic unit but above its fee floor | The counterparty chain can't express it in a single lock; the coin side can. The swap engine **aggregates**: sub-unit intents batch into one counterparty-side HTLC at or above the atomic unit, while the coin side carries per-intent subatomic precision. The lock is valid; the precision lives on the coin side. |
+| Below the counterparty's fee floor ("dust") | The counterparty chain can't move it economically at all — one fee eats one dust intent. Aggregation answers this too: the batch pays **one** counterparty fee, amortized across intents. A dust swap executes only when its batch reaches economic viability; until then the intent board shows "waiting for batch partners" — honestly, not "no counterparty." |
 
-**The honest limit:** subatomic granularity is one-directional precision — the coin side can
-*receive* dust-fine value, but the counterparty chain can only *send* what its own rails
-express. The design never claims to make another chain more divisible than it is. What it
-claims: value that would otherwise sit stranded can cross into the coin's world, whole.
+**The honest limit (corrected):** subatomic granularity is one-directional precision —
+the coin side can *receive* and *attribute* dust-fine value, but the counterparty chain
+can only *lock* what its own rails express. The design never claims to make another
+chain more divisible than it is, and it no longer claims a counterparty-side lock below
+the counterparty's atomic unit — such a lock cannot exist. What it claims: value that
+would otherwise sit stranded can cross into the coin's world, whole, via aggregation —
+many dust intents, one valid lock, per-intent precision on the coin side.
+
+**Aggregation rules:** a batch locks only when the aggregated counterparty amount is a
+valid on-chain amount (≥ the chain's atomic unit) *and* the amortized fee leaves every
+intent net-positive — the counterparty-chain fee question is answered here: one fee per
+batch, split across intents, never charged to an intent that can't bear it. The batch's
+composition is receipted per intent. If the batch never fills, every intent refunds
+untouched — waiting costs nothing but time, and the wait is shown, not hidden.
+
+**The tradeoff, stated:** aggregation introduces a batcher — the swap daemon groups
+intents. A stalled batcher delays swaps but cannot steal them: every intent carries
+its own timelock, so a batch that never locks refunds by the clock. Batching is a
+liveness consideration, never a custody one.
 
 ---
 
@@ -125,9 +143,33 @@ beside heartbeat, ledger sync, witness listener, Joule meter, and pin daemon:
 - **Timelock expiry races:** the two-tier timelock (`T_taker < T_maker` with a safety margin,
   his parameter) exists precisely so races resolve in favor of refunds over theft. The margin
   is sized against the slowest chain's confirmation time in the pair — measured, not guessed.
-- **Daemon asleep (iOS/browser hosts):** per the Iris-daemon pattern — an asleep daemon claims
-  nothing. A swap whose timelock window passes while the daemon sleeps refunds; the design
-  refuses swap durations shorter than the host's honest wake guarantees.
+- **The response window (the bound the design previously left undefined):** the
+  dangerous window is not the whole swap. It opens the moment the maker's claim
+  transaction reveals `s` on-chain and closes when the taker's claim confirms.
+  Its bound: `T_maker_expiry − claim_confirmation_depth − safety_margin`, all in
+  the slowest chain's confirmation time in the pair — measured, not guessed.
+  Inside this window the taker MUST be live (daemon awake and watching). This is
+  a hard requirement, not a preference.
+- **Taker-role admission:** before accepting a swap as taker, the daemon checks
+  the host's honest wake guarantee against the worst-case response window. If
+  the host cannot guarantee wakefulness (iOS background limits, a throttled
+  browser tab), the daemon **declines the taker role** for that swap — it may
+  still act as maker (the maker reveals first and chooses the moment, so the
+  maker needs no post-reveal window), or it declines the swap entirely. The
+  quote screen states the liveness requirement in plain words: *"as taker, your
+  device must stay awake until your claim confirms."*
+- **Watchtower option (DESIGN):** a taker may delegate the watch to a watchtower —
+  a third party, or another of the owner's own daemons on an always-on host —
+  holding an encrypted claim transaction released on seeing `s`. The watchtower
+  learns `s` only at reveal time and can claim only *to the taker's address*:
+  it can rescue, never steal. Trust assumption labeled on the quote screen.
+- **Daemon asleep (iOS/browser hosts), corrected:** per the Iris-daemon pattern —
+  an asleep daemon claims nothing. Where no reveal has happened, a slept window
+  refunds safely by the clock. Where `s` was revealed while the daemon slept
+  through the response window, the design **does not promise a safe refund** —
+  the unsafe promise is removed here, not softened. Swap durations are still
+  refused below the host's honest wake guarantees, and now the taker role is
+  refused below the response-window guarantee too.
 
 ---
 

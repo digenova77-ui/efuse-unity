@@ -12,13 +12,28 @@ The coin-VM document specifies a **userspace binary** — one file, any computer
 cradles it. The fabric needs **bootable ISOs** — images a hypervisor (or bare metal) can boot
 directly. The seam is the packaging, not the world:
 
-- The **guest ISO** = a minimal kernel + the coin world as its init (kernel_ledger,
-  the five daemons, the terminal — everything §1–§4 of the coin-VM doc, unchanged).
-- The **host ISO** = a minimal kernel + a KVM-class hypervisor + the fabric daemon
-  (specified in §1 below).
+- **One image, roles by boot context (recommended — this is §5's fractal law, stated
+  up front so the document agrees with itself):** a single minimal-kernel image
+  carrying *both* the coin world (as a bootable init path) *and* the hypervisor +
+  fabric daemon (as the host path). At boot it reads its context — *am I on metal
+  or under a hypervisor? Did I receive a spawn order or a work order?* — and takes
+  the role the position demands. "Guest ISO" and "host ISO" in this document are
+  *roles of the one image*, not two artifacts. One file, any computer — the
+  philosophy holds at the ISO layer too.
+- **Alternative — separate images:** build two artifacts, a guest image (kernel +
+  coin world as init) and a host image (kernel + hypervisor + fabric daemon).
+  Simpler to reason about per role; doubles the build and audit surface, and
+  breaks the self-similarity §5 is built on ("a seed that lands on soil becomes a
+  tree; a seed that lands on a branch becomes a leaf — it's the same seed").
 
-Same world, different cradle. If the sibling's world changes, the guest ISO tracks it —
-the guest image format defined here is the contract between the two documents.
+> **Decision owed to David — flagged, not decided here.** §5 already assumes the
+> one-image law; the recommendation above keeps the document consistent with
+> itself. If he chooses separate images, §5 gets rewritten to match — the
+> rewrite is mechanical, the choice is his.
+
+Same world, different cradle — whatever the image count, the *format* contract holds:
+if the sibling's world changes, the guest role's image content tracks it. The image
+format defined here is the contract between the two documents.
 
 ---
 
