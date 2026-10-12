@@ -1,3 +1,17 @@
+## Exactly what we are
+
+DualisCapax is building the perpetual world: computation measured to the Joule,
+proof carried without servers, value moved without intermediaries.
+
+Core invariant: **nothing enters the record except through proof;
+nothing proven is ever lost.**
+
+Full identity, every claim graded:
+[docs/28-canonical-identity-dossier.md](./docs/28-canonical-identity-dossier.md).
+**No live coin. No live wallet. No live emission.**
+
+---
+
 # eFuse Unity
 
 **Fuel under an empty center.**  
