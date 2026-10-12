@@ -12,36 +12,33 @@ The coin-VM document specifies a **userspace binary** — one file, any computer
 cradles it. The fabric needs **bootable ISOs** — images a hypervisor (or bare metal) can boot
 directly. The seam is the packaging, not the world:
 
-- **One image, roles by boot context (recommended — this is §5's fractal law, stated
-  up front so the document agrees with itself):** a single minimal-kernel image
-  carrying *both* the coin world (as a bootable init path) *and* the hypervisor +
-  fabric daemon (as the host path). At boot it reads its context — *am I on metal
-  or under a hypervisor? Did I receive a spawn order or a work order?* — and takes
-  the role the position demands. "Guest ISO" and "host ISO" in this document are
-  *roles of the one image*, not two artifacts. One file, any computer — the
-  philosophy holds at the ISO layer too.
-- **Alternative — separate images:** build two artifacts, a guest image (kernel +
-  coin world as init) and a host image (kernel + hypervisor + fabric daemon).
-  Simpler to reason about per role; doubles the build and audit surface, and
-  breaks the self-similarity §5 is built on ("a seed that lands on soil becomes a
+- **Decision (David, Oct 12, 2026): one image, roles by boot context.** A single
+  minimal-kernel image carries *both* the coin world (as a bootable init path)
+  *and* the hypervisor + fabric daemon (as the host path). At boot it reads its
+  context — *am I on metal or under a hypervisor? Did I receive a spawn order or
+  a work order?* — and takes the role the position demands. "Guest ISO" and "host
+  ISO" in this document are *roles of the one image*, not two artifacts. One file,
+  any computer — the philosophy holds at the ISO layer too. §5's fractal law is
+  this same decision stated as architecture; the sections agree because there was
+  never a second image.
+- **Alternative considered and rejected — separate images:** a guest artifact
+  (kernel + coin world as init) plus a host artifact (kernel + hypervisor +
+  fabric daemon). Rejected: it doubles the build and audit surface and breaks
+  the self-similarity §5 is built on ("a seed that lands on soil becomes a
   tree; a seed that lands on a branch becomes a leaf — it's the same seed").
 
-> **Decision owed to David — flagged, not decided here.** §5 already assumes the
-> one-image law; the recommendation above keeps the document consistent with
-> itself. If he chooses separate images, §5 gets rewritten to match — the
-> rewrite is mechanical, the choice is his.
-
-Same world, different cradle — whatever the image count, the *format* contract holds:
+Same world, different cradle — one image, two roles; the *format* contract holds:
 if the sibling's world changes, the guest role's image content tracks it. The image
 format defined here is the contract between the two documents.
 
 ---
 
-## 1. The Host ISO — it boots, then it listens
+## 1. The Host Role — it boots, then it listens
 
-A minimal bootable image. On boot it does one thing: **listens for work and spawns guests.**
+The one image in its host role (§5): the same artifact that boots as a worker
+elsewhere. In this role it does one thing: **listens for work and spawns guests.**
 
-**What's in the ISO:**
+**What's in the image** (both role paths ship in the one artifact):
 
 | Layer | What | Why |
 |---|---|---|
@@ -71,9 +68,9 @@ nothing — **a host that can't virtualize doesn't pretend.**
 
 ## 2. Nested Booting — any ISO inside any ISO
 
-The host ISO boots guest ISOs. Guests are coin-VM images — or **another host ISO**,
-for deeper nesting: a host inside a host inside a host, each one listening and spawning
-in its own layer.
+The image in its host role boots the image in guest roles. Guests are coin-VM
+images — or **the same image in its host role again**, for deeper nesting: a host
+inside a host inside a host, each one listening and spawning in its own layer.
 
 **The honest cost:** every nesting level pays a virtualization tax — more exits, more
 translation, more Joules per unit of work. The tax is measured per level and reported
@@ -102,7 +99,7 @@ The fabric daemon watches demand and hires accordingly:
 **The lifecycle:** `spawn → run → suspend → resume-or-kill.`
 
 - **Spawn:** work arrives (the perpetual loop's dispatch queue, binding demand) — the daemon
-  boots a guest ISO for it. Guests are hired per unit of work, not per shift.
+  boots the image in its guest role for it. Guests are hired per unit of work, not per shift.
 - **Run:** the guest works; the host meters every Joule (§4).
 - **Suspend:** no work for the guest — it suspends to disk. State checkpointed, receipted,
   the ledger knows exactly where it stopped.
@@ -145,8 +142,8 @@ silicon is the frontier; bounded honest estimates are the design.
 
 ## 5. The Fractal Law — one image, infinite roles
 
-The fabric is **self-similar**: the host ISO and the guest ISO are the *same image*,
-behaving differently by position.
+The fabric is **self-similar**: the image's host role and guest role are the
+*same artifact*, behaving differently by position.
 
 - Boot it on **bare metal** (or as a top-level VM) → it's a **host**: it listens, it spawns.
 - Boot it **as a guest** under a host → it's a **worker**: it works, it reports.
@@ -169,7 +166,7 @@ a tree; a seed that lands on a branch becomes a leaf; it's the same seed.
 | Scale-to-zero elasticity | **REAL** | Serverless proved the pattern; the lifecycle here copies it honestly |
 | This architecture document | **DESIGN** | Nothing boots; no image built, no metal touched |
 | The fabric daemon (listen/spawn/suspend/kill) | **DESIGN** | Specified, unbuilt |
-| The guest ISO format (the seam contract) | **DESIGN** | Specified; tracks the sibling's world |
+| The image format (the seam contract — roles by boot context) | **DESIGN** | Specified; tracks the sibling's world |
 | The boot sequences | **DESIGN** | Specified, unbuilt |
 | Bounded per-guest Joule estimates on shared hardware | **DESIGN** | Specified with labeled error bounds |
 | Joule-*accurate* per-guest metering (noisy neighbors solved) | **FRONTIER** | Stated, not solved — §4 |
@@ -181,7 +178,7 @@ a tree; a seed that lands on a branch becomes a leaf; it's the same seed.
 
 ## Open parameters (his)
 
-1. Host ISO size budget (tens of MB proposed — his ceiling).
+1. Image size budget (tens of MB proposed — his ceiling).
 2. Maximum nesting depth (2 proposed; deeper by his exception only).
 3. Idle-to-suspend and suspend-to-kill timeouts (the N in §3).
 4. Metering error-bound tolerance for noisy-neighbor apportionment.

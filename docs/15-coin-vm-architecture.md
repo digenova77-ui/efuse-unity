@@ -32,7 +32,25 @@ description of itself. Canonical input bytes, in this order:
 
 1. `prev_state_hash` — the hash of the ledger state the transition builds on.
 2. `tx_canonical_bytes` — the transition's canonical serialization (the same bytes
-   `tx_id` commits to).
+   `tx_id` commits to). **Canonical encoding, normative for this design** —
+   non-circular by construction: derived fields (`tx_id`, `invariant_hash`, and
+   the `signature` computed over these bytes) are never inputs to the encoding;
+   they are computed *from* it. Fields in this fixed order, each length-prefixed
+   (u64 little-endian byte length, then the field bytes; integers unsigned
+   little-endian of their declared width; nested structures framed recursively):
+   1. `encoding_version` — u16, currently `1`.
+   2. `domain` — the ASCII bytes of `efuse-coin-tx-v1` (domain separation: these
+      bytes never verify as anything else).
+   3. `inputs` — the ordered list of consumed state references.
+   4. `outputs` — the ordered list of created state entries.
+   5. `grants` — the ordered list of Unity ID grant references the transition relies on.
+   6. `memo` — arbitrary bytes, may be empty (still framed as zero length).
+   No field is optional and none may be reordered — two nodes serializing the same
+   logical transaction produce byte-identical output, so
+   `tx_id = sha256(tx_canonical_bytes)` is a content address, not an opinion.
+   (If the V2 manifest later pins a different framing, the manifest governs and
+   this section is updated to cite it — the exclusion of derived fields is the
+   invariant part.)
 3. `candidate_state_hash` — the hash of the state the transition *claims* results
    from applying it.
 4. `invariant_version` — the version of the invariant predicate set, so a rule
@@ -51,7 +69,13 @@ against the recomputed candidate state:
   the signer's Unity ID grant at this state.
 
 If any predicate fails — or the recomputed candidate hash mismatches the claim —
-the validator rejects: `apply(state, tx) → reject`. The ledger sync daemon (§4)
+the validator rejects: `apply(state, tx) → reject`. The two checks are independent:
+a candidate can produce a matching `invariant_hash` and still fail a predicate —
+the hash commits to candidate *bytes*, never to predicate *truth*. Predicate failure
+rejects on its own, regardless of whether the hash matched; a hash mismatch rejects
+on its own, regardless of the predicates. Neither check vouches for the other.
+
+The ledger sync daemon (§4)
 treats a rejected transition as a full stop: it does not advance local state past
 it, it does not skip it, and it receipts the rejection. A chain that cannot
 validate does not sync — UNKNOWN is never PASS, not for ledgers either.
