@@ -60,15 +60,42 @@ class X402Middleware:
         self.receipts = receipts if receipts is not None else ReceiptChain(node_id="x402-rail")
         self.network = network
 
-    def _terms(self, path: str, price_micros: int) -> dict:
+    def _terms(self, path: str, price_micros: int, description: str) -> dict:
         req = build_payment_required(
             resource_url=path,
-            description=self.catalog.price_for(path).description,
+            description=description,
             amount_micros=price_micros,
             pay_to=self.pay_to,
             network=self.network,
         )
         return req["accepts"][0]
+
+    def _price(self, path: str, environ) -> tuple:
+        """Resolve (price, description, pricing_quote). Lane-aware when the
+        catalog supports it; the balancer sets environ['x402.lane'] and the
+        deliberation pipeline sets environ['x402.decision_id']."""
+        lane = environ.get("x402.lane")
+        decision_id = environ.get("x402.decision_id")
+        catalog = self.catalog
+        if hasattr(catalog, "quote"):
+            quote = catalog.quote(path, lane=lane, decision_id=decision_id)
+            if quote is None:
+                return None, None, None
+            price = catalog.price_for(path, lane=lane, decision_id=decision_id)
+            return price, price.description, quote
+        price = catalog.price_for(path)
+        if price is None:
+            return None, None, None
+        return price, price.description, {
+            "resource": path,
+            "base_merit": price.merit,
+            "lane": lane,
+            "mode": "STATIC",
+            "multiplier": 1.0,
+            "marker": None,
+            "merit": price.merit,
+            "micros": price.micros,
+        }
 
     def __call__(self, environ, start_response):
         path = environ.get("PATH_INFO", "/")
@@ -90,19 +117,19 @@ class X402Middleware:
             }
             return _json_response(start_response, "200 OK", body)
 
-        price = self.catalog.price_for(path)
+        price, description, pricing_quote = self._price(path, environ)
         if price is None:
             return self.app(environ, start_response)  # free path — pass through
 
         price_micros = price.micros
-        terms = self._terms(path, price_micros)
+        terms = self._terms(path, price_micros, description)
         challenge = {
             "x402Version": 2,
             "error": "payment required",
             "accepts": [terms],
             "resource": {
                 "url": path,
-                "description": price.description,
+                "description": description,
                 "invoice_id": new_invoice_id(),
             },
         }
@@ -150,6 +177,7 @@ class X402Middleware:
                 f"{settlement['settlement_ref']}+{residual_settlement['settlement_ref']}"
             ),
             resource_url=path,
+            pricing=pricing_quote,
         )
 
         environ["x402.receipt"] = trace

@@ -7,6 +7,13 @@ from .protocol import (
     encode_payment_payload,
 )
 from .economy import MERIT_TO_USDC_MICROS, RESIDUAL_BPS, Price, PriceCatalog, split_residual
+from .pricing import (
+    DynamicPriceCatalog,
+    EnergyIndex,
+    LaneEnergyMarker,
+    RotationLedger,
+    RotationRound,
+)
 from .facilitator import CoinbaseFacilitator, Facilitator, LocalTestFacilitator
 from .middleware import X402Middleware
 from .receipts import ReceiptChain
@@ -26,6 +33,11 @@ __all__ = [
     "PaymentVerifier",
     "Price",
     "PriceCatalog",
+    "DynamicPriceCatalog",
+    "EnergyIndex",
+    "LaneEnergyMarker",
+    "RotationLedger",
+    "RotationRound",
     "ReceiptChain",
     "X402Middleware",
     "build_payment_required",

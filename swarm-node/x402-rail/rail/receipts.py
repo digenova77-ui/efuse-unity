@@ -58,6 +58,7 @@ class ReceiptChain:
         settlement_kind: str,
         settlement_ref: str,
         resource_url: str,
+        pricing: dict | None = None,
     ) -> dict:
         possibility_space = {"paid": True, "unpaid": False}
         outcome = {
@@ -74,6 +75,11 @@ class ReceiptChain:
             "settlement_ref": settlement_ref,
             "resource_url": resource_url,
         }
+        if pricing is not None:
+            # The energy-index quote that produced this gross — auditable
+            # after the fact. The residual split is computed from the gross
+            # and is untouched by whatever the index did.
+            outcome["pricing"] = pricing
         prev_hash = self.head_hash
         measured_at = now_s()
         ps_hash = _sha256_hex(_canon(possibility_space))
