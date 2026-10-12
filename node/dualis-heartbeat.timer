@@ -1,0 +1,10 @@
+[Unit]
+Description=DualisCapax swarm node heartbeat, every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Unit=dualis-heartbeat.service
+
+[Install]
+WantedBy=timers.target
