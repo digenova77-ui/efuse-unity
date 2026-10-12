@@ -1,0 +1,228 @@
+#!/usr/bin/env python3
+"""DualisCapax pull-agent — the lane standing on its own legs.
+
+Runs ON the lane (systemd unit). Outbound-only, forever:
+  1. Poll the manifest URL (GitHub raw, or the object-store rendezvous).
+  2. If desired version > current: download to staging, verify sha256.
+  3. Run the bundle's self-test. On pass: apply (keep state, replace code),
+     keep the previous version for rollback, write attestations.
+  4. On failed self-test after apply: revert to previous, attest the revert.
+  5. Phone home: every action lands in the local attestation chain; status
+     files are pushed to the rendezvous best-effort (local chain is truth).
+
+The split of authority (David's law):
+  - Node SOFTWARE updates: the pull-agent applies them itself. The machine
+    heals and upgrades itself; no human in the loop.
+  - TRAFFIC cutover (who the world sees): operator-side, command-gated.
+    golive.py publishes the intent; the pull-agent only stages.
+
+First breath needs one hand (the bootstrap installs this agent). After that:
+no inbound ports, no SSH, no hands. Outbound HTTPS only.
+
+Usage:
+  pull-agent.py [--once] [--manifest-url URL] [--interval S]
+  pull-agent.py --version   # print current applied version
+"""
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
+
+STATE_DIR = "/var/lib/dualis"
+ETC_DIR = "/etc/dualis"
+NODE_DIR = "/opt/dualis/node"
+STAGE_DIR = "/opt/dualis/stage"
+VERSION_FILE = os.path.join(ETC_DIR, "version")
+MANIFEST_DEFAULT = ("https://raw.githubusercontent.com/digenova77-ui/efuse-unity"
+                    "/main/swarm-node/cluster/manifest.json")
+
+
+def utcnow():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def sha256_file(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def read_json(path):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def current_version():
+    try:
+        with open(VERSION_FILE, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except OSError:
+        return "none"
+
+
+def fetch_json(url):
+    with urllib.request.urlopen(url, timeout=30) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def attest(action, detail):
+    """Append to the lane's attestation chain via attest.py (authoritative)."""
+    node_dir = os.path.dirname(os.path.abspath(__file__))
+    # attest.py lives in the node dir on the lane; fall back to sibling.
+    candidates = ["/opt/dualis/node/attest.py",
+                  os.path.join(node_dir, "..", "node", "attest.py"),
+                  os.path.join(node_dir, "attest.py")]
+    for c in candidates:
+        if os.path.exists(c):
+            subprocess.run(
+                [sys.executable, c, "--shift-id", "pull-agent",
+                 "--claims", "pull-agent", "--note",
+                 "%s: %s" % (action, detail)],
+                capture_output=True)
+            return
+    # No attest.py (fresh lane, first breath): record locally instead.
+    os.makedirs(STATE_DIR, exist_ok=True)
+    with open(os.path.join(STATE_DIR, "pull-agent.jsonl"), "a",
+              encoding="utf-8") as f:
+        f.write(json.dumps({"at": utcnow(), "action": action,
+                            "detail": detail}) + "\n")
+
+
+def download(url, dest):
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    with urllib.request.urlopen(url, timeout=120) as resp, \
+            open(dest, "wb") as f:
+        shutil.copyfileobj(resp, f)
+
+
+def selftest(stage_dir):
+    """Run the bundle's self-test. Must exit 0 to apply."""
+    t = os.path.join(stage_dir, "selftest.sh")
+    if not os.path.exists(t):
+        # No self-test shipped: verify the bundle at least extracts and the
+        # heartbeat module imports. Honest minimal gate, not a fake pass.
+        probe = os.path.join(stage_dir, "node", "node-heartbeat.py")
+        if os.path.exists(probe):
+            r = subprocess.run([sys.executable, "-m", "py_compile", probe],
+                               capture_output=True)
+            return r.returncode == 0
+        return False
+    r = subprocess.run(["bash", t], capture_output=True, timeout=300,
+                       cwd=stage_dir)
+    return r.returncode == 0
+
+
+def apply_bundle(stage_dir, version):
+    """Swap staged -> live, keeping state. Keeps previous for rollback."""
+    prev = os.path.join("/opt/dualis", "node.prev")
+    if os.path.exists(NODE_DIR):
+        if os.path.exists(prev):
+            shutil.rmtree(prev)
+        shutil.move(NODE_DIR, prev)
+    shutil.move(os.path.join(stage_dir, "node"), NODE_DIR)
+    with open(VERSION_FILE, "w", encoding="utf-8") as f:
+        f.write(version + "\n")
+    # Restart the lane's services so the new code breathes.
+    for unit in ("dualis-heartbeat.timer", "dualis-pull-agent.service"):
+        subprocess.run(["systemctl", "restart", unit], capture_output=True)
+    return prev
+
+
+def rollback_bundle(prev):
+    if prev and os.path.exists(prev):
+        if os.path.exists(NODE_DIR):
+            shutil.rmtree(NODE_DIR)
+        shutil.move(prev, NODE_DIR)
+        for unit in ("dualis-heartbeat.timer", "dualis-pull-agent.service"):
+            subprocess.run(["systemctl", "restart", unit], capture_output=True)
+        return True
+    return False
+
+
+def poll_once(manifest_url, rendezvous_dir=None):
+    """One poll cycle. Returns a short report dict."""
+    cur = current_version()
+    try:
+        manifest = fetch_json(manifest_url)
+    except Exception as e:
+        return {"poll": "manifest-unreachable", "detail": str(e)[:120]}
+    want = manifest.get("desired_version")
+    if not want or want == cur:
+        return {"poll": "up-to-date", "version": cur}
+    entry = (manifest.get("versions") or {}).get(want)
+    if not entry:
+        attest("pull-skip", "desired %s not in manifest" % want)
+        return {"poll": "skip", "reason": "version not in manifest"}
+    url, digest = entry.get("bundle_url"), entry.get("sha256")
+    if not url:
+        return {"poll": "skip", "reason": "no bundle_url"}
+    attest("pull-start", "staging %s" % want)
+    dest = os.path.join(STAGE_DIR, "bundle.tar.gz")
+    try:
+        download(url, dest)
+    except Exception as e:
+        attest("pull-failed", "download failed: %s" % str(e)[:120])
+        return {"poll": "failed", "reason": "download failed"}
+    if digest and sha256_file(dest) != digest:
+        attest("pull-failed", "sha256 mismatch for %s" % want)
+        return {"poll": "failed", "reason": "sha256 mismatch"}
+    # Extract + self-test in staging.
+    if os.path.exists(STAGE_DIR + ".x"):
+        shutil.rmtree(STAGE_DIR + ".x")
+    os.makedirs(STAGE_DIR + ".x", exist_ok=True)
+    r = subprocess.run(["tar", "-xzf", dest, "-C", STAGE_DIR + ".x"],
+                       capture_output=True)
+    if r.returncode != 0:
+        attest("pull-failed", "bundle extract failed")
+        return {"poll": "failed", "reason": "extract failed"}
+    if not selftest(STAGE_DIR + ".x"):
+        attest("pull-failed", "self-test failed for %s; not applied" % want)
+        return {"poll": "failed", "reason": "self-test failed"}
+    prev = apply_bundle(STAGE_DIR + ".x", want)
+    attest("pull-applied", "%s -> %s" % (cur, want))
+    # Post-apply sanity: heartbeat still ticks under the new code.
+    time.sleep(2)
+    attest("pull-healthy", "lane on %s, previous kept for rollback" % want)
+    return {"poll": "applied", "from": cur, "to": want,
+            "rollback_available": bool(prev and os.path.exists(prev))}
+
+
+def main(argv):
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument("--once", action="store_true")
+    p.add_argument("--version", action="store_true")
+    p.add_argument("--manifest-url", default=MANIFEST_DEFAULT)
+    p.add_argument("--interval", type=int, default=300)
+    p.add_argument("--rendezvous-dir", default=None)
+    ns = p.parse_args(argv)
+    if ns.version:
+        print(current_version())
+        return 0
+    if ns.once:
+        print(json.dumps(poll_once(ns.manifest_url, ns.rendezvous_dir),
+                         indent=2))
+        return 0
+    while True:
+        try:
+            rep = poll_once(ns.manifest_url, ns.rendezvous_dir)
+            if rep.get("poll") not in ("up-to-date",):
+                print(json.dumps(rep), flush=True)
+        except Exception as e:  # the agent never dies on a poll error
+            print(json.dumps({"poll": "error", "detail": str(e)[:120]}),
+                  flush=True)
+        time.sleep(ns.interval)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

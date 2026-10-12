@@ -1,0 +1,18 @@
+$TTL 300
+; dualiscapax.ai — base zone, included identically in every view.
+; Per-view A answers live in answers.<view> (rewritten by geodns-agent.py).
+; SOA serial: date-based, bump on every hand edit (agent bumps its own).
+@   IN SOA ns1.dualiscapax.ai. admin.dualiscapax.ai. (
+        2026101201 ; serial YYYYMMDDNN
+        3600       ; refresh
+        900        ; retry
+        604800     ; expire
+        300 )      ; minimum
+
+    IN NS ns1.dualiscapax.ai.
+    IN NS ns2.dualiscapax.ai.
+
+ns1 IN A 108.61.17.141   ; DCLM lane, New Jersey
+ns2 IN A 45.76.33.16     ; EUROPE lane, Amsterdam
+
+$INCLUDE answers.base

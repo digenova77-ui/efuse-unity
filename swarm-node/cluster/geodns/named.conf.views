@@ -1,0 +1,88 @@
+// named.conf.views — BIND9 geographic views for dualiscapax.ai.
+// Include from named.conf:  include "/etc/bind/named.conf.views";
+//
+// DEPENDENCY (honest): geographic matching needs the GeoIP2 module and a
+// MaxMind database. One-time setup on each nameserver box:
+//   apt-get install -y bind9-geoip   (or build with --with-geoip2)
+//   mkdir -p /usr/share/GeoIP
+//   # download GeoLite2-Country.mmdb (free MaxMind account) to /usr/share/GeoIP/
+// Without the database, named fails to start — the config refuses to run
+// geography-blind rather than answer wrongly.
+//
+// Health-driven answers: each view's zone file $INCLUDEs answers.<view>,
+// which geodns-agent.py rewrites from the health stream and reloads via rndc.
+// A lane that stops attesting is removed from its views' answers; if no
+// lane is healthy, the agent keeps last-known-good (stale beats blackhole).
+
+geoip-directory "/usr/share/GeoIP";
+
+acl "xfer-lanes" {
+    108.61.17.141;   // DCLM, New Jersey (ns1)
+    45.76.33.16;     // EUROPE, Amsterdam (ns2)
+};
+
+view "europe" {
+    match-clients { geoip-country DB "GeoLite2-Country.mmdb" country EU; };
+    recursion no;
+    zone "dualiscapax.ai" {
+        type master;
+        file "/etc/bind/db.dualiscapax.ai.europe";
+        allow-transfer { xfer-lanes; };
+    };
+};
+
+view "mea" {
+    match-clients {
+        geoip-country DB "GeoLite2-Country.mmdb" country ME;
+        geoip-country DB "GeoLite2-Country.mmdb" country AF;
+    };
+    recursion no;
+    zone "dualiscapax.ai" {
+        type master;
+        file "/etc/bind/db.dualiscapax.ai.mea";
+        allow-transfer { xfer-lanes; };
+    };
+};
+
+view "apac" {
+    match-clients {
+        geoip-country DB "GeoLite2-Country.mmdb" country AS;
+        geoip-country DB "GeoLite2-Country.mmdb" country OC;
+    };
+    recursion no;
+    zone "dualiscapax.ai" {
+        type master;
+        file "/etc/bind/db.dualiscapax.ai.apac";
+        allow-transfer { xfer-lanes; };
+    };
+};
+
+view "americas" {
+    match-clients {
+        geoip-country DB "GeoLite2-Country.mmdb" country NA;
+        geoip-country DB "GeoLite2-Country.mmdb" country SA;
+    };
+    recursion no;
+    zone "dualiscapax.ai" {
+        type master;
+        file "/etc/bind/db.dualiscapax.ai.americas";
+        allow-transfer { xfer-lanes; };
+    };
+};
+
+// default: everything not matched above (and the fallback path if geoip
+// lookups ever fail-open). Answers the nearest lane to David's home region.
+view "default" {
+    match-clients { any; };
+    recursion no;
+    zone "dualiscapax.ai" {
+        type master;
+        file "/etc/bind/db.dualiscapax.ai.default";
+        allow-transfer { xfer-lanes; };
+    };
+};
+
+// Per-view zone files are assembled at deploy time:
+//   db.dualiscapax.ai.<view> = db.dualiscapax.ai.base with
+//   "$INCLUDE answers.base" replaced by "$INCLUDE answers.<view>"
+// (see geodns-agent.py --init)
