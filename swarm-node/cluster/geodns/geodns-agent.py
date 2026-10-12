@@ -27,7 +27,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import balancer
 import health as healthmod
 
-VIEWS = ["default", "europe", "apac", "mea", "oceania"]
+# Must match the views in named.conf.views exactly: the americas view has
+# its own zone file (db.dualiscapax.ai.americas), while oceania is folded
+# into the apac BIND view — there is no answers.oceania consumer.
+VIEWS = ["default", "europe", "apac", "mea", "americas"]
 ZONE_DIR = "/etc/bind"
 HEALTH_PATH = "/var/lib/dualis/cluster/health.json"
 CHANGELOG = "/var/lib/dualis/cluster/geodns-changes.jsonl"
