@@ -23,7 +23,7 @@ the computer is not the hardware, it's the code.
 | Field | Meaning |
 |---|---|
 | `tx_id` | Unique identifier of the transition (hash of the transition's canonical bytes) |
-| `invariant_hash` | Hash committing to the invariants the transition must preserve **and to the candidate state** (canonical inputs specified below). If the invariants break, the hash won't match and the transition dies. |
+| `invariant_hash` | Hash committing to the invariants the transition must preserve **and to the candidate state** (canonical inputs specified below). A failed invariant predicate rejects the transition independently of whether the hash matches. |
 | `signature` | The signer's proof — who authorized this transition, verified against their Unity ID grant |
 
 **`invariant_hash` — canonical inputs.** The hash commits to the *candidate state*
@@ -68,12 +68,23 @@ against the recomputed candidate state:
 - **Grant validity** — every authorization the transition relies on is valid against
   the signer's Unity ID grant at this state.
 
-If any predicate fails — or the recomputed candidate hash mismatches the claim —
-the validator rejects: `apply(state, tx) → reject`. The two checks are independent:
-a candidate can produce a matching `invariant_hash` and still fail a predicate —
-the hash commits to candidate *bytes*, never to predicate *truth*. Predicate failure
-rejects on its own, regardless of whether the hash matched; a hash mismatch rejects
-on its own, regardless of the predicates. Neither check vouches for the other.
+**Transition acceptance — three independent gates.** A transition advances local
+state only if all three hold; any failure rejects (`apply(state, tx) → reject`):
+
+1. **Candidate-state hash** — the locally recomputed state hashes to the claimed
+   `candidate_state_hash`.
+2. **`invariant_hash` verification** — the validator recomputes
+   `sha256(prev_state_hash | tx_canonical_bytes | candidate_state_hash | invariant_version)`
+   from the canonical inputs and compares it against the supplied value; on mismatch
+   it rejects before any state advancement.
+3. **Invariant predicates** — balances sum, no double-spend, grant validity,
+   evaluated against the recomputed candidate state; any failure rejects.
+
+The gates are independent: a candidate can carry a matching `invariant_hash` and
+still fail a predicate — the hash commits to candidate *bytes*, never to predicate
+*truth*. Predicate failure rejects on its own, regardless of whether the hash
+matched; a hash mismatch rejects on its own, regardless of the predicates.
+Neither check vouches for the other.
 
 The ledger sync daemon (§4)
 treats a rejected transition as a full stop: it does not advance local state past
@@ -168,7 +179,7 @@ lives. Each daemon: what it does, what it costs, how it survives reboot.
 | Daemon | Does | Costs | Survives reboot |
 |---|---|---|---|
 | **heartbeat** | The perpetual loop's tick — the VM's own proof it's alive, chained into the heartbeat log | Near-zero: a hash and a timestamp per tick | The Iris-daemon pattern: persistent, SYSTEM-level where the host allows, plain-words grant where it doesn't |
-| **ledger sync** | Follows the chain — pulls new blocks/transitions from peers, verifies invariant_hashes, advances local state | Bandwidth + verify-compute, metered by the Joule meter | Resumes from last sealed state; never replays from genesis unless the state file is lost |
+| **ledger sync** | Follows the chain — pulls new blocks/transitions from peers, verifies invariant_hashes (recomputes `sha256(prev_state_hash \| tx_canonical_bytes \| candidate_state_hash \| invariant_version)` per §1, rejects on mismatch before advancing), advances local state only past accepted transitions | Bandwidth + verify-compute, metered by the Joule meter | Resumes from last sealed state; never replays from genesis unless the state file is lost |
 | **witness listener** | Listens for the two-observer net — receives attestations, checks κ-independence, files them | Idle-cheap; spikes on attestation traffic | Restarts listening on boot; missed attestations are UNKNOWN, never assumed |
 | **Joule meter** | The diamond floor's ear — measures the VM's own compute cost per transition, feeds the pricing engine's M term | The meter costs energy too — metered honestly, recursion labeled | Counter persists; a fresh boot starts a new metering epoch, labeled |
 | **pin daemon** | Pins the VM's world to memory — ledger snapshots and manifests to IPFS/local pins, the mind-pins discipline | Storage + pinning bandwidth | Re-pins on boot; every pin receipted and chained |
