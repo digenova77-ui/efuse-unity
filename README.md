@@ -1,53 +1,72 @@
-# x402 payment rail
+## Exactly what we are
 
-Crypto-to-crypto HTTP payments for anything. Implements the open
-[x402](https://x402.org) v2 protocol (scheme `"exact"`, EIP-3009
-`TransferWithAuthorization`): a service answers unpaid requests with
-`402 Payment Required`, the payer signs an authorization and retries with
-`X-Payment`, the service verifies the signature, settles via a facilitator,
-serves, and writes a hash-chained payment receipt.
+DualisCapax is building the perpetual world: computation measured to the Joule,
+proof carried without servers, value moved without intermediaries.
 
-## Layout
+Core invariant: **nothing enters the record except through proof;
+nothing proven is ever lost.**
 
-| File | What |
-|---|---|
-| `rail/protocol.py` | x402 v2 wire shapes, networks, EIP-712 typed data |
-| `rail/signer.py` | client-side EIP-3009 signing |
-| `rail/verifier.py` | server-side verification (fail-closed; replay protection) |
-| `rail/facilitator.py` | settlement: `LocalTestFacilitator` (simulated) / `CoinbaseFacilitator` (real, designed) |
-| `rail/economy.py` | Merit-denominated pricing, the 1% residual split |
-| `rail/receipts.py` | payment receipts as hash-chained collapse traces |
-| `rail/middleware.py` | framework-agnostic WSGI 402 gate |
-| `rail/client.py` | pay-and-retry HTTP client (stdlib) |
-| `rail/demo.py` | demo server |
+Full identity, every claim graded:
+[docs/28-canonical-identity-dossier.md](./docs/28-canonical-identity-dossier.md).
+**No live coin. No live wallet. No live emission.**
 
-## Quickstart
+---
+
+# eFuse Unity
+
+**Fuel under an empty center.**  
+`coin = fuel_not_Accept` · `pure_own = cost paid before title` · Mirror ∈ {0,1}
+
+Company-first public surface. The measure does not require a personal name.  
+What connects the project to the world is only what others can **find**: this repo, published site copy, and public registries when they exist.
+
+## Seal
+
+See [`UNITY_SEAL_v1.md`](./UNITY_SEAL_v1.md). Boot computes `unity_hash` and refuses drift.
+
+## Website & portal
+
+See [`docs/PUBLIC_SURFACE.md`](./docs/PUBLIC_SURFACE.md).
+
+```
+docs + simulations     → open to test (same toll)
+payment / bank gateway → not in this repo (dead until operator builds real rails)
+KYC                    → institutions only; not a hash; not this chat
+```
+
+Public website uploads are **irreversible marks** — claim ≤ evidence.
+
+## Quick start
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install eth-account pytest
-.venv/bin/python -m pytest tests/ -q   # 14 tests, simulated settlement
-.venv/bin/python -m rail.demo --port 8099
+cd efuse-unity
+PYTHONPATH=src python simulations/run_orbit.py
+# EFUSE_SIM_N=10000 PYTHONPATH=src python simulations/run_orbit.py
 ```
 
-Then, unpaid → 402, paid → 200:
+## Architecture
 
-```python
-from rail.client import x402_get
-status, body, receipt = x402_get("http://127.0.0.1:8099/metered", private_key=KEY)
+```
+RF5 → RF6 → GateA → GateB → evidence_ok → spend → tip → Mirror
+ESCROW --(cost paid + Accept 1)--> PURE --(burn)--> SPENT
 ```
 
-## Money rules
+## Docs
 
-- **Testnet default.** Base Sepolia (`eip155:84532`). Mainnet constructs only
-  with an explicit opt-in; the test suite never touches a real rail.
-- **Simulated settlement is labeled.** `LocalTestFacilitator` receipts carry
-  `settlement_kind="simulated"` and `sim:<uuid>` references. No transaction
-  hash is ever invented.
-- **1% residual.** Every settled payment splits: 1% to the residual address,
-  99% to the service (integer math, no dust). The residual leg is a
-  service-initiated forward, never a second payer authorization.
-- **No receipt = no payment.** The middleware refuses to serve unless the
-  receipt was appended to the hash-chained ledger. Receipts are public at
-  `/receipts`.
-- **Merit is a unit of account, not a token.** Settlement is USDC on a real
-  rail. No fiat on/off ramps — that's the adopter's department.
+- [Public surface / website honesty](./docs/PUBLIC_SURFACE.md)
+- [White paper direction](./docs/WHITEPAPER.md)
+- [Indexes](./docs/INDEX.md)
+- [Company pack](./company/README.md)
+
+## Simulations
+
+Orbit trials: honest → 1, attacks → 0, seal stable (gravity to empty center).
+
+## Shared playground
+
+Free to test. Same stick. No Exempt.  
+Belongs to them as much as the authors — **under the line**, not above it.
+
+---
+
+*Fuel pays the claim; the tip keeps the time; the center stays empty.*
