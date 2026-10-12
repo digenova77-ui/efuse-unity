@@ -9,12 +9,17 @@ import json
 import os
 import sys
 import tempfile
+import time
 import unittest
 
 CLUSTER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, CLUSTER)
+sys.path.insert(0, os.path.dirname(CLUSTER))  # swarm-node/ for signing
 import golive
 import balancer
+from signing import backend as _bend
+from signing import intent as _gintent
+from signing.keys import fingerprint as _fp
 
 
 def write(p, obj):
@@ -45,6 +50,74 @@ class GoLiveTest(unittest.TestCase):
         # Patch curl_ok to accept file:// URLs honestly.
         self._curl = golive.curl_ok
         golive.curl_ok = lambda u: u.startswith("file://") and os.path.exists(u[7:])
+        # Signing regime: throwaway offline key for the tests (never real).
+        self._seed, self._pub = _bend.generate()
+        self.pubkey_file = os.path.join(self.tmp, "david-pubkey")
+        with open(self.pubkey_file, "w") as f:
+            f.write(self._pub.hex() + "\n")
+        # A valid signed intent for EUROPE v9.9.9.
+        payload = _gintent.build_intent("EUROPE", "v9.9.9", "x" * 64, ttl_s=600)
+        self.intent_file = os.path.join(self.tmp, "intent.json")
+        write(self.intent_file, _gintent.seal_intent(payload, self._seed))
+        golive.STATE_DIR = self.tmp  # nonce store lands here per-run
+
+    def _fresh_intent(self, lane="EUROPE", version="v9.9.9", bundle_hash=None):
+        # Every run needs a fresh nonce — intents are single-use by design.
+        payload = _gintent.build_intent(lane, version, bundle_hash or "x" * 64,
+                                        ttl_s=600)
+        p = os.path.join(self.tmp, "intent-%d.json" % time.time_ns())
+        write(p, _gintent.seal_intent(payload, self._seed))
+        return p
+
+    def test_dry_run_stops_before_cutover(self):
+        # Dry-run is preparation: no word needed, no intent published.
+        write(self.health, {"EUROPE": {"state": "UP"}})
+        rec = golive.run("EUROPE", "v9.9.9", self.manifest, self.health,
+                         os.path.join(self.tmp, "bind"), dry_run=True)
+        self.assertTrue(rec["dry_run"])
+        stages = [s["stage"] for s in rec["stages"]]
+        self.assertIn("PREFLIGHT", stages)
+        self.assertNotIn("INTENT", stages)  # no word, no intent
+        self.assertNotIn("CUTOVER", stages)
+        self.assertFalse(os.path.exists(
+            os.path.join(golive.RENDEZVOUS, "golive", "intent", "EUROPE.json")))
+
+    def test_real_run_without_intent_halts(self):
+        # The word must be proven: no signed intent -> HALT at INTENT.
+        write(self.health, {"EUROPE": {"state": "UP"}})
+        with self.assertRaises(golive.GateFailed) as c:
+            golive.run("EUROPE", "v9.9.9", self.manifest, self.health,
+                       os.path.join(self.tmp, "bind"), dry_run=False,
+                       intent_path=None, david_pubkey_path=self.pubkey_file,
+                       timeout=1)
+        self.assertEqual(c.exception.stage, "INTENT")
+
+    def test_tampered_intent_halts(self):
+        # An intent for the WRONG version is not the word for this cutover.
+        write(self.health, {"EUROPE": {"state": "UP"}})
+        bad_payload = _gintent.build_intent("EUROPE", "v0.0.1", "y" * 64, ttl_s=600)
+        bad_intent = os.path.join(self.tmp, "bad-intent.json")
+        write(bad_intent, _gintent.seal_intent(bad_payload, self._seed))
+        with self.assertRaises(golive.GateFailed) as c:
+            golive.run("EUROPE", "v9.9.9", self.manifest, self.health,
+                       os.path.join(self.tmp, "bind"), dry_run=False,
+                       intent_path=bad_intent,
+                       david_pubkey_path=self.pubkey_file, timeout=1)
+        self.assertEqual(c.exception.stage, "INTENT")
+        self.assertIn("mismatch", c.exception.reason)
+
+    def test_wait_staged_timeout_halts_and_traces(self):
+        write(self.health, {"EUROPE": {"state": "UP"}})
+        with self.assertRaises(golive.GateFailed) as c:
+            golive.run("EUROPE", "v9.9.9", self.manifest, self.health,
+                       os.path.join(self.tmp, "bind"), dry_run=False,
+                       intent_path=self._fresh_intent(),
+                       david_pubkey_path=self.pubkey_file, timeout=1)
+        self.assertEqual(c.exception.stage, "WAIT-STAGED")
+        traces = balancer.read_traces()
+        self.assertEqual(len(traces), 1)  # exactly one gap trace
+        self.assertEqual(traces[0]["kind"], "gap")
+        self.assertIn("WAIT-STAGED", traces[0]["outcome"])
 
     def tearDown(self):
         golive.curl_ok = self._curl
@@ -62,32 +135,6 @@ class GoLiveTest(unittest.TestCase):
         with self.assertRaises(golive.GateFailed):
             golive.stage_preflight("EUROPE", "v0.0.0", self.manifest,
                                    golive.read_json(self.health))
-
-    def test_dry_run_stops_before_cutover(self):
-        write(self.health, {"EUROPE": {"state": "UP"}})
-        rec = golive.run("EUROPE", "v9.9.9", self.manifest, self.health,
-                         os.path.join(self.tmp, "bind"), dry_run=True)
-        self.assertTrue(rec["dry_run"])
-        stages = [s["stage"] for s in rec["stages"]]
-        self.assertIn("PREFLIGHT", stages)
-        self.assertIn("INTENT", stages)
-        self.assertNotIn("CUTOVER", stages)
-        # Intent was published (reversible), nothing cut over.
-        intent = golive.read_json(
-            os.path.join(golive.RENDEZVOUS, "golive", "intent", "EUROPE.json"))
-        self.assertEqual(intent["status"], "armed")
-
-    def test_wait_staged_timeout_halts_and_traces(self):
-        write(self.health, {"EUROPE": {"state": "UP"}})
-        with self.assertRaises(golive.GateFailed) as c:
-            golive.run("EUROPE", "v9.9.9", self.manifest, self.health,
-                       os.path.join(self.tmp, "bind"), dry_run=False,
-                       timeout=1)
-        self.assertEqual(c.exception.stage, "WAIT-STAGED")
-        traces = balancer.read_traces()
-        self.assertEqual(len(traces), 1)  # exactly one gap trace
-        self.assertEqual(traces[0]["kind"], "gap")
-        self.assertIn("WAIT-STAGED", traces[0]["outcome"])
 
     def test_rollback_restores_prior_answers(self):
         zd = os.path.join(self.tmp, "bind")
@@ -122,6 +169,8 @@ class GoLiveTest(unittest.TestCase):
         with self.assertRaises(golive.GateFailed) as c:
             golive.run("EUROPE", "v9.9.9", self.manifest, self.health, zd,
                        dry_run=False,
+                       intent_path=self._fresh_intent(),
+                       david_pubkey_path=self.pubkey_file,
                        health_fn=lambda: golive.read_json(health_stuck),
                        timeout=1)
         self.assertEqual(c.exception.stage, "CONFIRM")

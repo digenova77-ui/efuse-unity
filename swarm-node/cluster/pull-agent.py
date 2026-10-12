@@ -33,15 +33,52 @@ import time
 import urllib.request
 from datetime import datetime, timezone
 
-STATE_DIR = "/var/lib/dualis"
-ETC_DIR = "/etc/dualis"
+
+def _load_signing():
+    """Locate the signing package (lane: /opt/dualis/signing)."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in ("/opt/dualis/signing",
+                 os.path.join(here, "..", "signing"),
+                 os.path.join(here, "signing")):
+        if os.path.exists(os.path.join(cand, "__init__.py")):
+            parent = os.path.dirname(os.path.abspath(cand))
+            if parent not in sys.path:
+                sys.path.insert(0, parent)
+            try:
+                import signing.manifest as smanifest
+                import signing.envelope as envelope
+                import signing.keys as skeys
+                return smanifest, envelope, skeys
+            except Exception:
+                continue
+    return None
+
+
+SIGNING = _load_signing()
+
+STATE_DIR = os.environ.get("DUALIS_STATE_DIR", "/var/lib/dualis")
+ETC_DIR = os.environ.get("DUALIS_ETC_DIR", "/etc/dualis")
 NODE_DIR = "/opt/dualis/node"
 PULL_DIR = "/opt/dualis/pull-agent"
+SIGNING_DIR = "/opt/dualis/signing"
 PULL_UNIT = "/etc/systemd/system/dualis-pull-agent.service"
 STAGE_DIR = "/opt/dualis/stage"
 VERSION_FILE = os.path.join(ETC_DIR, "version")
+DAVID_PUBKEY_FILE = os.path.join(ETC_DIR, "david-pubkey")
 MANIFEST_DEFAULT = ("https://raw.githubusercontent.com/digenova77-ui/efuse-unity"
                     "/main/swarm-node/cluster/manifest.json")
+
+
+def pinned_pubkey():
+    """David's offline root pubkey, pinned at the one-hand bootstrap.
+    None = pre-ceremony (transitional)."""
+    if SIGNING is None:
+        return None
+    _, _, skeys = SIGNING
+    try:
+        return skeys.read_pubkey_file(DAVID_PUBKEY_FILE)
+    except (OSError, ValueError):
+        return None
 
 
 def utcnow():
@@ -142,10 +179,12 @@ def apply_bundle(stage_dir, version):
     """Swap staged -> live, keeping state. Keeps previous for rollback.
 
     Fused bundle layout (v1.1.0+): stage_dir contains node/ (the lane
-    runtime), pull-agent/ (the self-updater), and dualis-pull-agent.service
+    runtime), pull-agent/ (the self-updater), signing/ (the signing
+    regime — stdlib-only, no new deps), and dualis-pull-agent.service
     (its systemd unit). Older bundles with only node/ still apply."""
     moved = {}
-    for name, live in (("node", NODE_DIR), ("pull-agent", PULL_DIR)):
+    for name, live in (("node", NODE_DIR), ("pull-agent", PULL_DIR),
+                       ("signing", SIGNING_DIR)):
         src = os.path.join(stage_dir, name)
         if os.path.isdir(src):
             moved[name] = _swap_dir(src, live)
@@ -168,7 +207,8 @@ def rollback_bundle(moved):
     """Restore previous dirs after a failed apply. Returns True if anything
     was restored."""
     restored = False
-    for name, live in (("node", NODE_DIR), ("pull-agent", PULL_DIR)):
+    for name, live in (("node", NODE_DIR), ("pull-agent", PULL_DIR),
+                       ("signing", SIGNING_DIR)):
         prev = (moved or {}).get(name)
         if prev and os.path.exists(prev):
             if os.path.exists(live):
@@ -187,15 +227,53 @@ def rollback_bundle(moved):
 
 
 def poll_once(manifest_url, rendezvous_dir=None):
-    """One poll cycle. Returns a short report dict."""
+    """One poll cycle. Returns a short report dict.
+
+    Signing regime (C1/S1): when David's pubkey is pinned
+    (/etc/dualis/david-pubkey), the manifest signature is verified BEFORE
+    anything is downloaded; unsigned/mis-signed manifests are refused and
+    the refusal is attested. Desired versions must be NEWER than running
+    unless a signed downgrade authorization is present. Pre-ceremony
+    (no pinned key): the old behavior runs, with an honest warning
+    attested — the regime activates at the key ceremony.
+    """
     cur = current_version()
     try:
         manifest = fetch_json(manifest_url)
     except Exception as e:
         return {"poll": "manifest-unreachable", "detail": str(e)[:120]}
+    pubkey = pinned_pubkey()
+    if SIGNING is not None and pubkey is not None:
+        smanifest, envelope, skeys = SIGNING
+        try:
+            smanifest.verify_manifest(manifest, pubkey)
+        except envelope.EnvelopeError as e:
+            attest("pull-refused", "manifest signature invalid: %s" % str(e)[:120])
+            return {"poll": "refused", "reason": "manifest signature invalid"}
+    elif SIGNING is not None:
+        attest("pull-warning",
+               "pre-ceremony: no pinned offline pubkey — manifest signatures "
+               "NOT verified (transitional)")
     want = manifest.get("desired_version")
     if not want or want == cur:
         return {"poll": "up-to-date", "version": cur}
+    # Downgrade protection (S1): monotonic versions, signed auth to go back.
+    if SIGNING is not None and pubkey is not None:
+        smanifest, envelope, skeys = SIGNING
+        try:
+            newer = smanifest.is_newer(want, cur)
+        except ValueError:
+            attest("pull-refused", "unparseable version in manifest: %r" % want)
+            return {"poll": "refused", "reason": "unparseable version"}
+        if not newer:
+            auth = smanifest.find_downgrade_auth(manifest, want, pubkey)
+            if auth is None:
+                attest("pull-refused",
+                       "downgrade %s -> %s without signed authorization" % (cur, want))
+                return {"poll": "refused",
+                        "reason": "downgrade without signed authorization"}
+            attest("pull-downgrade-authorized",
+                   "%s -> %s: %s" % (cur, want, auth.get("reason", "")))
     entry = (manifest.get("versions") or {}).get(want)
     if not entry:
         attest("pull-skip", "desired %s not in manifest" % want)
@@ -213,6 +291,19 @@ def poll_once(manifest_url, rendezvous_dir=None):
     if digest and sha256_file(dest) != digest:
         attest("pull-failed", "sha256 mismatch for %s" % want)
         return {"poll": "failed", "reason": "sha256 mismatch"}
+    # Bundle signature (defense in depth): verified when present. The
+    # manifest signature already binds version+sha256; this catches
+    # manifest/bundle mismatch.
+    if SIGNING is not None and pubkey is not None and digest:
+        smanifest, envelope, skeys = SIGNING
+        bsig = entry.get("bundle_sig")
+        if bsig:
+            try:
+                smanifest.verify_bundle(want, digest, bsig, pubkey)
+            except envelope.EnvelopeError as e:
+                attest("pull-refused",
+                       "bundle signature invalid for %s: %s" % (want, str(e)[:80]))
+                return {"poll": "refused", "reason": "bundle signature invalid"}
     # Extract + self-test in staging.
     if os.path.exists(STAGE_DIR + ".x"):
         shutil.rmtree(STAGE_DIR + ".x")

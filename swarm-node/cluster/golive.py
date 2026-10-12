@@ -38,6 +38,31 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import balancer
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                ".."))
+
+
+def _load_signing():
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in ("/opt/dualis/signing",
+                 os.path.join(here, "..", "signing"),
+                 os.path.join(here, "signing")):
+        if os.path.exists(os.path.join(cand, "__init__.py")):
+            parent = os.path.dirname(os.path.abspath(cand))
+            if parent not in sys.path:
+                sys.path.insert(0, parent)
+            try:
+                import signing.intent as gintent
+                import signing.envelope as envelope
+                import signing.keys as skeys
+                return gintent, envelope, skeys
+            except Exception:
+                continue
+    return None
+
+
+SIGNING = _load_signing()
+
 STATE_DIR = os.environ.get("DUALIS_CLUSTER_STATE", "/var/lib/dualis/cluster")
 RENDEZVOUS = os.environ.get("DUALIS_RENDEZVOUS_DIR", "/var/lib/dualis/rendezvous")
 # In production the rendezvous is the object-store bucket (s3://dclm-objects/golive/).
@@ -139,12 +164,42 @@ def stage_preflight(lane, version, manifest_url, health):
             "lane_state": st, "at": utcnow()}
 
 
-def stage_intent(lane, version, bundle):
-    """Gate 2: publish the reversible go-live intent."""
+def stage_intent(lane, version, bundle, intent_path, david_pubkey_path):
+    """Gate 2: the word, PROVEN. The intent must be a sealed envelope signed
+    by the offline key (S5) — the static "david:go-live" string is dead.
+
+    Verification (before anything is published): signature by the pinned
+    offline pubkey, lane/version/bundle_hash match, time window valid,
+    nonce never used before (replay protection). Unverified -> HALT.
+    """
+    if SIGNING is None:
+        raise GateFailed("INTENT", "signing module unavailable — cannot verify the word")
+    gintent, envelope, skeys = SIGNING
+    if not intent_path:
+        raise GateFailed("INTENT", "no signed intent provided (--intent required)")
+    try:
+        pubkey = skeys.read_pubkey_file(david_pubkey_path)
+    except (OSError, ValueError) as e:
+        raise GateFailed("INTENT", "cannot read offline pubkey: %s" % e)
+    try:
+        with open(intent_path, "r", encoding="utf-8") as f:
+            env = json.load(f)
+    except (OSError, ValueError) as e:
+        raise GateFailed("INTENT", "cannot read intent file: %s" % e)
+    nonce_store = os.path.join(STATE_DIR, "golive-nonces.json")
+    try:
+        payload = gintent.verify_intent(env, pubkey, lane, version,
+                                        bundle.get("sha256"),
+                                        nonce_store)
+    except gintent.IntentError as e:
+        raise GateFailed("INTENT", "the word is not proven: %s" % e)
     intent = {"lane": lane, "version": version,
               "bundle_url": bundle["bundle_url"],
               "sha256": bundle.get("sha256"),
-              "issued_at": utcnow(), "issued_by": "david:go-live",
+              "issued_at": payload["issued_at"],
+              "expires_at": payload["expires_at"],
+              "issued_by": payload.get("type") + ":" + env.get("key_id", "?"),
+              "nonce": payload["nonce"],
               "status": "armed"}
     write_json(os.path.join(RENDEZVOUS, "golive", "intent", lane + ".json"), intent)
     return intent
@@ -228,7 +283,8 @@ def rollback(reason):
 
 
 def run(lane, version, manifest_url, health_path, zone_dir, dry_run,
-        health_fn=None, timeout=STAGE_TIMEOUT):
+        health_fn=None, timeout=STAGE_TIMEOUT, intent_path=None,
+        david_pubkey_path="/etc/dualis/david-pubkey"):
     """Run the pipeline. Returns the go-live record. Raises GateFailed."""
     log = []
     health = read_json(health_path) or {}
@@ -246,14 +302,18 @@ def run(lane, version, manifest_url, health_path, zone_dir, dry_run,
     try:
         pre = attempt("PREFLIGHT", stage_preflight,
                       lane, version, manifest_url, health)
-        intent = attempt("INTENT", stage_intent, lane, version, pre["bundle"])
         if dry_run:
+            # Dry-run is preparation: no word needed, no intent published.
+            # It proves preflight + readiness and stops before CUTOVER.
             emit_golive_trace(
                 "collapse",
                 "go-live dry-run for %s version %s" % (lane, version),
-                "armed+staged-check only; CUTOVER skipped by command (dry-run)")
+                "preflight green; CUTOVER skipped by command (dry-run); "
+                "no intent published without the signed word")
             return {"lane": lane, "version": version, "dry_run": True,
                     "stages": log, "at": utcnow()}
+        intent = attempt("INTENT", stage_intent, lane, version, pre["bundle"],
+                         intent_path, david_pubkey_path)
         staged = attempt("WAIT-STAGED", stage_wait_staged, lane, timeout)
         health2 = read_json(health_path) or {}
         cut = attempt("CUTOVER", stage_cutover, lane, health2, zone_dir, False)
@@ -287,10 +347,20 @@ def main(argv):
     p.add_argument("--manifest-url", default=DEFAULT_MANIFEST)
     p.add_argument("--health", default=os.path.join(STATE_DIR, "health.json"))
     p.add_argument("--zone-dir", default=os.environ.get("DUALIS_ZONE_DIR", "/etc/bind"))
+    p.add_argument("--intent", default=None,
+                   help="path to the SIGNED go-live intent envelope (required unless --dry-run)")
+    p.add_argument("--david-pubkey", default="/etc/dualis/david-pubkey",
+                   help="pinned offline root pubkey for intent verification")
     ns = p.parse_args(argv)
+    if not ns.dry_run and not ns.intent:
+        print(json.dumps({"go_live": "HALTED", "stage": "INTENT",
+                          "reason": "no signed intent provided (--intent required); "
+                                    "the word must be proven, not asserted"}, indent=2))
+        return 1
     try:
         rec = run(ns.lane, ns.version, ns.manifest_url, ns.health,
-                  ns.zone_dir, ns.dry_run)
+                  ns.zone_dir, ns.dry_run, intent_path=ns.intent,
+                  david_pubkey_path=ns.david_pubkey)
         print(json.dumps(rec, indent=2, sort_keys=True))
         return 0
     except GateFailed as e:

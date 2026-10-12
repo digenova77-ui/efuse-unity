@@ -15,9 +15,14 @@
 #   1. Checks python3 (Ubuntu 22.04 ships it); installs git if missing.
 #   2. Creates /opt/dualis, /var/lib/dualis, /etc/dualis (never touches anything else).
 #   3. Downloads the node files into /opt/dualis/node/ (overwrites only our own files).
+#   3b. Downloads the signing regime into /opt/dualis/signing/ (stdlib-only
+#      Ed25519 — the lane verifies manifests, bundles, and streams).
 #   4. Downloads the cluster middleware into /opt/dualis/pull-agent/ and installs
 #      the dualis-pull-agent systemd unit — the lane's own legs, outbound-only.
-#   5. Writes /etc/dualis/node-id (kept), /etc/dualis/lane, /etc/dualis/version.
+#   5. Writes /etc/dualis/node-id (kept), /etc/dualis/lane, /etc/dualis/version,
+#      and pins the offline root pubkey at /etc/dualis/david-pubkey (C1).
+#      The lane keypair is born on-lane at first breath (C2) — private key
+#      0600, never leaves the box; pubkey published in the birth trace.
 #   6. Clones (or pulls) the public code mirror into /opt/dualis/code.
 #   7. Installs a systemd timer (every 5 min); falls back to cron if no systemd.
 #   8. Runs one heartbeat immediately, then writes the BIRTH trace — the lane's
@@ -40,6 +45,17 @@
 #   DUALIS_FIXTURE  skip network-mutating steps (apt, code mirror, garage
 #                   binary download, systemd enable/start)
 #   RAW_BASE        override the download base (default: GitHub raw)
+#
+# Signing regime (C1): the offline root PUBLIC key is pinned HERE, at the
+# one-hand moment. Public keys are public — no secrecy needed. Set
+# DAVID_PUBKEY to the hex pubkey from the key ceremony BEFORE pasting;
+# the bootstrap writes it to /etc/dualis/david-pubkey and the pull-agent
+# verifies every manifest signature against it from then on. Empty means
+# pre-ceremony: the lane runs with manifest signatures UNVERIFIED (an
+# honest warning is printed and attested) until the ceremony happens.
+# The expected fingerprint is carried out-of-band in the deploy doc —
+# compare it to what the bootstrap prints. One glance, then paste.
+DAVID_PUBKEY="${DAVID_PUBKEY:-}"
 set -euo pipefail
 
 RAW_BASE="${RAW_BASE:-https://raw.githubusercontent.com/digenova77-ui/efuse-unity/main/swarm-node}"
@@ -103,6 +119,13 @@ chmod +x "$NODE_DIR/node-heartbeat.py" "$NODE_DIR/swarm-status" "$NODE_DIR/attes
 cp -f "$NODE_DIR/swarm-status" "$BIN_DIR/swarm-status"
 cp -f "$NODE_DIR/swarm-merge" "$BIN_DIR/swarm-merge"
 chmod +x "$BIN_DIR/swarm-status" "$BIN_DIR/swarm-merge"
+echo "[3b/9] signing regime (stdlib-only — the lane verifies everything)"
+SIGNING_DIR="$INSTALL_DIR/signing"
+mkdir -p "$SIGNING_DIR"
+for f in __init__.py backend.py ed25519_pure.py keys.py envelope.py manifest.py intent.py lane.py allowlist.py orders.py; do
+  curl -fsSL "$RAW_BASE/signing/$f" -o "$SIGNING_DIR/$f"
+done
+echo "  signing module installed at $SIGNING_DIR"
 if [ "$LANE" = "EUROPE" ]; then
   for f in object-init object-status s3.py garage.service; do
     curl -fsSL "$RAW_BASE/node/$f" -o "$NODE_DIR/$f"
@@ -136,6 +159,17 @@ else
 fi
 echo "$FUSED_VERSION" > "$ETC_DIR/version"
 echo "  version: $FUSED_VERSION"
+if [ -n "$DAVID_PUBKEY" ]; then
+  printf '%s\n' "$DAVID_PUBKEY" > "$ETC_DIR/david-pubkey"
+  chmod 644 "$ETC_DIR/david-pubkey"
+  FP="$(python3 -c 'import hashlib;h=hashlib.sha256(bytes.fromhex("'"$DAVID_PUBKEY"'")).hexdigest()[:16];print("-".join(h[i:i+4] for i in range(0,16,4)))')"
+  echo "  offline root pubkey pinned — fingerprint: $FP"
+  echo "  (compare with the deploy doc. One glance.)"
+else
+  echo "  WARNING: DAVID_PUBKEY not set — pre-ceremony mode."
+  echo "  Manifest signatures will NOT be verified until the key ceremony."
+  echo "  Run the ceremony, then re-run this bootstrap with DAVID_PUBKEY set."
+fi
 
 echo "[6/9] code mirror"
 CODE_DIR="$INSTALL_DIR/code"

@@ -72,6 +72,34 @@ from datetime import datetime, timezone
 
 from .economy import Price, PriceCatalog
 
+# Signing boundary (S4): oracle inputs crossing a trust boundary must be
+# SIGNED events from allowlisted keys. The deliberation pipeline's key
+# opens rotation rounds; the sealed meter's key submits Joule markers.
+# The allowlist itself is signed by the offline root key.
+import os as _os
+import sys as _sys
+
+def _load_signing():
+    here = _os.path.dirname(_os.path.abspath(__file__))
+    for cand in ("/opt/dualis/signing",
+                 _os.path.join(here, "..", "..", "signing"),
+                 _os.path.join(here, "..", "signing"),
+                 _os.path.join(here, "signing")):
+        if _os.path.exists(_os.path.join(cand, "__init__.py")):
+            parent = _os.path.dirname(_os.path.abspath(cand))
+            if parent not in _sys.path:
+                _sys.path.insert(0, parent)
+            try:
+                import signing.allowlist as sallow
+                import signing.envelope as senvelope
+                return sallow, senvelope
+            except Exception:
+                continue
+    return None
+
+
+_SIGNING = _load_signing()
+
 # Honest grades a marker may carry. Only REAL and REPORTED move money.
 GRADES = ("REAL", "REPORTED", "INFERRED")
 INDEXABLE_GRADES = ("REAL", "REPORTED")
@@ -155,8 +183,49 @@ class EnergyIndex:
 
     def update_marker(self, marker: LaneEnergyMarker) -> None:
         """Store a marker. Validation happened in the marker itself;
-        a bad marker raises there and is never stored."""
+        a bad marker raises there and is never stored.
+
+        NOTE (S4): this raw entry point is for the IN-PROCESS pipeline
+        only. Anything crossing a trust boundary (a lane submitting a
+        marker) must use update_marker_signed — the signed envelope from
+        an allowlisted sealed-meter key. Unsigned remote submissions are
+        dropped and the drop is attested.
+        """
         self._markers[marker.lane] = marker
+
+    def update_marker_signed(self, env: dict, allowlist_cfg: dict,
+                             offline_pubkey: bytes) -> LaneEnergyMarker:
+        """Accept a SIGNED energy-marker event (S4). Verifies: the
+        allowlist's own signature (offline root), the event signature,
+        and that the key is allowlisted for role 'sealed-meter'.
+        Returns the stored marker. Raises EnvelopeError otherwise —
+        the caller attests the drop."""
+        if _SIGNING is None:
+            raise RuntimeError("signing module unavailable — cannot accept "
+                               "signed marker events")
+        sallow, senvelope = _SIGNING
+        payload = sallow.open_event(env, allowlist_cfg, offline_pubkey,
+                                    "sealed-meter")
+        if payload.get("type") != "energy-marker":
+            raise senvelope.EnvelopeError("not an energy-marker event")
+        marker = LaneEnergyMarker(
+            lane=payload["lane"],
+            joules_per_unit=float(payload["joules_per_unit"]),
+            measured_at=payload["measured_at"],
+            source=payload["source"],
+            grade=payload.get("grade", "REPORTED"),
+        )
+        # S3 oracle rule, enforced at the boundary: a sealed meter's
+        # signature authenticates the SOURCE, not the grade. Self-reports
+        # arrive at most REPORTED; REAL requires calibrated-meter
+        # provenance, declared in the payload and checked here.
+        if marker.grade == "REAL" and not payload.get("calibrated"):
+            marker = LaneEnergyMarker(
+                lane=marker.lane, joules_per_unit=marker.joules_per_unit,
+                measured_at=marker.measured_at, source=marker.source,
+                grade="REPORTED")
+        self._markers[marker.lane] = marker
+        return marker
 
     def marker_for(self, lane: str) -> LaneEnergyMarker | None:
         return self._markers.get(lane)
@@ -294,6 +363,28 @@ class RotationLedger:
             )
         )
         return n
+
+    def open_round_signed(self, env: dict, allowlist_cfg: dict,
+                          offline_pubkey: bytes) -> int:
+        """Accept a SIGNED rotation-round event (S4). The event must come
+        from a key allowlisted for role 'deliberation-pipeline'. Returns
+        the round number. Raises EnvelopeError otherwise — the caller
+        attests the drop (a flood of dropped forgeries is itself a signal).
+        """
+        if _SIGNING is None:
+            raise RuntimeError("signing module unavailable — cannot accept "
+                               "signed round events")
+        sallow, senvelope = _SIGNING
+        payload = sallow.open_event(env, allowlist_cfg, offline_pubkey,
+                                    "deliberation-pipeline")
+        if payload.get("type") != "rotation-round":
+            raise senvelope.EnvelopeError("not a rotation-round event")
+        return self.open_round(
+            decision_id=payload["decision_id"],
+            contributor=payload["contributor"],
+            premium_quoted_micros=int(payload["premium_quoted_micros"]),
+            energy_mult=float(payload.get("energy_mult", 1.0)),
+        )
 
     def certify_round(
         self,

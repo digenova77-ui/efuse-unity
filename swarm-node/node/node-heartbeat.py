@@ -7,6 +7,11 @@ packages, no network calls, no agent runtime required.
 Every run appends ONE tick to /var/lib/dualis/heartbeat.jsonl:
   node_id, box label, logical tick, UTC time, uptime, load, disk, memory.
 
+Each tick is SIGNED with the lane key (born on-lane at first breath, see
+signing/lane.py) — S13: remote health streams are signed by the lane key,
+so a planted heartbeat.jsonl for a dead lane fails verification. Unsigned
+ticks (pre-regime) carry an honest marker.
+
 Honesty law (same as the main loop): where a figure is not measurable,
 record UNKNOWN, never zero.
 
@@ -21,6 +26,23 @@ import socket
 import sys
 import time
 from datetime import datetime, timezone
+
+
+def _load_signing():
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in ("/opt/dualis/signing",
+                 os.path.join(here, "..", "signing"),
+                 os.path.join(here, "signing")):
+        if os.path.exists(os.path.join(cand, "__init__.py")):
+            parent = os.path.dirname(os.path.abspath(cand))
+            if parent not in sys.path:
+                sys.path.insert(0, parent)
+            try:
+                import signing.lane as lanelib
+                return lanelib
+            except Exception:
+                continue
+    return None
 
 STATE_DIR = os.environ.get("DUALIS_STATE_DIR", "/var/lib/dualis")
 ETC_DIR = os.environ.get("DUALIS_ETC_DIR", "/etc/dualis")
@@ -134,6 +156,23 @@ def main(argv):
             "boot_epoch": int(time.time() - up) if up else "UNKNOWN",
         },
     }
+
+    # Sign the tick with the lane key (S13) BEFORE writing — one JSON
+    # object per line, signature included. Unsigned only if the signing
+    # module or lane key is unavailable — marked honestly, never faked.
+    lanelib = _load_signing()
+    if lanelib is not None:
+        try:
+            seed, _pub = lanelib.ensure_lane_keypair(ETC_DIR)
+            sig_b64, key_id = lanelib.sign_record_body(entry, seed)
+            entry["sig"] = sig_b64
+            entry["key_id"] = key_id
+        except Exception as e:
+            entry["sig"] = "none"
+            entry["sig_error"] = "signing failed: %s" % str(e)[:80]
+    else:
+        entry["sig"] = "none"
+        entry["sig_note"] = "signing module unavailable (pre-regime)"
 
     with open(LOG, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")

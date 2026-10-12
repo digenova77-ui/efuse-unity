@@ -7,11 +7,24 @@ proofs (deltas, never bulk state); the merge happens asynchronously elsewhere.
 
 Record format (one JSON object per line in /var/lib/dualis/attestations.jsonl):
   lane, node_id, shift_id, seq, prev_hash, at_utc,
-  claims_touched[], verdict_hashes{}, note, hash
+  claims_touched[], verdict_hashes{}, note,
+  lane_pubkey (hex, on the birth record — seq 1),
+  sig (Ed25519 over the canonical body), key_id (signer fingerprint),
+  hash
 
 The hash covers the canonical JSON of the record WITHOUT the hash field
-itself, and includes prev_hash — so the chain is tamper-evident. GENESIS is
-the prev_hash of the first record.
+itself (but INCLUDING sig/key_id), and includes prev_hash — so the chain
+is tamper-evident. Signatures make it tamper-PROOF against anyone without
+the lane key: chain verification is signature verification (C2 closed).
+
+Lane identity = the birth pubkey. The birth record (seq 1) carries
+lane_pubkey and is self-certifying: its sig must verify against the
+pubkey it carries. Later records bind via key_id.
+
+If the signing module is unavailable (pre-regime bundle), records are
+written UNSIGNED with an honest marker — availability of the heartbeat
+outranks purity during transition, and verifiers treat unsigned records
+per their own rules (never as proven).
 
 Usage:
   attest.py --shift-id ID --claims c1,c2 --verdict k1=hash1,k2=hash2 [--note TEXT]
@@ -24,6 +37,28 @@ import os
 import socket
 import sys
 from datetime import datetime, timezone
+
+
+def _load_signing():
+    """Locate the signing package: /opt/dualis/signing on the lane,
+    sibling ../signing in the repo, or ./signing. Returns the module or None."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for cand in ("/opt/dualis/signing",
+                 os.path.join(here, "..", "signing"),
+                 os.path.join(here, "signing")):
+        init = os.path.join(cand, "__init__.py")
+        if os.path.exists(init):
+            parent = os.path.dirname(os.path.abspath(cand))
+            if parent not in sys.path:
+                sys.path.insert(0, parent)
+            try:
+                import signing.envelope as envelope
+                import signing.lane as lanelib
+                import signing.backend as bend
+                return envelope, lanelib, bend
+            except Exception:
+                continue
+    return None
 
 STATE_DIR = os.environ.get("DUALIS_STATE_DIR", "/var/lib/dualis")
 ETC_DIR = os.environ.get("DUALIS_ETC_DIR", "/etc/dualis")
@@ -78,16 +113,48 @@ def read_first(path):
 
 
 def verify(recs=None):
+    """Verify hash links AND signatures. Returns (ok, n, detail).
+
+    Signature rule: the birth record (seq 1) must carry lane_pubkey and be
+    self-certifying (sig verifies against the pubkey it carries). Later
+    records must carry a sig whose key_id matches the birth pubkey.
+    Records without sig are LEGACY (pre-regime): hash-checked only, and
+    the detail says so honestly — never counted as proven.
+    """
     recs = read_chain() if recs is None else recs
+    signing = _load_signing()
     prev = GENESIS
+    lane_pub = None
+    signed_n = 0
     for i, r in enumerate(recs):
         if r.get("prev_hash") != prev:
             return False, i, "prev_hash mismatch at seq %s" % r.get("seq")
         body = {k: v for k, v in r.items() if k != "hash"}
         if sha256(canonical(body)) != r.get("hash"):
             return False, i, "hash mismatch at seq %s" % r.get("seq")
+        sig = r.get("sig")
+        if signing is not None and sig and sig != "none":
+            env, lanelib, bend = signing
+            try:
+                if r.get("seq") == 1:
+                    if not r.get("lane_pubkey"):
+                        return False, i, "birth record lacks lane_pubkey"
+                    lane_pub = bytes.fromhex(r["lane_pubkey"])
+                    if len(lane_pub) != 32:
+                        return False, i, "birth lane_pubkey malformed"
+                if lane_pub is None:
+                    return False, i, "no lane pubkey pinned before seq %s" % r.get("seq")
+                lanelib.verify_record_signature(r, lane_pub)
+                signed_n += 1
+            except Exception as e:
+                return False, i, "signature invalid at seq %s: %s" % (r.get("seq"), e)
         prev = r["hash"]
-    return True, len(recs), "chain valid"
+    detail = "chain valid, %d records, %d/%d signed" % (len(recs), signed_n, len(recs))
+    if signing is None:
+        detail += " (signing module unavailable — legacy check only)"
+    elif signed_n < len(recs):
+        detail += " (legacy unsigned records present — not proven)"
+    return True, len(recs), detail
 
 
 def cmd_append(args):
@@ -118,6 +185,24 @@ def cmd_append(args):
         "verdict_hashes": verdict_hashes,
         "note": ns.note,
     }
+    # Sign the record (C2). The lane keypair is born on-lane at first
+    # breath and never leaves it. Birth record carries the pubkey.
+    signing = _load_signing()
+    if signing is not None:
+        env, lanelib, bend = signing
+        try:
+            seed, pub = lanelib.ensure_lane_keypair(ETC_DIR)
+            if body["seq"] == 1:
+                body["lane_pubkey"] = pub.hex()
+            sig_b64, key_id = lanelib.sign_record_body(body, seed)
+            body["sig"] = sig_b64
+            body["key_id"] = key_id
+        except Exception as e:
+            body["sig"] = "none"
+            body["sig_error"] = "signing failed: %s" % str(e)[:80]
+    else:
+        body["sig"] = "none"
+        body["sig_note"] = "signing module unavailable (pre-regime)"
     body["hash"] = sha256(canonical(body))
 
     os.makedirs(STATE_DIR, exist_ok=True)
