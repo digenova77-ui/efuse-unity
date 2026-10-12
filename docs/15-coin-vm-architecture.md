@@ -77,7 +77,15 @@ well-defined.
 
 Activation is never retroactive: a version that was not active for a given
 `prev_state_hash` can never validate a transition built on it, so an inactive
-version cannot bypass validation. Version upgrades are themselves governed —
+version cannot bypass validation. **Selection is deterministic, not a choice:**
+for a given `prev_state_hash` the registry selects exactly one version — the
+highest version whose activation state is at or before that parent in chain
+order. The validator uses the registry-selected version; a supplied
+`invariant_version` that differs from it is rejected as unknown/inactive. A
+downgrade is therefore impossible by construction: once a newer version's
+activation state is sealed and published, every later parent selects the newer
+version, and an older version supplied for such a parent rejects. Version
+upgrades are themselves governed —
 each new version's activation state is sealed and published before the version
 may be used, so no validator can be asked to honor a rule set it never saw
 activated.
@@ -92,29 +100,33 @@ against the recomputed candidate state:
 - **Grant validity** — every authorization the transition relies on is valid against
   the signer's Unity ID grant at this state.
 
-**Transition acceptance — four independent gates.** A transition advances local
-state only if all four hold; any failure rejects (`apply(state, tx) → reject`):
+**Transition acceptance — five independent gates.** A transition advances local
+state only if all five hold; any failure rejects (`apply(state, tx) → reject`):
 
-1. **Version support** — the supplied `invariant_version` is in the supported
-   registry and active for this transition's `prev_state_hash`; an unknown,
+1. **Parent link** — `prev_state_hash` equals the hash of the validator's current
+   `state`; a transition that does not extend local state rejects here, before
+   version selection, before any state is recomputed.
+2. **Version support** — the supplied `invariant_version` equals the
+   registry-selected version for this transition's `prev_state_hash`; an unknown,
    unsupported, or not-yet-active version rejects here, before any predicate is
    evaluated, before any state is recomputed.
-2. **Candidate-state hash** — the locally recomputed state hashes to the claimed
+3. **Candidate-state hash** — the locally recomputed state hashes to the claimed
    `candidate_state_hash`.
-3. **`invariant_hash` verification** — the validator recomputes
+4. **`invariant_hash` verification** — the validator recomputes
    `sha256(prev_state_hash | tx_canonical_bytes | candidate_state_hash | invariant_version)`
    from the canonical inputs and compares it against the supplied value; on mismatch
    it rejects before any state advancement.
-4. **Invariant predicates** — balances sum, no double-spend, grant validity,
+5. **Invariant predicates** — balances sum, no double-spend, grant validity,
    evaluated against the recomputed candidate state; any failure rejects.
 
 The gates are independent: a candidate can carry a matching `invariant_hash` and
 still fail a predicate — the hash commits to candidate *bytes*, never to predicate
 *truth*. Predicate failure rejects on its own, regardless of whether the hash
 matched; a hash mismatch rejects on its own, regardless of the predicates.
-And the version gate stands before all of it: a transition running an unknown or
-inactive rule set never reaches the predicates, the hash checks, or the state
-machine. Neither check vouches for the other.
+And the parent-link and version gates stand before all of it: a transition that
+does not extend the validator's current state, or that runs an unknown,
+mismatched, or inactive rule set, never reaches the predicates, the hash checks,
+or the state machine. Neither check vouches for the other.
 
 The ledger sync daemon (§4)
 treats a rejected transition as a full stop: it does not advance local state past
