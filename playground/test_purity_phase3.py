@@ -140,5 +140,57 @@ class PurityPhase3FullSI(unittest.TestCase):
             self.assertFalse(faces_frontier(f))
 
 
+
+class PurityPhase3MoreEdges(unittest.TestCase):
+    def test_whitespace_reflects_is_glass(self):
+        f = Facet("x", "ring", reflects=" purity")
+        self.assertFalse(grade(f)["pure"])
+        self.assertFalse(faces_frontier(f))
+
+    def test_lowercase_grades_fail(self):
+        f = Facet("x", "ring", clarity="fl", color="d", cut="excellent")
+        self.assertFalse(grade(f)["pure"])
+        self.assertFalse(faces_frontier(f))
+
+    def test_empty_cut_is_glass(self):
+        f = Facet("x", "ring", cut="")
+        self.assertFalse(grade(f)["pure"])
+        self.assertIn("cut:", "".join(grade(f)["failed"]))
+
+    def test_all_max_except_one_scale(self):
+        cases = [
+            Facet("c", "ring", clarity="VS"),
+            Facet("o", "ring", color="E"),
+            Facet("u", "ring", cut="Very Good"),
+            Facet("r", "ring", reflects="other"),
+        ]
+        for f in cases:
+            self.assertFalse(faces_frontier(f), f.name)
+
+    def test_duplicate_facets_all_judged(self):
+        facets = [
+            Facet("foundation", "floor"),
+            Facet("dup", "ring", clarity="SI2"),
+            Facet("dup", "ring", clarity="SI2"),
+            Facet("ceiling", "ceiling"),
+        ]
+        p = DiamondPlayground(facets=facets)
+        r = frontier_report(p)
+        self.assertEqual(len(r["held"]), 2)
+        self.assertFalse(r["ceiling_claimable"])
+
+    def test_visual_report_marks_glass(self):
+        bad = Facet("bad", "economy", clarity="I", color="Z", cut="Poor")
+        p = DiamondPlayground(facets=[
+            Facet("foundation", "floor"),
+            bad,
+            Facet("ceiling", "ceiling"),
+        ])
+        text = visual_report(p)
+        self.assertIn("◇", text)
+        self.assertIn("REFUSED", text)
+        self.assertIn("NOT REACHED", text)
+
+
 if __name__ == "__main__":
     unittest.main()
