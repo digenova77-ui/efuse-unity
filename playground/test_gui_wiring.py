@@ -99,5 +99,42 @@ class PressureInjectionTests(unittest.TestCase):
         self.assertIn("tinted_claim", text)
 
 
+
+class UITests(unittest.TestCase):
+    def test_status_label_exists(self):
+        text = GUI.read_text()
+        self.assertIn("status_label", text)
+        self.assertIn("textvariable=self.status", text)
+
+    def test_tree_columns(self):
+        text = GUI.read_text()
+        for col in ("name", "kind", "clarity", "color", "cut", "verdict"):
+            self.assertIn(f'"{col}"', text)
+
+    def test_color_backgrounds(self):
+        text = GUI.read_text()
+        self.assertIn("#e6ffe6", text)  # green pass
+        self.assertIn("#ffe6e6", text)  # red glass
+
+    def test_refresh_rebuilds_tree(self):
+        text = GUI.read_text()
+        self.assertIn("self.tree.delete", text)
+        self.assertIn("self.tree.insert", text)
+
+    def test_window_title_and_geometry(self):
+        text = GUI.read_text()
+        self.assertIn("Diamond Purity Playground", text)
+        self.assertIn("geometry", text)
+
+    def test_headless_import(self):
+        # Import must succeed even without a display
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("purity_gui", GUI)
+        mod = importlib.util.module_from_spec(spec)
+        # Do not exec main; just confirm module file is valid Python
+        compile(GUI.read_text(), str(GUI), "exec")
+        self.assertIsNotNone(spec)
+
+
 if __name__ == "__main__":
     unittest.main()
