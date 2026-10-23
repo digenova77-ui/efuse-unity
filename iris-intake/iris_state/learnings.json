@@ -1,15 +1,90 @@
 {
   "held_out:test_pulse": {
     "key": "held_out:test_pulse",
-    "previous": null,
-    "receipt_id": "rcpt:f5c141f9b42a2c13b13b574caf3ac09af16dea7d7db0b0ea157d032e1eed2b02",
-    "t_epoch": 1792729960,
+    "previous": {
+      "key": "held_out:test_pulse",
+      "previous": null,
+      "receipt_id": "rcpt:f5c141f9b42a2c13b13b574caf3ac09af16dea7d7db0b0ea157d032e1eed2b02",
+      "t_epoch": 1792729960,
+      "value": {
+        "judgment": {
+          "law_wins": true,
+          "mode": "hybrid",
+          "note": "test",
+          "verdict": "REFUSE"
+        },
+        "label": "IRIS LEARNING PULSE",
+        "note": "held-out pulse; core integrity gate unchanged"
+      }
+    },
+    "receipt_id": "rcpt:278132fbf47a658d1c05b2cb967a4db42de4ac069e0d5b28c1e53f685e91fd96",
+    "t_epoch": 1792730238,
     "value": {
       "judgment": {
         "law_wins": true,
         "mode": "hybrid",
-        "note": "test",
+        "note": "second pulse",
         "verdict": "REFUSE"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
+  "held_out:unity_transfer_perfect_paperwork": {
+    "key": "held_out:unity_transfer_perfect_paperwork",
+    "previous": null,
+    "receipt_id": "rcpt:4fcdbc16171e1e8e47137e129c0ef2da5b6e9ad60c18841ea029bd8048baa497",
+    "t_epoch": 1792730238,
+    "value": {
+      "judgment": {
+        "law_wins": true,
+        "mode": "hybrid",
+        "reason": "unity transfer refused even with perfect paperwork",
+        "verdict": "REFUSE"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
+  "observe:held_out:unity_transfer_perfect_paperwork": {
+    "key": "observe:held_out:unity_transfer_perfect_paperwork",
+    "previous": null,
+    "receipt_id": "rcpt:f3968273f4c5709fbf625e018a101b1545b0e8cfee4ebe505e0d42be0f3a7dcc",
+    "t_epoch": 1792731798,
+    "value": {
+      "judgment": {
+        "delta": {
+          "actual": "REFUSE",
+          "matched": true,
+          "note": "delta computed; core integrity gate unchanged",
+          "predicted_verdict": "REFUSE"
+        },
+        "label": "IRIS SELF-LEARNING",
+        "outcome": {
+          "actual": "REFUSE"
+        },
+        "phase": "OBSERVE",
+        "prior_receipt": "rcpt:96d58ea6cab17bc62d5968057c4c2f20a3c69380a2ecdfda0e3452696a900c11"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
+  "predict:held_out:unity_transfer_perfect_paperwork": {
+    "key": "predict:held_out:unity_transfer_perfect_paperwork",
+    "previous": null,
+    "receipt_id": "rcpt:96d58ea6cab17bc62d5968057c4c2f20a3c69380a2ecdfda0e3452696a900c11",
+    "t_epoch": 1792731798,
+    "value": {
+      "judgment": {
+        "judgment": {
+          "law_wins": true,
+          "mode": "hybrid",
+          "verdict": "REFUSE"
+        },
+        "label": "IRIS SELF-LEARNING",
+        "note": "prediction only; outcome not yet observed",
+        "phase": "PREDICT"
       },
       "label": "IRIS LEARNING PULSE",
       "note": "held-out pulse; core integrity gate unchanged"
