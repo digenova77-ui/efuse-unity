@@ -65,5 +65,36 @@ class OmniElevations(unittest.TestCase):
         self.assertIsInstance(c["chain_intact"], bool)
 
 
+
+class OmniOptional(unittest.TestCase):
+    def test_standing_boundary_fields(self):
+        from omni import standing_boundary
+        b = standing_boundary()
+        for key in ("standing_callable", "tokenizer_present",
+                    "emission_source", "boundary"):
+            self.assertIn(key, b)
+        self.assertIsInstance(b["standing_callable"], bool)
+        self.assertIsInstance(b["tokenizer_present"], bool)
+
+    def test_receipt_checksum_non_negative(self):
+        from omni import receipt_checksum
+        c = receipt_checksum()
+        self.assertGreaterEqual(c["learnings"], 0)
+        if c["learnings"] > 0:
+            self.assertTrue(c["last_receipt"])
+            self.assertTrue(c["last_receipt"].startswith("rcpt:"))
+
+    def test_omni_brief_stable_on_repeat(self):
+        from omni import omni_brief
+        a = omni_brief()
+        b = omni_brief()
+        self.assertEqual(a, b)
+
+    def test_gui_references_omni_brief(self):
+        from pathlib import Path
+        text = Path("purity_gui.py").read_text()
+        self.assertIn("omni_brief", text)
+
+
 if __name__ == "__main__":
     unittest.main()
