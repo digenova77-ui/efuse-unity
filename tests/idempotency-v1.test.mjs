@@ -56,7 +56,11 @@ test('object key order is immaterial; array order remains material', () => {
   assert.notEqual(canonical([1, 2]), canonical([2, 1]));
 });
 
-test('non-finite numeric inputs fail closed', () => {
+test('unsupported numeric and Unicode inputs fail closed', () => {
   assert.throws(() => canonical(Number.NaN));
   assert.throws(() => canonical(Number.POSITIVE_INFINITY));
+  assert.throws(() => canonical(1.5));
+  assert.throws(() => canonical(Number.MAX_SAFE_INTEGER + 1));
+  assert.throws(() => canonical('\\uD800'));
+  assert.throws(() => canonical('\\uDC00'));
 });
