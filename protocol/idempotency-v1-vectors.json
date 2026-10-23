@@ -1,6 +1,6 @@
 {
   "contract": "dualis.idempotency.v1",
-  "canonicalization": "UTF-8 JSON; recursively sorted object keys; compact separators; array order preserved; no non-finite numbers",
+  "canonicalization": "UTF-8 JSON; recursively sorted object keys by Unicode scalar values; compact separators; array order preserved; strings, booleans, null, and safe integers only; reject floats, non-finite numbers, unsupported types, and unpaired surrogates",
   "vectors": [
     {
       "input": {"b": 2, "a": 1},
