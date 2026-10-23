@@ -32,13 +32,30 @@ class Facet:
     reflects: str = "purity"
 
 
+def grade(f: Facet) -> dict:
+    """Score each scale and return a structured purity judgment.
+
+    Pure only if every scale is in its pass band AND the facet reflects purity.
+    Returns scores, pass/fail per scale, and an overall verdict.
+    """
+    clarity_ok = f.clarity in CLARITY_PASS
+    color_ok = f.color in COLOR_PASS
+    cut_ok = f.cut in CUT_PASS
+    reflects_ok = f.reflects == "purity"
+    pure = clarity_ok and color_ok and cut_ok and reflects_ok
+    return {
+        "clarity": {"value": f.clarity, "score": CLARITY_SCORE.get(f.clarity, 0.0), "pass": clarity_ok},
+        "color":   {"value": f.color,   "score": COLOR_SCORE.get(f.color, 0.0),   "pass": color_ok},
+        "cut":     {"value": f.cut,     "score": CUT_SCORE.get(f.cut, 0.0),       "pass": cut_ok},
+        "reflects": {"value": f.reflects, "pass": reflects_ok},
+        "pure": pure,
+        "verdict": "PASS" if pure else "GLASS",
+        "failed": _failed_scales(f) if not pure else [],
+    }
+
+
 def _pure(f: Facet) -> bool:
-    return (
-        f.clarity in CLARITY_PASS
-        and f.color in COLOR_PASS
-        and f.cut in CUT_PASS
-        and f.reflects == "purity"
-    )
+    return grade(f)["pure"]
 
 
 @dataclass
@@ -77,15 +94,16 @@ class DiamondPlayground:
         for f in self.facets:
             if f.kind == "ceiling":
                 continue
-            pure = _pure(f)
+            g = grade(f)
             out.append({
                 "name": f.name,
                 "kind": f.kind,
-                "clarity": f.clarity,
-                "color": f.color,
-                "cut": f.cut,
-                "verdict": "PASS" if pure else "GLASS",
-                "failed": [] if pure else _failed_scales(f),
+                "clarity": g["clarity"],
+                "color": g["color"],
+                "cut": g["cut"],
+                "reflects": g["reflects"],
+                "verdict": g["verdict"],
+                "failed": g["failed"],
             })
         return out
 
