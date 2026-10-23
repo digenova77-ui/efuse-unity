@@ -75,5 +75,64 @@ class FrontierInvariants(unittest.TestCase):
         self.assertFalse(r["ceiling_claimable"])
 
 
+
+class FrontierContract(unittest.TestCase):
+    """Implicit report-contract invariants."""
+
+    def test_ceiling_excluded_from_facing_and_held(self):
+        r = frontier_report()
+        self.assertNotIn("ceiling", r["facing"])
+        self.assertFalse(any(h["name"] == "ceiling" for h in r["held"]))
+
+    def test_report_carries_law_origin_learning(self):
+        r = frontier_report()
+        self.assertEqual(r["law"], "LAW WINS")
+        self.assertEqual(r["origin"], "immutable")
+        self.assertEqual(r["learning"], "advisory only — NOT_FOR_EMISSION")
+
+    def test_protocol_string(self):
+        r = frontier_report()
+        self.assertEqual(r["protocol"], "DIAMOND.FRONTIER.MAX.v1")
+
+    def test_held_entry_shape(self):
+        soft = Facet("soft", "tree", clarity="VS", color="E", cut="Very Good")
+        p = DiamondPlayground(facets=[
+            Facet("foundation", "floor"),
+            soft,
+            Facet("ceiling", "ceiling"),
+        ])
+        held = frontier_report(p)["held"]
+        self.assertEqual(len(held), 1)
+        h = held[0]
+        self.assertEqual(h["name"], "soft")
+        self.assertEqual(h["clarity"], "VS")
+        self.assertEqual(h["color"], "E")
+        self.assertEqual(h["cut"], "Very Good")
+        self.assertIn("grade_verdict", h)
+        self.assertEqual(h["reason"], "below maximum pure band")
+
+    def test_only_ceiling_is_claimable_if_floor_holds(self):
+        p = DiamondPlayground(facets=[
+            Facet("foundation", "floor"),
+            Facet("ceiling", "ceiling"),
+        ])
+        r = frontier_report(p)
+        self.assertTrue(r["ceiling_claimable"])
+        self.assertEqual(r["facing"], ["foundation"])
+        self.assertEqual(r["held"], [])
+
+    def test_old_gate_failure_is_also_held(self):
+        # SI is below both the old pass band and the frontier
+        bad = Facet("bad", "economy", clarity="SI", color="D", cut="Excellent")
+        p = DiamondPlayground(facets=[
+            Facet("foundation", "floor"),
+            bad,
+            Facet("ceiling", "ceiling"),
+        ])
+        r = frontier_report(p)
+        self.assertFalse(r["ceiling_claimable"])
+        self.assertTrue(any(h["name"] == "bad" for h in r["held"]))
+
+
 if __name__ == "__main__":
     unittest.main()
