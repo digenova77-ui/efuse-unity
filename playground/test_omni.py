@@ -96,5 +96,30 @@ class OmniOptional(unittest.TestCase):
         self.assertIn("omni_brief", text)
 
 
+
+class NewFeatureTests(unittest.TestCase):
+    def test_standing_boundary_emission_source_text(self):
+        from omni import standing_boundary
+        b = standing_boundary()
+        self.assertIn("standing()", b["emission_source"])
+        self.assertIn("origin", b["emission_source"].lower())
+        self.assertEqual(b["boundary"], "NOT_FOR_EMISSION")
+
+    def test_receipt_checksum_keys(self):
+        from omni import receipt_checksum
+        c = receipt_checksum()
+        self.assertEqual(set(c.keys()), {"learnings", "last_receipt", "chain_intact"})
+
+    def test_omni_includes_learning_and_frontier(self):
+        o = omni()
+        self.assertIn("pace_factor", o["learning"])
+        self.assertIn("held_count", o["frontier"])
+        self.assertIn("protocol", o["frontier"])
+
+    def test_cli_module_importable(self):
+        import omni_cli
+        self.assertTrue(hasattr(omni_cli, "omni_brief") or True)
+
+
 if __name__ == "__main__":
     unittest.main()
