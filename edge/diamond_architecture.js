@@ -32,6 +32,7 @@ export const CEILING = {
 
 import { grade, facesFrontier, frontierReport, DEFAULT_FACETS } from "./diamond_edge.js";
 import { classify, readyToName, PROTOCOL as STORAGE } from "./diamond_storage_protocol.js";
+import { protocolReality } from "./reality_standard.js";
 
 export function architectureReport(facets = DEFAULT_FACETS, pins = []) {
   const fr = frontierReport(facets);
@@ -50,6 +51,7 @@ export function architectureReport(facets = DEFAULT_FACETS, pins = []) {
       claimable: fr.ceiling_claimable && nameReady.ok,
     },
     integrity: "UNCHANGED — core not touched",
+    reality: protocolReality(),
   };
 }
 
