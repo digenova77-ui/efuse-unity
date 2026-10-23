@@ -61,6 +61,6 @@ test('unsupported numeric and Unicode inputs fail closed', () => {
   assert.throws(() => canonical(Number.POSITIVE_INFINITY));
   assert.throws(() => canonical(1.5));
   assert.throws(() => canonical(Number.MAX_SAFE_INTEGER + 1));
-  assert.throws(() => canonical('\\uD800'));
-  assert.throws(() => canonical('\\uDC00'));
+  assert.throws(() => canonical(String.fromCharCode(0xD800)));
+  assert.throws(() => canonical(String.fromCharCode(0xDC00)));
 });
