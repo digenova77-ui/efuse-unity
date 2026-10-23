@@ -164,3 +164,30 @@ def demo_with_impurity() -> Dict:
         Facet("ceiling", "ceiling"),
     ])
     return {"floor_holds": p.floor_holds(), "rise": p.rise(), "ceiling": p.ceiling()}
+
+
+def visual_report(p: DiamondPlayground | None = None) -> str:
+    """ASCII purity report. One line per facet, scales as blocks."""
+    if p is None:
+        p = DiamondPlayground()
+    lines = ["DIAMOND PURITY REPORT", "=" * 44]
+    for f in p.facets:
+        if f.kind == "ceiling":
+            continue
+        g = grade(f)
+        mark = "◆" if g["pure"] else "◇"
+        bars = []
+        for scale in ("clarity", "color", "cut"):
+            s = g[scale]
+            bar = "█" * int(s["score"] * 5) + "░" * (5 - int(s["score"] * 5))
+            flag = "✓" if s["pass"] else "✗"
+            bars.append(f"{scale[:3]} {bar} {flag}")
+        lines.append(f"{mark} {f.name:<12} {'  '.join(bars)}")
+        if g["failed"]:
+            lines.append(f"    failed: {', '.join(g['failed'])}")
+    r = p.rise()
+    c = p.ceiling()
+    lines.append("-" * 44)
+    lines.append(f"rise:    {'OK' if r.get('ok') else 'REFUSED'}")
+    lines.append(f"ceiling: {'REACHED' if c.get('reached') else 'NOT REACHED'}")
+    return "\n".join(lines)
