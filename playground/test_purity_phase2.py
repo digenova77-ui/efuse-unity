@@ -57,5 +57,52 @@ class PurityPhase2(unittest.TestCase):
                         or hasattr(token_engine, "Tokenizer"))
 
 
+
+class PurityPhase2Edges(unittest.TestCase):
+    def test_empty_state_accuracy_is_none(self):
+        from learning_signal import accuracy
+        from iris_state import IrisState
+        # Fresh state may already have learnings from prior runs;
+        # accuracy must still be a float or None, never raise.
+        acc = accuracy(IrisState())
+        self.assertIn(acc["accuracy"], (None, 0.0, 1.0) )
+        self.assertIsInstance(acc["accuracy"], (float, type(None)))
+
+    def test_pace_factor_bounded(self):
+        from pure_pace import pace_factor, PACE_MIN, PACE_MAX
+        from iris_state import IrisState
+        f = pace_factor(IrisState())["factor"]
+        self.assertGreaterEqual(f, PACE_MIN)
+        self.assertLessEqual(f, PACE_MAX)
+
+    def test_soft_facet_passes_old_gate_fails_frontier(self):
+        soft = Facet("soft", "tree", clarity="VS", color="E", cut="Very Good")
+        self.assertTrue(grade(soft)["pure"])       # old gate
+        self.assertFalse(faces_frontier(soft))     # frontier
+
+    def test_colorless_but_poor_cut_is_glass(self):
+        f = Facet("x", "ring", clarity="FL", color="D", cut="Poor")
+        self.assertFalse(grade(f)["pure"])
+        self.assertFalse(faces_frontier(f))
+
+    def test_excellent_cut_but_tinted_is_glass(self):
+        f = Facet("x", "ring", clarity="FL", color="J", cut="Excellent")
+        self.assertFalse(grade(f)["pure"])
+        self.assertFalse(faces_frontier(f))
+
+    def test_reflects_not_purity_is_glass(self):
+        f = Facet("x", "ring", clarity="FL", color="D", cut="Excellent",
+                  reflects="theater")
+        self.assertFalse(grade(f)["pure"])
+        self.assertFalse(faces_frontier(f))
+
+    def test_highest_order_contract_refuses_emission(self):
+        from highest_order import contract
+        c = contract()
+        refuses = " ".join(c.get("iris_must_refuse", [])).lower()
+        self.assertIn("emission", refuses)
+        self.assertIn("standing", refuses)
+
+
 if __name__ == "__main__":
     unittest.main()
