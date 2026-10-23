@@ -191,3 +191,12 @@ def visual_report(p: DiamondPlayground | None = None) -> str:
     lines.append(f"rise:    {'OK' if r.get('ok') else 'REFUSED'}")
     lines.append(f"ceiling: {'REACHED' if c.get('reached') else 'NOT REACHED'}")
     return "\n".join(lines)
+
+
+def save_report(path: str = "purity_report.txt",
+                p: DiamondPlayground | None = None) -> str:
+    """Write the visual purity report to a file. Returns the path."""
+    text = visual_report(p)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text + "\n")
+    return path
