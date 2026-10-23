@@ -46,6 +46,30 @@
       "note": "held-out pulse; core integrity gate unchanged"
     }
   },
+  "observe:held_out:merit_origin": {
+    "key": "observe:held_out:merit_origin",
+    "previous": null,
+    "receipt_id": "rcpt:cf20c4aa2842d6cef44a9afd98854a14127aa84904ab0698207875c8fbbab822",
+    "t_epoch": 1792731870,
+    "value": {
+      "judgment": {
+        "delta": {
+          "actual": "PASS",
+          "matched": true,
+          "note": "delta computed; core integrity gate unchanged",
+          "predicted_verdict": "PASS"
+        },
+        "label": "IRIS SELF-LEARNING",
+        "outcome": {
+          "actual": "PASS"
+        },
+        "phase": "OBSERVE",
+        "prior_receipt": "rcpt:7a66620937412f4d6e8668eccfafed4b5c8e80a81f39e345f30e3cd72cfa8c52"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
   "observe:held_out:unity_transfer_perfect_paperwork": {
     "key": "observe:held_out:unity_transfer_perfect_paperwork",
     "previous": null,
@@ -70,6 +94,25 @@
       "note": "held-out pulse; core integrity gate unchanged"
     }
   },
+  "predict:held_out:merit_origin": {
+    "key": "predict:held_out:merit_origin",
+    "previous": null,
+    "receipt_id": "rcpt:7a66620937412f4d6e8668eccfafed4b5c8e80a81f39e345f30e3cd72cfa8c52",
+    "t_epoch": 1792731870,
+    "value": {
+      "judgment": {
+        "judgment": {
+          "law_wins": true,
+          "verdict": "PASS"
+        },
+        "label": "IRIS SELF-LEARNING",
+        "note": "prediction only; outcome not yet observed",
+        "phase": "PREDICT"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
   "predict:held_out:unity_transfer_perfect_paperwork": {
     "key": "predict:held_out:unity_transfer_perfect_paperwork",
     "previous": null,
@@ -88,6 +131,21 @@
       },
       "label": "IRIS LEARNING PULSE",
       "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
+  "signal:held_out:merit_origin": {
+    "key": "signal:held_out:merit_origin",
+    "previous": null,
+    "receipt_id": "rcpt:d3bc2f5cad7a0da8585396ebac45a0b26d683311dc94461bb48851bec79e2c97",
+    "t_epoch": 1792731870,
+    "value": {
+      "actual": "PASS",
+      "boundary": "NOT_FOR_EMISSION",
+      "key": "held_out:merit_origin",
+      "label": "IRIS LEARNING SIGNAL",
+      "matched": true,
+      "note": "signal only \u2014 emission reads standing(), never this",
+      "predicted_verdict": "PASS"
     }
   }
 }
