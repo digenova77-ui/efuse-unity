@@ -1,0 +1,21 @@
+name: frontier
+
+on:
+  push:
+    paths:
+      - "playground/**"
+      - ".github/workflows/frontier.yml"
+  pull_request:
+    paths:
+      - "playground/**"
+
+jobs:
+  invariants:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run frontier invariant suite
+        run: make playground
