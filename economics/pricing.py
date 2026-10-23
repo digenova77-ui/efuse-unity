@@ -88,7 +88,20 @@ if _DCLM_DIR not in sys.path:
 from compute import PROVENANCE_LABELS  # noqa: E402
 # The canon meter owns pricing (canon XIII; dclm/rights.py): the flat
 # decision price is the meter's COMPUTE constant — imported, never copied.
-from meter import PRICE_COMPUTE, UNIT as METER_UNIT  # noqa: E402
+from meter import PRICE_COMPUTE, UNIT as METER_UNIT
+
+# Storage cost index is a LABEL BASE only (edge/storage_cost_index.py).
+# It does not replace PRICE_COMPUTE. USD/AR figures stay non-billable.
+try:
+    import importlib.util
+    _sc_path = os.path.normpath(os.path.join(_HERE, "..", "edge", "storage_cost_index.py"))
+    _spec = importlib.util.spec_from_file_location("storage_cost_index", _sc_path)
+    _sc = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_sc)
+    STORAGE_COST_BASE = _sc.storage_index()
+except Exception:
+    STORAGE_COST_BASE = {"available": False, "boundary": "NOT_FOR_EMISSION"}
+  # noqa: E402
 
 # --- the engine has no tier concept. Price is per decision, atomic. ---------
 # There is no tier parameter, no tier table, no tier branch anywhere in this
