@@ -19,7 +19,16 @@ function compareUnicodeScalars(a, b) {
 function canonical(value) {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') {
     if (typeof value === 'string') {
-      assert.ok(!/[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|(?<![\\uD800-\\uDBFF])[\\uDC00-\\uDFFF]/u.test(value), 'unpaired surrogates are not canonical');
+      for (let i = 0; i < value.length; i++) {
+        const unit = value.charCodeAt(i);
+        if (unit >= 0xD800 && unit <= 0xDBFF) {
+          const next = value.charCodeAt(i + 1);
+          assert.ok(next >= 0xDC00 && next <= 0xDFFF, 'unpaired high surrogate is not canonical');
+          i++;
+        } else {
+          assert.ok(!(unit >= 0xDC00 && unit <= 0xDFFF), 'unpaired low surrogate is not canonical');
+        }
+      }
     }
     return JSON.stringify(value);
   }
