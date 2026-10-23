@@ -100,5 +100,45 @@ class PurityPhase3SI2(unittest.TestCase):
         self.assertFalse(faces_frontier(only_f))
 
 
+
+class PurityPhase3FullSI(unittest.TestCase):
+    """Full SI1/SI2 and neighboring color/cut matrix."""
+
+    def test_si1_and_si2_never_pure(self):
+        for clar in ("SI", "SI1", "SI2"):
+            for color in ("D", "E", "F", "G"):
+                for cut in ("Excellent", "Very Good", "Good"):
+                    f = Facet("x", "ring", clarity=clar, color=color, cut=cut)
+                    self.assertFalse(grade(f)["pure"], f"{clar}/{color}/{cut}")
+                    self.assertFalse(faces_frontier(f))
+                    self.assertTrue(any(s.startswith("clarity:") for s in grade(f)["failed"]))
+
+    def test_color_g_and_beyond_never_pure(self):
+        for color in ("G", "H", "I", "J"):
+            f = Facet("x", "ring", clarity="FL", color=color, cut="Excellent")
+            self.assertFalse(grade(f)["pure"])
+            self.assertIn(f"color:{color}", grade(f)["failed"])
+            self.assertFalse(faces_frontier(f))
+
+    def test_f_passes_old_gate_only_at_max_other_scales(self):
+        # F + FL + Excellent → old pass, frontier fail
+        ok = Facet("ok", "ring", clarity="FL", color="F", cut="Excellent")
+        self.assertTrue(grade(ok)["pure"])
+        self.assertFalse(faces_frontier(ok))
+        # F + VVS → still old pass
+        vvs = Facet("v", "ring", clarity="VVS", color="F", cut="Excellent")
+        self.assertTrue(grade(vvs)["pure"])
+        self.assertFalse(faces_frontier(vvs))
+        # F + SI2 → old fail
+        si = Facet("s", "ring", clarity="SI2", color="F", cut="Excellent")
+        self.assertFalse(grade(si)["pure"])
+
+    def test_i1_i2_i3_are_glass(self):
+        for clar in ("I", "I1", "I2", "I3"):
+            f = Facet("x", "ring", clarity=clar, color="D", cut="Excellent")
+            self.assertFalse(grade(f)["pure"])
+            self.assertFalse(faces_frontier(f))
+
+
 if __name__ == "__main__":
     unittest.main()

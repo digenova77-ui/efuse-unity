@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 # Clarity
-CLARITY_SCORE = {"FL": 1.0, "VVS": 0.95, "VS": 0.85, "SI": 0.6, "I": 0.3}
+CLARITY_SCORE = {"FL": 1.0, "VVS": 0.95, "VS": 0.85, "SI": 0.6, "SI1": 0.55, "SI2": 0.5, "I": 0.3, "I1": 0.25, "I2": 0.2, "I3": 0.15}
 CLARITY_PASS = {"FL", "VVS", "VS"}
 
 # Color (GIA-style). Colorless band passes.
