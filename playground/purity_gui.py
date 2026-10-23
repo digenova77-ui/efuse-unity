@@ -9,6 +9,7 @@ from __future__ import annotations
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
+from omni import omni_brief
 from diamond_playground import (
     DiamondPlayground, Facet, visual_report, save_report, grade,
 )
@@ -73,7 +74,7 @@ class PurityApp:
         reached = c.get("reached")
         self.status.set(
             f"pressure: {self.pg.pressure_passes}   "
-            f"ceiling: {'REACHED' if reached else 'NOT REACHED'}"
+            f"ceiling: {'REACHED' if reached else 'NOT REACHED'}   {omni_brief()}"
         )
         self.status_label.config(bg="#e6ffe6" if reached else "#ffe6e6")
 

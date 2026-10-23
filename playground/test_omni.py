@@ -48,5 +48,22 @@ class OmniTests(unittest.TestCase):
             self.assertEqual(o["frontier"]["held_count"], 0)
 
 
+
+class OmniElevations(unittest.TestCase):
+    def test_standing_boundary(self):
+        from omni import standing_boundary
+        b = standing_boundary()
+        self.assertTrue(b["standing_callable"] or b["tokenizer_present"])
+        self.assertEqual(b["boundary"], "NOT_FOR_EMISSION")
+        self.assertIn("origin", b["emission_source"])
+
+    def test_receipt_checksum(self):
+        from omni import receipt_checksum
+        c = receipt_checksum()
+        self.assertIn("learnings", c)
+        self.assertIn("last_receipt", c)
+        self.assertIsInstance(c["chain_intact"], bool)
+
+
 if __name__ == "__main__":
     unittest.main()

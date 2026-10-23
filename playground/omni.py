@@ -79,3 +79,38 @@ def omni_brief(state: Optional[IrisState] = None) -> str:
         f"pace={o['learning']['pace_factor']}  "
         f"boundary={o['learning']['boundary']}"
     )
+
+
+def standing_boundary() -> dict:
+    """Confirm emission still keys off origin standing.
+    Does not call emission. Read-only probe.
+    """
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    if str(root / "dclm") not in sys.path:
+        sys.path.insert(0, str(root / "dclm"))
+    import token_engine
+    has_standing = callable(getattr(token_engine, "standing", None))
+    has_tokenizer = hasattr(token_engine, "Tokenizer")
+    return {
+        "standing_callable": has_standing,
+        "tokenizer_present": has_tokenizer,
+        "emission_source": "standing() — origin only",
+        "boundary": "NOT_FOR_EMISSION",
+    }
+
+
+def receipt_checksum(state=None) -> dict:
+    """Walk the learning receipt chain and report length + last id.
+    Pure read. No mutation.
+    """
+    from iris_state import IrisState
+    st = state or IrisState()
+    keys = list(st.learnings.keys())
+    last = st.meta.get("last_receipt")
+    return {
+        "learnings": len(keys),
+        "last_receipt": last,
+        "chain_intact": bool(last) or len(keys) == 0,
+    }
