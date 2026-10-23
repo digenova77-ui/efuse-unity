@@ -1,128 +1,113 @@
 """DIAMOND PLAYGROUND — floor → mesh → ceiling.
 
-Traces the derivative diamond foundational floor up through the facet
-mesh to the diamond ceiling. Pure, fail-closed, one light.
-
-Floor properties (from DIAMOND_ARCHITECTURE_FLOOR.md):
-  1. Hardest structure
-  2. Formed under pressure
-  3. Clarity graded
-  4. Multi-faceted
-  5. Refracts (one truth, many views)
-
-Mesh: rings as circular facets, tree as branching, economy as circulatory.
-Ceiling: the same light exiting through the highest facet — clarity FL,
-LAW WINS, origin immutable.
+Three gates on every facet: clarity, color, cut.
+A facet passes only if all three are pure and it reflects purity.
+One failed scale → glass → rise refused → ceiling not reached.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-# Clarity grades — binary gate preserved
-CLARITY = {
-    "FL": 1.0,   # Flawless — PASS
-    "VVS": 0.95,
-    "VS": 0.85,
-    "SI": 0.6,   # FAIL — fixable
-    "I": 0.3,    # FAIL — discard
-}
-PASS_GRADES = {"FL", "VVS", "VS"}
+# Clarity
+CLARITY_SCORE = {"FL": 1.0, "VVS": 0.95, "VS": 0.85, "SI": 0.6, "I": 0.3}
+CLARITY_PASS = {"FL", "VVS", "VS"}
+
+# Color (GIA-style). Colorless band passes.
+COLOR_SCORE = {c: 1.0 - i * 0.04 for i, c in enumerate("DEFGHIJKLMNOPQRSTUVWXYZ")}
+COLOR_PASS = {"D", "E", "F"}
+
+# Cut
+CUT_SCORE = {"Excellent": 1.0, "Very Good": 0.9, "Good": 0.75, "Fair": 0.5, "Poor": 0.3}
+CUT_PASS = {"Excellent", "Very Good"}
 
 
 @dataclass(frozen=True)
 class Facet:
     name: str
-    kind: str          # "ring" | "tree" | "economy" | "ceiling"
-    clarity: str
-    reflects: str = "purity"   # must be purity; anything else is glass
+    kind: str
+    clarity: str = "FL"
+    color: str = "D"
+    cut: str = "Excellent"
+    reflects: str = "purity"
+
+
+def _pure(f: Facet) -> bool:
+    return (
+        f.clarity in CLARITY_PASS
+        and f.color in COLOR_PASS
+        and f.cut in CUT_PASS
+        and f.reflects == "purity"
+    )
 
 
 @dataclass
 class DiamondPlayground:
-    """One stone. Floor, mesh, ceiling. One light."""
     floor_clarity: str = "FL"
+    floor_color: str = "D"
+    floor_cut: str = "Excellent"
     facets: List[Facet] = field(default_factory=list)
     pressure_passes: int = 0
 
     def __post_init__(self) -> None:
         if not self.facets:
             self.facets = [
-                # Floor
-                Facet("foundation", "floor", self.floor_clarity),
-                # Mesh — rings (circular)
-                Facet("DCLM", "ring", "FL"),
-                Facet("Iris", "ring", "FL"),
-                Facet("Twain²", "ring", "FL"),
-                # Mesh — tree (branching)
-                Facet("summer", "tree", "VS"),
-                Facet("winter", "tree", "VS"),
-                # Mesh — economy (circulatory)
-                Facet("merit", "economy", "FL"),
-                Facet("standing", "economy", "FL"),
-                # Ceiling
-                Facet("ceiling", "ceiling", "FL"),
+                Facet("foundation", "floor", self.floor_clarity, self.floor_color, self.floor_cut),
+                Facet("DCLM", "ring"),
+                Facet("Iris", "ring"),
+                Facet("Twain²", "ring"),
+                Facet("summer", "tree", clarity="VS", color="E", cut="Very Good"),
+                Facet("winter", "tree", clarity="VS", color="F", cut="Very Good"),
+                Facet("merit", "economy"),
+                Facet("standing", "economy"),
+                Facet("ceiling", "ceiling"),
             ]
 
-    # -- Floor ----------------------------------------------------------
     def floor_holds(self) -> bool:
-        """Hardest structure. Floor cannot fail."""
-        return self.floor_clarity in PASS_GRADES
+        floor = next(f for f in self.facets if f.kind == "floor")
+        return _pure(floor)
 
     def apply_pressure(self) -> Dict:
-        """Formed under pressure. Each pass is heat."""
         self.pressure_passes += 1
-        return {
-            "pressure_passes": self.pressure_passes,
-            "floor": "holds" if self.floor_holds() else "FAIL",
-            "note": "pressure created the floor; it does not threaten it",
-        }
+        return {"pressure_passes": self.pressure_passes,
+                "floor": "holds" if self.floor_holds() else "FAIL"}
 
-    # -- Mesh -----------------------------------------------------------
     def mesh(self) -> List[Dict]:
-        """Facets as the mesh. Glass (non-purity) is discarded."""
         out = []
         for f in self.facets:
             if f.kind == "ceiling":
                 continue
-            pure = f.reflects == "purity" and f.clarity in PASS_GRADES
+            pure = _pure(f)
             out.append({
                 "name": f.name,
                 "kind": f.kind,
                 "clarity": f.clarity,
-                "score": CLARITY.get(f.clarity, 0.0),
+                "color": f.color,
+                "cut": f.cut,
                 "verdict": "PASS" if pure else "GLASS",
+                "failed": [] if pure else _failed_scales(f),
             })
         return out
 
     def rise(self) -> Dict:
-        """Come up through the mesh. One light, many refractions."""
         if not self.floor_holds():
             return {"ok": False, "reason": "floor failed — cannot rise"}
         mesh = self.mesh()
         glass = [m for m in mesh if m["verdict"] == "GLASS"]
         if glass:
-            return {
-                "ok": False,
-                "reason": "glass in mesh",
-                "glass": [g["name"] for g in glass],
-            }
-        return {
-            "ok": True,
-            "mesh": mesh,
-            "light": "one",
-            "refractions": len(mesh),
-        }
+            return {"ok": False, "reason": "glass in mesh",
+                    "glass": [{"name": g["name"], "failed": g["failed"]} for g in glass]}
+        return {"ok": True, "mesh": mesh, "light": "one", "refractions": len(mesh)}
 
-    # -- Ceiling --------------------------------------------------------
     def ceiling(self) -> Dict:
-        """Diamond ceiling. Same light, highest facet. LAW WINS."""
         r = self.rise()
         if not r.get("ok"):
-            return {"reached": False, "reason": r.get("reason")}
+            return {"reached": False, "reason": r.get("reason"), "detail": r.get("glass")}
         return {
             "reached": True,
             "clarity": "FL",
+            "color": "D",
+            "cut": "Excellent",
             "law": "LAW WINS",
             "origin": "immutable",
             "learning": "advisory only — NOT_FOR_EMISSION",
@@ -131,13 +116,33 @@ class DiamondPlayground:
         }
 
 
+def _failed_scales(f: Facet) -> List[str]:
+    failed = []
+    if f.clarity not in CLARITY_PASS:
+        failed.append(f"clarity:{f.clarity}")
+    if f.color not in COLOR_PASS:
+        failed.append(f"color:{f.color}")
+    if f.cut not in CUT_PASS:
+        failed.append(f"cut:{f.cut}")
+    if f.reflects != "purity":
+        failed.append("reflects:not-purity")
+    return failed
+
+
 def demo() -> Dict:
-    """Fill the playground and traverse floor → mesh → ceiling."""
     p = DiamondPlayground()
     p.apply_pressure()
     p.apply_pressure()
-    return {
-        "floor_holds": p.floor_holds(),
-        "rise": p.rise(),
-        "ceiling": p.ceiling(),
-    }
+    return {"floor_holds": p.floor_holds(), "rise": p.rise(), "ceiling": p.ceiling()}
+
+
+def demo_with_impurity() -> Dict:
+    """Show the gate refusing a tinted / poorly cut facet."""
+    bad = Facet("tinted_claim", "economy", clarity="FL", color="J", cut="Fair", reflects="purity")
+    p = DiamondPlayground(facets=[
+        Facet("foundation", "floor"),
+        Facet("DCLM", "ring"),
+        bad,
+        Facet("ceiling", "ceiling"),
+    ])
+    return {"floor_holds": p.floor_holds(), "rise": p.rise(), "ceiling": p.ceiling()}
