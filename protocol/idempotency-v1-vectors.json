@@ -1,0 +1,21 @@
+{
+  "contract": "dualis.idempotency.v1",
+  "canonicalization": "UTF-8 JSON; recursively sorted object keys by Unicode scalar values; compact separators; array order preserved; strings, booleans, null, and safe integers only; reject floats, non-finite numbers, unsupported types, and unpaired surrogates",
+  "vectors": [
+    {
+      "input": {"b": 2, "a": 1},
+      "canonical_utf8": "{\"a\":1,\"b\":2}",
+      "sha256": "43258cff783fe7036d8a43033f830adfc60ec037382473548ac742b888292777"
+    },
+    {
+      "input": {"scope": "meter.debit", "items": [1, 2]},
+      "canonical_utf8": "{\"items\":[1,2],\"scope\":\"meter.debit\"}",
+      "sha256": "f160334e06ada470d41d3557df496fff685899eebf380cceb01fce545b6e985c"
+    },
+    {
+      "input": {"scope": "queue.inventory", "nested": {"z": null, "a": true}},
+      "canonical_utf8": "{\"nested\":{\"a\":true,\"z\":null},\"scope\":\"queue.inventory\"}",
+      "sha256": "0b3f2c98dabfcab4a33f07e29f4c3d67453604eed374ed3996610261651d7367"
+    }
+  ]
+}
