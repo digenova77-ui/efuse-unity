@@ -5,8 +5,8 @@ The website code runs INSIDE DCLM: the server computes the world state and
 spits out signed data. Client devices render it; they do not compute on
 connect.
 
-This module imports the ring/Parliament logic from ~/workspace/core-rings/rings.py
-(it does not copy it) and builds the signed WorldState on top.
+Ring/Parliament logic is now pure and local (dclm/rings.py). The historical
+external path remains as a fallback only.
 
 Data honesty rules (absolute, no exceptions):
   * EVERY field carries a provenance label:
@@ -24,10 +24,14 @@ import os
 import subprocess
 import sys
 
-# --- import the ring/Parliament logic (not copied) --------------------------
+# --- import the ring/Parliament logic (local pure first) -------------------
 _HERE = os.path.dirname(os.path.abspath(__file__))
+# Prefer the pure local contract so the tree is self-contained.
+sys.path.insert(0, _HERE)
+# Historical external path retained as fallback only (never required).
 _CORE_RINGS = os.path.join(os.path.dirname(_HERE), "..", "core-rings")
-sys.path.insert(0, os.path.normpath(_CORE_RINGS))
+if os.path.isdir(_CORE_RINGS):
+    sys.path.insert(0, os.path.normpath(_CORE_RINGS))
 from rings import DecisionWave, Parliament, Point  # noqa: E402
 
 
