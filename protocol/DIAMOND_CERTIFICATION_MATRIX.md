@@ -6,17 +6,47 @@ Status is evidence-scoped, not a blanket production certification. A row is cert
 
 Trinity is the sole authorization gate. Idempotency identifies and de-duplicates an operation; it never grants authority. Unknown authority, mismatched operation content, or unresolved prior effects fail closed. Remove duplicate policy/scaffolding only when the invariant remains enforced and tested.
 
-## Evidence ledger (2026-10-23)
+## Evidence ledger (2026-10-23; refreshed after latest CI runs)
 
 | Boundary | Revision / evidence | Current status | Remaining proof |
 |---|---|---|---|
-| Canonical idempotency contract | efuse-unity PR #8; CI run https://github.com/digenova77-ui/efuse-unity/actions/runs/39994072065 | Contract-vector CI passed on the vector-metadata revision | Re-run and certify latest PR head; review language-specific implementations |
-| Factory event ledger | factory-queue PR #10; CI run https://github.com/digenova77-ui/dualiscapax-factory-queue/actions/runs/39993875614 | CI passed on queue revision with aligned shared-vector metadata | Verify latest branch head; concurrency/crash-recovery proof; distributed deployment claims excluded |
-| Landing edge | landing PR #160; CI run https://github.com/digenova77-ui/dualiscapax-landing/actions/runs/39994113487 | Elite CI passed including shared canonicalization vectors | Verify exact current PR head and Pages/Worker release configuration; live route proof |
+| Canonical idempotency contract | efuse-unity PR #8, head `9543ede1d0801bdf8714e9db98a12f9ad5da1c4b`; CI https://github.com/digenova77-ui/efuse-unity/actions/runs/39994272437 | CI passed on exact PR head; shared encoding/hash vector gate green | Effect-boundary, cross-language and crash/concurrency tests remain outstanding |
+| Factory event ledger | queue PR #10, head `83537fb5142cd7781dc3cfe3c6878b41c83cb30e`; CI https://github.com/digenova77-ui/dualiscapax-factory-queue/actions/runs/39994544596 | CI passed on exact PR head; strict vector rejection tests and timestamp-independent replay coverage included | Ledger remains single-host; concurrent process/crash-injection and external effect atomicity are not yet proven |
+| Landing edge | landing PR #160, head `35f138a3a55d07f2e2eae158020d894bfb2edafa`; CI https://github.com/digenova77-ui/dualiscapax-landing/actions/runs/39994113487 | Elite CI passed on exact PR head including shared canonicalization vectors | Read-only route behavior is CI evidence only; Pages/Worker configuration and live route still require staging proof |
 | Iris identity-to-world routing | Replit branch `feat/iris-backend-dev-restore-20261022`, HEAD `998902c64784fc1e7af256b1d6275234937de827`; recorded local suite 136/136 | Local contract suite reported passing at that revision | Repeat on current source; provider credentials/session gate; isolated staging route proof |
 | Law core | `dualiscapax-law-core`, `master`; verify workflow runs exist | Existing Rust verification CI has passing runs on listed historical SHAs | Run `verify.sh` on current head; prove Trinity authority binding and replay/crash invariants against real effect boundary |
 | Production release rail | Pages/Worker integration has reported missing Worker entrypoint/assets configuration | Not certified | Correct project/build configuration only after authorized review; stage and probe exact deployed SHA |
 | Distributed execution / consensus | No cross-node fault-injection evidence linked here | Not certified | Multi-node partition, duplicate delivery, leader/recovery, and durability tests before any distributed exactly-once claim |
+
+
+## World Elite evidence discipline
+
+Use these labels in every report and release record:
+
+- **PROVEN-CI**: named automated tests passed on the exact SHA.
+- **PROVEN-LOCAL**: a reproducible local test passed on the exact SHA; environment and command are recorded.
+- **PROVEN-STAGING**: isolated deployed revision was probed, with sanitized request/response evidence and deployment identity.
+- **PROVEN-PRODUCTION**: production behavior was verified through approved read-only probes and auditable evidence.
+- **UNPROVEN**: evidence is absent, stale, incomplete, or only indirect.
+- **FAILED**: a relevant test or probe failed; keep the failure visible until a corrected exact SHA passes.
+
+A status cannot be promoted by documentation, a green unrelated workflow, a passing test on an older SHA, or a source-code inspection alone. A certification statement must name the claim, boundary, exact SHA, test/probe command, result, and limitations. Evidence artifacts must not contain credentials, biometric data, secrets, or raw private payloads.
+
+## Minimal end-to-end proof campaign
+
+1. **Canonical bytes:** every runtime validates the same shared vectors, safe-integer range, Unicode rules, object-key ordering, and array-order semantics.
+2. **Effect harness:** a deterministic fake effect counter is the oracle; repeated same-key requests must leave the counter at one and return the same receipt.
+3. **Conflict:** change one semantic request field under the same scope/operation ID; require a conflict and unchanged effect counter.
+4. **Authority:** inject missing, revoked, malformed, and denied authority; require blocked outcome and zero effects.
+5. **Concurrency:** issue simultaneous same-key requests through independent workers against the actual reservation store; require one reservation and one effect.
+6. **Crash points:** terminate after reservation, after downstream effect, and before receipt commit; restart and prove reconciliation without blind replay.
+7. **Integrity:** alter stored record, receipt, sequence, or previous hash; require fail-closed detection.
+8. **Staging:** deploy only an explicitly approved isolated candidate, record deployed SHA/config identity, run sanitized probes, and retain outputs.
+9. **Production:** require explicit release approval after all applicable gates pass. No CI-only claim may be described as production certification.
+
+## Simplification gate
+
+Before removing a framework, wrapper, policy module, or service, identify its invariant and callers; show the invariant remains enforced by a smaller component; run relevant tests; inspect the diff for lost authorization checks, logging, recovery, or rollback behavior. Delete only after that proof. No removal is justified solely because a layer looks redundant.
 
 ## Required conformance behavior
 
