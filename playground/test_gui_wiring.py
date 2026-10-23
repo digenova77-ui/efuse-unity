@@ -136,5 +136,47 @@ class UITests(unittest.TestCase):
         self.assertIsNotNone(spec)
 
 
+
+class ImportExportTests(unittest.TestCase):
+    def test_export_writes_report(self):
+        import tempfile, os
+        from diamond_playground import DiamondPlayground, save_report, visual_report
+        p = DiamondPlayground()
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "out.txt")
+            returned = save_report(path, p)
+            self.assertEqual(returned, path)
+            self.assertTrue(os.path.exists(path))
+            content = open(path).read()
+            self.assertIn("DIAMOND PURITY REPORT", content)
+            self.assertEqual(content.strip(), visual_report(p).strip())
+
+    def test_export_default_name(self):
+        text = GUI.read_text()
+        self.assertIn("purity_report.txt", text)
+        self.assertIn("defaultextension", text)
+
+    def test_import_round_trip(self):
+        import tempfile, os
+        from diamond_playground import DiamondPlayground, save_report
+        p = DiamondPlayground()
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "round.txt")
+            save_report(path, p)
+            loaded = open(path).read()
+            # re-export and compare
+            path2 = os.path.join(d, "round2.txt")
+            save_report(path2, p)
+            self.assertEqual(open(path).read(), open(path2).read())
+            self.assertIn("rise:", loaded)
+            self.assertIn("ceiling:", loaded)
+
+    def test_gui_export_wired(self):
+        text = GUI.read_text()
+        self.assertIn("on_save", text)
+        self.assertIn("asksaveasfilename", text)
+        self.assertIn("save_report", text)
+
+
 if __name__ == "__main__":
     unittest.main()
