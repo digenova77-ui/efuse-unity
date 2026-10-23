@@ -21,3 +21,6 @@ broad-tests:
 
 verify-all: verify broad-tests
 	@echo "VERIFY-ALL DONE (broad suites best-effort)"
+
+omni: edge-tests
+	cd edge && node omni_idempotent.mjs
