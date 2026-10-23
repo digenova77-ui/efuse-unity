@@ -33,3 +33,16 @@ assert(o.contract.boundary === "NOT_FOR_EMISSION", "boundary");
 
 if (failed) { console.error(failed, "failed"); process.exit(1); }
 console.log("all edge tests passed");
+
+import { verifyReceiptChain, standingProbe } from "./diamond_edge.js";
+
+const chain = [
+  { id: "rcpt:aaa", prev: null },
+  { id: "rcpt:bbb", prev: "rcpt:aaa" },
+  { id: "rcpt:ccc", prev: "rcpt:bbb" },
+];
+assert(verifyReceiptChain(chain).ok === true, "chain ok");
+assert(verifyReceiptChain([{ id: "rcpt:x", prev: "nope" }, { id: "rcpt:y", prev: "other" }]).ok === false, "chain break");
+const sp = standingProbe();
+assert(sp.boundary === "NOT_FOR_EMISSION", "probe boundary");
+assert(sp.emission_source.includes("origin"), "probe origin");

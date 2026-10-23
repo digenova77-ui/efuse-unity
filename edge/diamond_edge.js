@@ -111,3 +111,32 @@ export const DEFAULT_FACETS = [
   { name: "standing", kind: "economy", clarity: "FL", color: "D", cut: "Excellent", reflects: "purity" },
   { name: "ceiling", kind: "ceiling", clarity: "FL", color: "D", cut: "Excellent", reflects: "purity" },
 ];
+
+
+/** Append-only receipt chain check. Pure. */
+export function verifyReceiptChain(receipts) {
+  if (!Array.isArray(receipts) || receipts.length === 0) {
+    return { ok: true, length: 0, reason: "empty" };
+  }
+  for (let i = 1; i < receipts.length; i++) {
+    const prev = receipts[i - 1];
+    const cur = receipts[i];
+    if (!cur || !cur.id || !cur.id.startsWith("rcpt:")) {
+      return { ok: false, length: i, reason: "bad id" };
+    }
+    if (cur.prev !== prev.id) {
+      return { ok: false, length: i, reason: "prev mismatch" };
+    }
+  }
+  return { ok: true, length: receipts.length, last: receipts[receipts.length - 1].id };
+}
+
+/** Read-only standing probe. Does not emit. */
+export function standingProbe() {
+  return {
+    standing_callable: true,
+    emission_source: "standing() — origin only",
+    boundary: "NOT_FOR_EMISSION",
+    note: "edge probe; live token_engine not imported here",
+  };
+}
