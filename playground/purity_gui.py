@@ -23,8 +23,9 @@ class PurityApp:
 
         # Status bar
         self.status = tk.StringVar(value="ready")
-        tk.Label(root, textvariable=self.status, anchor="w",
-                 font=("Courier", 10)).pack(fill="x", padx=8, pady=(6, 0))
+        self.status_label = tk.Label(root, textvariable=self.status, anchor="w",
+                                     font=("Courier", 10), bg="#e6ffe6")
+        self.status_label.pack(fill="x", padx=8, pady=(6, 0))
 
         # Facet table
         cols = ("name", "kind", "clarity", "color", "cut", "verdict")
@@ -32,6 +33,8 @@ class PurityApp:
         for c, w in zip(cols, (140, 80, 80, 60, 100, 80)):
             self.tree.heading(c, text=c)
             self.tree.column(c, width=w, anchor="center")
+        self.tree.tag_configure("pass", background="#e6ffe6")
+        self.tree.tag_configure("glass", background="#ffe6e6")
         self.tree.pack(fill="both", expand=True, padx=8, pady=6)
 
         # Report text
@@ -56,7 +59,8 @@ class PurityApp:
             if f.kind == "ceiling":
                 continue
             g = grade(f)
-            self.tree.insert("", "end", values=(
+            tag = "pass" if g["pure"] else "glass"
+            self.tree.insert("", "end", tags=(tag,), values=(
                 f.name, f.kind,
                 f"{f.clarity} {'✓' if g['clarity']['pass'] else '✗'}",
                 f"{f.color} {'✓' if g['color']['pass'] else '✗'}",
@@ -66,10 +70,12 @@ class PurityApp:
         self.text.delete("1.0", "end")
         self.text.insert("1.0", visual_report(self.pg))
         c = self.pg.ceiling()
+        reached = c.get("reached")
         self.status.set(
             f"pressure: {self.pg.pressure_passes}   "
-            f"ceiling: {'REACHED' if c.get('reached') else 'NOT REACHED'}"
+            f"ceiling: {'REACHED' if reached else 'NOT REACHED'}"
         )
+        self.status_label.config(bg="#e6ffe6" if reached else "#ffe6e6")
 
     def on_save(self) -> None:
         path = filedialog.asksaveasfilename(
