@@ -51,5 +51,53 @@ class GUIWiringTests(unittest.TestCase):
         self.assertTrue(callable(DiamondPlayground))
 
 
+
+class PressureInjectionTests(unittest.TestCase):
+    def test_apply_pressure_increments(self):
+        from diamond_playground import DiamondPlayground
+        p = DiamondPlayground()
+        self.assertEqual(p.pressure_passes, 0)
+        p.apply_pressure()
+        self.assertEqual(p.pressure_passes, 1)
+        p.apply_pressure()
+        self.assertEqual(p.pressure_passes, 2)
+
+    def test_pressure_does_not_break_floor(self):
+        from diamond_playground import DiamondPlayground
+        p = DiamondPlayground()
+        for _ in range(5):
+            p.apply_pressure()
+        self.assertTrue(p.floor_holds())
+        self.assertTrue(p.rise().get("ok"))
+
+    def test_inject_impurity_blocks_ceiling(self):
+        from diamond_playground import DiamondPlayground, Facet
+        p = DiamondPlayground()
+        self.assertTrue(p.ceiling().get("reached"))
+        bad = Facet("tinted_claim", "economy",
+                    clarity="FL", color="J", cut="Fair")
+        p.facets.insert(-1, bad)
+        self.assertFalse(p.rise().get("ok"))
+        self.assertFalse(p.ceiling().get("reached"))
+
+    def test_reset_restores_clean(self):
+        from diamond_playground import DiamondPlayground, Facet
+        p = DiamondPlayground()
+        p.apply_pressure()
+        p.facets.insert(-1, Facet("bad", "economy", clarity="I"))
+        # simulate reset
+        p2 = DiamondPlayground()
+        self.assertEqual(p2.pressure_passes, 0)
+        self.assertTrue(p2.ceiling().get("reached"))
+        self.assertFalse(any(f.name == "bad" for f in p2.facets))
+
+    def test_gui_wires_pressure_and_inject(self):
+        text = GUI.read_text()
+        self.assertIn("on_pressure", text)
+        self.assertIn("on_impurity", text)
+        self.assertIn("apply_pressure", text)
+        self.assertIn("tinted_claim", text)
+
+
 if __name__ == "__main__":
     unittest.main()
