@@ -42,7 +42,7 @@ The idempotency identity is the pair `(scope, operation_id)`; the stored record 
 
 Allowed transitions: absent -> RESERVED -> APPLIED; absent -> RESERVED -> REJECTED; RESERVED -> IN_DOUBT; IN_DOUBT -> APPLIED or REJECTED only through a verifiable reconciliation procedure. No transition may erase history or reset a completed key.
 
-A system may use a richer local state machine, but it MUST map to these semantics. If an operation is rejected because of transient state (for example insufficient balance), that refusal may be re-evaluated under an explicit new operation ID; do not silently mutate a terminal record or reuse a key with a different request.
+A system may use a richer local state machine, but it MUST map to these semantics. A policy refusal before reservation/effect that is explicitly classified as retryable (for example insufficient balance in the testnet meter) MAY remain uncached and re-evaluate live state on retry with the same operation ID, but only when no durable reservation, mutation, or externally visible effect occurred. This exception must be explicit in the operation contract and covered by tests. Once a durable reservation or side-effect attempt exists, the operation ID is bound to its request hash and cannot be silently reset; recovery must resume/reconcile the existing operation or use a new ID under a documented policy.
 
 ## Atomicity, crash recovery, and retries
 
