@@ -46,6 +46,30 @@
       "note": "held-out pulse; core integrity gate unchanged"
     }
   },
+  "observe:held_out:highest_order_demo": {
+    "key": "observe:held_out:highest_order_demo",
+    "previous": null,
+    "receipt_id": "rcpt:63bce5637be5cc328b7c2eccc4db721a562c6c9f65cf7c8f2d5b12e0e4776a96",
+    "t_epoch": 1792732099,
+    "value": {
+      "judgment": {
+        "delta": {
+          "actual": "REFUSE",
+          "matched": true,
+          "note": "delta computed; core integrity gate unchanged",
+          "predicted_verdict": "REFUSE"
+        },
+        "label": "IRIS SELF-LEARNING",
+        "outcome": {
+          "actual": "REFUSE"
+        },
+        "phase": "OBSERVE",
+        "prior_receipt": "rcpt:7e181acd40efcb19d5dde7f71166d14b9dbe51929fdd596ae33363871612af35"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
   "observe:held_out:merit_origin": {
     "key": "observe:held_out:merit_origin",
     "previous": null,
@@ -94,6 +118,25 @@
       "note": "held-out pulse; core integrity gate unchanged"
     }
   },
+  "predict:held_out:highest_order_demo": {
+    "key": "predict:held_out:highest_order_demo",
+    "previous": null,
+    "receipt_id": "rcpt:7e181acd40efcb19d5dde7f71166d14b9dbe51929fdd596ae33363871612af35",
+    "t_epoch": 1792732099,
+    "value": {
+      "judgment": {
+        "judgment": {
+          "law_wins": true,
+          "verdict": "REFUSE"
+        },
+        "label": "IRIS SELF-LEARNING",
+        "note": "prediction only; outcome not yet observed",
+        "phase": "PREDICT"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
   "predict:held_out:merit_origin": {
     "key": "predict:held_out:merit_origin",
     "previous": null,
@@ -131,6 +174,21 @@
       },
       "label": "IRIS LEARNING PULSE",
       "note": "held-out pulse; core integrity gate unchanged"
+    }
+  },
+  "signal:held_out:highest_order_demo": {
+    "key": "signal:held_out:highest_order_demo",
+    "previous": null,
+    "receipt_id": "rcpt:1989288569ca5413ac0b19362f977ac26217c5e87b8117352a4574ce75ebe5d5",
+    "t_epoch": 1792732099,
+    "value": {
+      "actual": "REFUSE",
+      "boundary": "NOT_FOR_EMISSION",
+      "key": "held_out:highest_order_demo",
+      "label": "IRIS LEARNING SIGNAL",
+      "matched": true,
+      "note": "signal only \u2014 emission reads standing(), never this",
+      "predicted_verdict": "REFUSE"
     }
   },
   "signal:held_out:merit_origin": {

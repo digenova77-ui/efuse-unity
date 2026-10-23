@@ -1,7 +1,7 @@
 {
   "canon": "1.5.0",
   "label": "IRIS MAX INTAKE",
-  "last_receipt": "rcpt:d3bc2f5cad7a0da8585396ebac45a0b26d683311dc94461bb48851bec79e2c97",
-  "receipts": 44,
+  "last_receipt": "rcpt:1989288569ca5413ac0b19362f977ac26217c5e87b8117352a4574ce75ebe5d5",
+  "receipts": 47,
   "schema": "iris.state.v1.testnet"
 }
