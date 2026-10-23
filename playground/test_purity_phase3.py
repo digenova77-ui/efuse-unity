@@ -75,5 +75,30 @@ class PurityPhase3(unittest.TestCase):
         self.assertFalse(r["ceiling_claimable"])
 
 
+
+class PurityPhase3SI2(unittest.TestCase):
+    def test_si2_f_g_combination(self):
+        # SI2 is below the clarity pass band (treated as non-FL/VVS/VS).
+        # F is inside the color pass band.
+        # G is outside the color pass band.
+        # A facet carrying SI2 clarity fails regardless of color.
+        # A facet carrying color G fails regardless of clarity.
+        si2 = Facet("si2", "ring", clarity="SI2", color="F", cut="Excellent")
+        self.assertFalse(grade(si2)["pure"])
+        self.assertFalse(faces_frontier(si2))
+        self.assertIn("clarity:SI2", grade(si2)["failed"])
+
+        color_g = Facet("tint_g", "ring", clarity="FL", color="G", cut="Excellent")
+        self.assertFalse(grade(color_g)["pure"])
+        self.assertFalse(faces_frontier(color_g))
+        self.assertIn("color:G", grade(color_g)["failed"])
+
+        # F alone (with max other scales) still passes the old gate
+        # but fails the frontier (frontier requires D).
+        only_f = Facet("only_f", "ring", clarity="FL", color="F", cut="Excellent")
+        self.assertTrue(grade(only_f)["pure"])
+        self.assertFalse(faces_frontier(only_f))
+
+
 if __name__ == "__main__":
     unittest.main()
