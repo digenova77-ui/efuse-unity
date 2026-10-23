@@ -71,6 +71,10 @@ Corrections are new append-only events referencing the prior receipt; never rewr
 
 These are mapping requirements, not assertions of current implementation.
 
+## Canonicalization conformance vectors
+
+Shared starter vectors are in [`idempotency-v1-vectors.json`](./idempotency-v1-vectors.json). Each language/runtime must reproduce the exact canonical UTF-8 bytes and SHA-256 before its adapter can claim protocol compatibility. These vectors validate encoding only; they do not prove concurrency, durable reservation, or effect atomicity.
+
 ## Acceptance gate
 
 A consumer cannot claim conformance until its tests demonstrate:
