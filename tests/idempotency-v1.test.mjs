@@ -7,17 +7,29 @@ const vectors = JSON.parse(
   await readFile(new URL('../protocol/idempotency-v1-vectors.json', import.meta.url), 'utf8')
 );
 
+function compareUnicodeScalars(a, b) {
+  const aa = Array.from(a, ch => ch.codePointAt(0));
+  const bb = Array.from(b, ch => ch.codePointAt(0));
+  for (let i = 0; i < Math.min(aa.length, bb.length); i++) {
+    if (aa[i] !== bb[i]) return aa[i] - bb[i];
+  }
+  return aa.length - bb.length;
+}
+
 function canonical(value) {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') {
+    if (typeof value === 'string') {
+      assert.ok(!/[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|(?<![\\uD800-\\uDBFF])[\\uDC00-\\uDFFF]/u.test(value), 'unpaired surrogates are not canonical');
+    }
     return JSON.stringify(value);
   }
   if (typeof value === 'number') {
-    assert.ok(Number.isFinite(value), 'non-finite numbers are not canonical');
+    assert.ok(Number.isSafeInteger(value), 'only safe integers are canonical');
     return JSON.stringify(value);
   }
   if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
   assert.equal(typeof value, 'object', 'unsupported canonical value');
-  return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonical(value[key])).join(',') + '}';
+  return '{' + Object.keys(value).sort(compareUnicodeScalars).map(key => JSON.stringify(key) + ':' + canonical(value[key])).join(',') + '}';
 }
 
 test('shared idempotency v1 canonical bytes and SHA-256 vectors', () => {
