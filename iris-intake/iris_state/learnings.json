@@ -1,1 +1,18 @@
-{}
+{
+  "held_out:test_pulse": {
+    "key": "held_out:test_pulse",
+    "previous": null,
+    "receipt_id": "rcpt:f5c141f9b42a2c13b13b574caf3ac09af16dea7d7db0b0ea157d032e1eed2b02",
+    "t_epoch": 1792729960,
+    "value": {
+      "judgment": {
+        "law_wins": true,
+        "mode": "hybrid",
+        "note": "test",
+        "verdict": "REFUSE"
+      },
+      "label": "IRIS LEARNING PULSE",
+      "note": "held-out pulse; core integrity gate unchanged"
+    }
+  }
+}
