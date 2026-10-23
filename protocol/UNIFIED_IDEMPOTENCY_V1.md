@@ -20,7 +20,7 @@ Every side-effecting operation MUST bind these fields before execution:
 - `created_at`: informational UTC timestamp; timestamps are not identity
 - `schema_version`: version of the operation payload
 
-The canonical request encoding is UTF-8 JSON with recursively sorted object keys, no insignificant whitespace, preserved array order, and no non-finite numbers. Each language implementation MUST share conformance vectors before it can claim compatibility. Hashing raw transport bytes is not sufficient.
+The canonical request encoding is UTF-8 JSON with recursively sorted object keys (lexicographic Unicode scalar-value order), no insignificant whitespace, preserved array order, strings/booleans/null, and safe integers only (absolute value no greater than 9,007,199,254,740,991). Floating-point values, non-finite numbers, unsupported types, and unpaired surrogates MUST be rejected rather than normalized. String escaping must follow JSON.stringify-compatible JSON escaping without ASCII-only escaping; UTF-8 bytes of that canonical string are hashed. Each language implementation MUST share conformance vectors before it can claim compatibility. Hashing raw transport bytes is not sufficient.
 
 ## Identity and collision rules
 
