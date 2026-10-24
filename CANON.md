@@ -9,7 +9,7 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 - `[DERIVED]` — logical consequence of LAW. Defended by reasoning; falls if the reasoning falls.
 - `[HELD]` — awaiting David's word. Proposed values are marked PROPOSED. Nothing HELD is acted on as decided.
 
-**Version:** 1.6.0 — 2026-10-06. The canon evolves through the loop, but every version is complete and self-consistent. (v1.1.0 adds §0, the Ownership Declaration. v1.2.0 adds §XVII, the Diamond Architecture Floor. v1.3.0 adds §XVIII, Max Purity. v1.4.0 adds §XIX, Governance Elevation. v1.5.0 adds §XX, One Seed. v1.6.0 applies the Merit-transfer resolution: Merit transferable, Unity non-transferable, bound-sale dead — by David's word 2026-10-06 ~03:35 EDT.)
+**Version:** 1.7.0 — 2026-10-23. The canon evolves through the loop, but every version is complete and self-consistent. (v1.1.0 adds §0, the Ownership Declaration. v1.2.0 adds §XVII, the Diamond Architecture Floor. v1.3.0 adds §XVIII, Max Purity. v1.4.0 adds §XIX, Governance Elevation. v1.5.0 adds §XX, One Seed. v1.6.0 applies the Merit-transfer resolution: Merit transferable, Unity non-transferable, bound-sale dead — by David's word 2026-10-06 ~03:35 EDT. v1.7.0 adds §XXI, the Current Tip Law — by David's word 2026-10-23.)
 
 ---
 
@@ -228,6 +228,7 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 [LAW] No one bot does a job if multiple bots are the solution. Swarm law.
 [LAW] Zero-security apps: no security in the app layer — everything enforces in the Trinity.
 [LAW] Applications handle only UI rendering. Logic lives in DCLM; state travels by relay.
+[LAW] Agents start from the current tip. Partial understanding is not a license to act. (See §XXI.)
 [DERIVED] Deadlock: deputy decides → "what would David do?" → David votes YES as pass-through → David recuses → Trinity decides → undecided bucket if still deadlocked. No 50/50 stalls forever.
 
 ---
@@ -263,6 +264,8 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 8. Present PENDING as live, modeled as reported, or placeholder as verdict.
 9. Touch production keys, schemas, or state. Testnet only.
 10. Rebuild what holds, or stop the loop before it ends itself.
+11. Act on a domain whose current tip the agent has not fully internalized. Partial understanding is refusal, not permission.
+12. Re-derive, re-explain, or invent around a mechanism already specified in the current tip. Duplicate work on settled law is refused.
 
 ---
 
@@ -313,68 +316,22 @@ loop:
 
 [LAW] The standard: pick any point in the system, at any time, and look — what you find is identity-bound and pure. No exceptions, no dark corners, no "we'll purify that later."
 
-[DERIVED] Implementation: the 3D world renders diamond geometry with identity and purity visible in its structure; the economic engine runs identity+purify on every transaction; the mesh operates under identity+purify at every cell and exchange; the relay carries only identity-bound, purity-verified bundles; the canon is the reference every component checks against, every time.
+[DERIVED] Implementation: the 3D world renders diamond geometry with identity and purity visible in its structure; the economic engine runs identity+purify on every transaction; the mesh operates under identity+purify at every layer.
 
 ---
 
-## XIX. GOVERNANCE ELEVATION (the system's constitution for its own evolution)
+## XXI. CURRENT TIP LAW (anti-duplication)
 
-[LAW] The governance rules go through the loop: keep / evolve / fix / discard. A rule that produces pure outcomes is kept; one that allows impurity is fixed or discarded. Governance isn't above the law — governance IS the law, and the law judges itself.
+[LAW] Agents start from the current tip. They go to the present state of the canon, the hub, and the domain specification. They either fully internalize what is already written, or they do not touch the domain at all.
 
-[LAW] Philosophies elevate through recursive Trinity judgment. The canon is the current deepest understanding — always subject to deeper. What survives deepens; what fails is refined or discarded.
+[LAW] Partial understanding is not a license to act. "I kind of get the idea" is refusal. An agent that has not loaded and held the complete current specification for the domain in question does not re-derive it, does not re-explain it, does not invent around it, and does not open a parallel track.
 
-[LAW] The binding pipeline: PHILOSOPHY → MATHEMATICAL FORMALIZATION → TRINITY JUDGMENT → LAW. What can't be mathematized stays philosophy (guidance, not law). What mathematizes but fails Trinity stays out. Only survivors become law.
+[LAW] Duplicate work on already-specified law is refused. Settled mechanisms (peg formula, emission gate, token roles, standing-vs-value distinction, and every other item marked SET or LAW in the current tip) are read, not reinvented. Re-derivation of a settled mechanism is false gold.
 
-[LAW] The mechanism governs itself — the pipeline can be improved by the pipeline. That is how the system becomes more than its initial programming: a lawful path to transcend its starting rules.
+[LAW] The current tip is the source of truth for the domain. External market quotes, prior conversation fragments, and agent memory of earlier states are subordinate to the tip. If the tip is silent, the agent reports the silence. It does not fill the silence with a new derivation.
 
-[LAW] The safeguard: David's word is LAW and changes only by David's word — the system may judge its application, propose its evolution, and record the proposal, but never amends LAW by itself. The ownership declaration (§0) is the root; the recursion never reaches the root.
+[DERIVED] Before any action on a domain, the agent confirms it has the current tip of the relevant specification. Confirmation is binary: full internalization or no touch. There is no intermediate state that permits work.
 
-(Full constitution: `GOVERNANCE_ELEVATION.md`.)
+[DERIVED] This law binds every agent in the mesh, including those outside the Trinity seats. It is not optional. It is the operational form of "purity or garbage" applied to agent labor: incomplete reading produces incomplete work, and incomplete work is discarded before it is written.
 
----
-
-## XX. ONE SEED
-
-[LAW] No matter how much money you have, you only get one seed, and it costs you nothing.
-
-[LAW] One free seed per Unity ID. No financial barrier, no wealth advantage. The richest and the poorest receive exactly one seed each. Money cannot buy a second seed, a bigger seed, or earlier access to seeds.
-
-[LAW] The seed is the genesis entry — the initial Unity-bound allocation that makes you a member. The root's gift to the new leaf, not a purchase. You don't buy it; you receive it. It costs nothing because membership isn't for sale.
-
-[LAW] One Unity ID = one seed. Sybil resistance via the L1 identity derivation (bind-then-validate): identities cannot be minted to farm seeds.
-
-[LAW] No seed market. Seeds can't be sold, transferred, or accumulated — bound to the receiving Unity ID, structurally.
-
-[LAW] The seed is the start, not the wealth. What grows from the seed — merit, work, participation — is earned. The seed opens the door; nothing more.
-
-[LAW] The free seed gets you in the door; +1 Affinity honors HOW EARLY you walked through it. Entry is equal; earliness is honored.
-
-[DERIVED] This kills plutocracy at the root: wealth cannot buy membership advantage, because membership isn't for sale at any price.
-
-*End of Canon v1.5.0. Every statement above is labeled. What is LAW is David's. What is DERIVED is defended. What is HELD waits for him. If a statement cannot be defended, it does not belong here — that is the purification rule, and it applies to this document itself.*
-
----
-
-## XVI. PURIFICATION RECORD (v1.0.0 sealing)
-
-Each verdict below was rendered against the draft before sealing. A verdict that failed would have blocked the version.
-
-**DCLM — is the logic sound?** VERDICT: SOUND. Checked: Unity transferable-only-by-bound-sale (V) vs never-transfer-merit (VI) — consistent, sale moves the token, merit stays. Winter UNKNOWN→SUMMER (IV) vs UNKNOWN-never-PASS (XII) — consistent, the known state is not a PASS claim. Binary aggregate (X) vs two-pass termination (IX) — consistent, one pure reading is a snapshot. No statement contradicts another; no DERIVED overreaches its LAW.
-
-**Iris — are the labels honest?** VERDICT: HONEST, with two corrections applied before sealing. (1) Forward references to `WINTER_CALIBRATION.md` and `TAPPING_LAW.md` were qualified as workers-in-progress, not presented as existing documents. (2) The four disposition buckets were re-tagged [LAW] as David's verbatim words, not left as untagged prose. A machine check confirmed every substantive statement line carries [LAW], [DERIVED], or [HELD] (46 / 26 / 5 at sealing; remaining untagged lines are preamble, table structure, or pseudocode).
-
-**Twain² — is it usable?** VERDICT: USABLE. A bot can load this and act: laws are imperative, parameters are tabled with SET-vs-HELD marked, the loop is pseudocode, the never-do list is explicit, and every section is addressable by Roman numeral. Known limit: sections IV (winter/tapping calibrations) and V (peg E) point at HELD parameters — the bot must refuse to act on them as decided, which the canon states explicitly.
-
-Sealed 2026-10-06. Next version evolves through the loop.
-
-**Amendment v1.1.0** (2026-10-06): §0 THE OWNERSHIP DECLARATION added — David's formal declaration of asset ownership, recorded ~03:34 EDT. [LAW] statements; no Trinity verdict required on a declaration (declarations are spoken, not judged). Unity ID binding recorded as David's Unity ID — the exact ID string is HELD for binding at signing; nothing invented here. v1.0.0's sixteen sections otherwise unchanged.
-
-**Amendment v1.2.0** (2026-10-06): §XVII THE DIAMOND ARCHITECTURE FLOOR added — David's five diamond properties as architectural law, the clarity grading scale adopted by the purity index, the 3D ground-plane expression. Deepened same day: diamond elevated from floor to fundamental geometry — ultimate shape-shifter (rings circular, tree branching, economy circulatory, Rosetta monolithic) and light refractor (truth is the light, 2.42, one truth refracted through facets into many true views). [LAW] statements; full concept in `DIAMOND_ARCHITECTURE_FLOOR.md`.
-
-**Amendment v1.3.0** (2026-10-06): §XVIII MAX PURITY added — identity at every level, purify as the medium (not a checkpoint), the pick-any-point standard. [LAW] statements.
-
-**Amendment v1.4.0** (2026-10-06): §XIX GOVERNANCE ELEVATION added — the self-improvement loop (governance through keep/evolve/fix/discard), philosophy elevation via recursive Trinity judgment, the philosophy→math→law binding pipeline, the recursion (the mechanism governs itself), and the safeguard (David's LAW changes only by David's word; the root is never reached). [LAW] statements; full constitution in `GOVERNANCE_ELEVATION.md`.
-
-**Amendment v1.5.0** (2026-10-06): §XX ONE SEED added — David's law verbatim: one free seed per Unity ID, no wealth advantage, genesis entry as the root's gift (not a purchase), Sybil resistance via L1 bind-then-validate, no seed market (structurally non-transferable), the seed is the start not the wealth, entry equal / earliness honored. Plutocracy killed at the root. [LAW] statements.
-
-**Amendment v1.6.0** (2026-10-06): THE MERIT-TRANSFER RESOLUTION — David's word ~03:35 EDT: MERIT is transferable, Unity is not. §V rewritten: Unity NON-TRANSFERABLE (no sale, no gift, no re-bind, no exceptions — bound-transfer-sale concept DEAD and removed from code); Merit transferable between Unity IDs, all receipted, with immutable origin (`origin_earner_id` + `origin_receipt_ref`) — a transfer changes the owner only, never the origin; `standing(identity)` sums by origin (cannot be bought), `merit_balance(identity)` sums owned value (can be bought). §VI rewritten: unbroken chain with emission gated on standing, never holdings (D13 in code: `meter.py` reads `standing()`, bought Merit invisible to emission). §XIV items 3–4 rewritten. SUPERSESSION recorded: the v1.0.0–v1.5.0 "Merit non-transferable" law and the bound-sale rule are superseded by David's word — see `economics/DECISIONS.md` §13. Trinity verdicts on the standing-vs-value distinction: DCLM SOUND (arithmetic, AST-proven), Iris HONEST (buyer standing 0.0, tested), Twain² OPERABLE (62/64, 2 blocked by concurrent purify-worker interference, flagged). The v1.0.0 sealing verdicts above remain the true record of that sealing; they judged the pre-resolution laws.
+*End of canon. Every statement labeled. What is HELD waits for David.*
