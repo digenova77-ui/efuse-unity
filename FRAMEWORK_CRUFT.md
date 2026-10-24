@@ -1,31 +1,25 @@
 # FRAMEWORK CRUFT — scaffolding vs law
 
-**Updated 2026-10-24.** User authorized cleanup of scaffolding left behind from implemented or dead ideas.
+**Updated 2026-10-24 (second pass).**
 
-Rule: law as code stays. Scaffolding that is no longer load-bearing is archived or removed.
+## Completed
 
-## Completed this pass
+- `dclm/chunk_build.lock` — deleted
+- `maximum_run/` one-shot script and run directories — archived, originals removed
+- `derivative_sim.py` — archived to `archive/derivative_sim/`, original removed (modeled companion, imported by nothing)
+- `dualiscapax-landing/sectors.html` — pure stub removed
 
-- `dclm/chunk_build.lock` — deleted (stale empty lock)
-- `maximum_run/` one-shot script and run directories — archived to `archive/maximum_run_20261006/`, originals removed
-- Purity status modules added across core repos (executable grades, not documentation)
+## Retained (still load-bearing or content)
 
-## Retained (still load-bearing)
+- All tests
+- `tokenize.py` shim, `ed25519.js` helper
+- Chunk state files (live inputs to chunks.py)
+- Landing HTML pages that are redirects or carry real content (alchemy, dai-overcol, after-spot, etc.)
+- `status.html` (one-line purity marker)
 
-- All `dclm/test_*.py` — regression harness until LOOP END
-- `dclm/tokenize.py` — PEP-562 shim; law lives in `token_engine.py`
-- `dclm/ed25519.js` — node helper; no native Python crypto yet
-- `dclm/chunk_epoch.json`, `chunk_prev_manifest.json`, `chunk_receipts.log`, `chunk_schema.json` — live inputs to `chunks.py`
-- Testnet keys and serve scripts — required while testnet is hand-operated
+## Notes
 
-## Still candidates (next calm window)
-
-- Empty dirs: `dclm/state-meter/`, `economics/state/`, `deploy/staging/` if still empty
-- `testnet/state/testnet-serve-*.log` — rotate
-- `unity-world/derivative_sim.py` — modeled companion; not runtime
-
-## Law (untouched)
-
-CANON, core dclm modules, economics, gate, purity, iris-intake, relays, client, data.
+Empty directories are not tracked by Git. Testnet serve logs were not present in the tree.
+Remaining landing pages were inspected: under-300-byte files are redirects or the status marker. Larger one-off pages contain real content and were left in place.
 
 *End of FRAMEWORK_CRUFT.md.*
