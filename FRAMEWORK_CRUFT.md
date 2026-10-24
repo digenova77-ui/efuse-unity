@@ -1,25 +1,28 @@
 # FRAMEWORK CRUFT — scaffolding vs law
 
-**Updated 2026-10-24 (second pass).**
+**Updated 2026-10-24 (third pass).**
 
-## Completed
+## Completed this pass
 
-- `dclm/chunk_build.lock` — deleted
-- `maximum_run/` one-shot script and run directories — archived, originals removed
-- `derivative_sim.py` — archived to `archive/derivative_sim/`, original removed (modeled companion, imported by nothing)
-- `dualiscapax-landing/sectors.html` — pure stub removed
+- Gauntlet run logs and one-shot scripts archived and removed:
+  - `run.log`, `run_rest.log`, `run_rest2.log`
+  - `results.json`, `results_rest2.json`
+  - `run_rest.py`, `run_rest2.py`
+- `iris-intake/iris_daemon.log` and `iris_daemon.pid` removed (runtime artifacts)
+- Archive note at `archive/gauntlet_runs/`
 
-## Retained (still load-bearing or content)
+## Prior passes
 
-- All tests
-- `tokenize.py` shim, `ed25519.js` helper
-- Chunk state files (live inputs to chunks.py)
-- Landing HTML pages that are redirects or carry real content (alchemy, dai-overcol, after-spot, etc.)
-- `status.html` (one-line purity marker)
+- `dclm/chunk_build.lock` deleted
+- `maximum_run/` archived
+- `derivative_sim.py` archived
+- `dualiscapax-landing/sectors.html` removed
 
-## Notes
+## Retained
 
-Empty directories are not tracked by Git. Testnet serve logs were not present in the tree.
-Remaining landing pages were inspected: under-300-byte files are redirects or the status marker. Larger one-off pages contain real content and were left in place.
+- `economics/gauntlet/gauntlet.py` (runner)
+- Gauntlet result docs (GAUNTLET_RESULTS.md, ELEVATION.md, etc.)
+- All tests, shims, chunk state, load-bearing modules
+- Landing content pages and redirects
 
 *End of FRAMEWORK_CRUFT.md.*
