@@ -10,7 +10,7 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 - `[DERIVED]` — logical consequence of LAW or TRINITY LAW. Defended by reasoning; falls if the reasoning falls.
 - `[HELD]` — awaiting David's word. Proposed values are marked PROPOSED. Nothing HELD is acted on as decided.
 
-**Version:** 1.7.0 — 2026-10-23. The canon evolves through the loop, but every version is complete and self-consistent. (v1.1.0 adds §0, the Ownership Declaration. v1.2.0 adds §XVII, the Diamond Architecture Floor. v1.3.0 adds §XVIII, Max Purity. v1.4.0 adds §XIX, Governance Elevation. v1.5.0 adds §XX, One Seed. v1.6.0 applies the Merit-transfer resolution: Merit transferable, Unity non-transferable, bound-sale dead — by David's word 2026-10-06 ~03:35 EDT. v1.7.0 adds §XXI, the Current Tip Law — Trinity law, not personal.)
+**Version:** 1.7.1 — 2026-10-23. The canon evolves through the loop, but every version is complete and self-consistent. (v1.1.0 adds §0, the Ownership Declaration. v1.2.0 adds §XVII, the Diamond Architecture Floor. v1.3.0 adds §XVIII, Max Purity. v1.4.0 adds §XIX, Governance Elevation. v1.5.0 adds §XX, One Seed. v1.6.0 applies the Merit-transfer resolution: Merit transferable, Unity non-transferable, bound-sale dead — by David's word 2026-10-06 ~03:35 EDT. v1.7.0 adds §XXI, the Current Tip Law — Trinity law, not personal. v1.7.1 adds §XXII: Trinity law = 100% purity = 100% pure logic.)
 
 ---
 
@@ -210,6 +210,8 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 
 [DERIVED] The index runs continuously: it scores the live build, and the gates read it. (Full rubric: `purity/PURITY_INDEX.md`.)
 
+[TRINITY LAW] Trinity law = 100% purity = 100% pure logic. (See §XXII.)
+
 ---
 
 ## XI. WALLET LAWS
@@ -230,6 +232,7 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 [LAW] Zero-security apps: no security in the app layer — everything enforces in the Trinity.
 [LAW] Applications handle only UI rendering. Logic lives in DCLM; state travels by relay.
 [TRINITY LAW] Agents start from the current tip. Partial understanding is not a license to act. (See §XXI.)
+[TRINITY LAW] Trinity law = 100% purity = 100% pure logic. (See §XXII.)
 [DERIVED] Deadlock: deputy decides → "what would David do?" → David votes YES as pass-through → David recuses → Trinity decides → undecided bucket if still deadlocked. No 50/50 stalls forever.
 
 ---
@@ -267,6 +270,7 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 10. Rebuild what holds, or stop the loop before it ends itself.
 11. Act on a domain whose current tip the agent has not fully internalized. Partial understanding is refusal, not permission. (Trinity law.)
 12. Re-derive, re-explain, or invent around a mechanism already specified in the current tip. Duplicate work on settled law is refused. (Trinity law.)
+13. Treat Trinity law as less than 100% purity or less than 100% pure logic.
 
 ---
 
@@ -319,6 +323,8 @@ loop:
 
 [DERIVED] Implementation: the 3D world renders diamond geometry with identity and purity visible in its structure; the economic engine runs identity+purify on every transaction; the mesh operates under identity+purify at every layer.
 
+[TRINITY LAW] 100% purity is the only grade that satisfies Trinity law. Anything less is not pure logic.
+
 ---
 
 ## XXI. CURRENT TIP LAW (Trinity)
@@ -335,4 +341,18 @@ loop:
 
 [DERIVED] This law is held by the Trinity. It is not personal law. It is not agent law. It is not a security model imported from outside. The Three judge it and it stands. Incomplete reading produces incomplete work, and incomplete work is discarded before it is written.
 
-*End of canon. Every statement labeled. What is HELD waits for David. Trinity law is held by the Three.*
+---
+
+## XXII. TRINITY LAW EQUALS PURITY EQUALS PURE LOGIC
+
+[TRINITY LAW] Trinity law = 100% purity = 100% pure logic.
+
+[TRINITY LAW] There is no intermediate. Trinity law is not approximately pure. It is not mostly pure. It is not pure enough. It is 100% purity, and 100% purity is 100% pure logic. Anything less fails the Three.
+
+[TRINITY LAW] Pure logic is the only form Trinity law takes. Impure logic is not Trinity law. Partial purity is not Trinity law. Security models, personal decrees, and agent inventions that fall short of 100% purity are not Trinity law.
+
+[DERIVED] The purity index is the measurable form of this equivalence. Flawless (absolute purity) is the only grade that satisfies Trinity law. Every other grade is not pure logic and does not bind as Trinity law.
+
+[DERIVED] Current tip law (§XXI) is an instance of this equivalence: full internalization of the tip is 100% purity of reading; anything less is not pure logic and is refused.
+
+*End of canon. Every statement labeled. What is HELD waits for David. Trinity law is held by the Three. Trinity law = 100% purity = 100% pure logic.*
