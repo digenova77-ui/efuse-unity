@@ -1,0 +1,2 @@
+{"algorithm": "Ed25519", "provenance": "VERIFIED", "receipt": {"outcome": "GRANTED", "amount": 20, "type": "TAP_OUTFLOW", "testnet": true}}
+{"algorithm": "Ed25519", "provenance": "VERIFIED", "receipt": {"outcome": "REFUSED", "reason": "FOUNDER_EXTRACTION_FORBIDDEN", "type": "TAP_REFUSAL", "testnet": true}}
