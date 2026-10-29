@@ -935,7 +935,9 @@ def emission_calculator(pool, verified_merit, peg_ratio, remaining_authority,
 
     # --- merit-weighted, peg-calibrated, authority-bounded, winter-throttled ---
     raw_total = total_merit / peg.value          # eFuse implied by the peg
-    bounded_total = min(raw_total, auth.value)   # bounded by remaining authority
+    # auth is FREE authority: cap - emitted - reserve. The reserve already
+    # occupies its units, so they are not metered again.
+    bounded_total = min(raw_total, auth.value)
     cap_applied = bounded_total < raw_total
     scale = (bounded_total / raw_total) if raw_total > 0 else 0.0
     # Winter: the gradient slows metered emission continuously
@@ -967,16 +969,21 @@ def emission_calculator(pool, verified_merit, peg_ratio, remaining_authority,
     # split (released funds are never re-absorbed) and AFTER the winter
     # throttle: a release is an explicit, separately-receipted calibration
     # decision ("calibration supports it"), not metered emission. Capped
-    # twice — by what the Reserve holds, and by remaining pool authority
-    # headroom (released funds leave only via disburse, which enforces the
-    # cap; the Reserve never manufactures headroom the pool lacks).
+    # by the reserve balance. Gross room is free authority plus that
+    # balance, so the release cannot push disbursable + release past the
+    # cap, and it cannot create authority.
     released = 0.0
     release_note = "no reserve release requested"
     if rel_fig is not None:
         if rel_fig.value <= 0:
             release_note = "zero reserve release requested — nothing released"
         else:
-            headroom = max(0.0, auth.value - disbursable)
+            # Gross cap room is the free authority plus the reserve that
+            # already occupies unminted units. A release only returns those
+            # units. It cannot exceed the balance, and disbursable + release
+            # cannot exceed gross. The reserve does not create authority.
+            gross = auth.value + bal_fig.value
+            headroom = max(0.0, gross - disbursable)
             released = min(rel_fig.value, bal_fig.value, headroom)
             if released < rel_fig.value - 1e-12:
                 release_note = (
@@ -1083,13 +1090,20 @@ class Ledger:
 
     # -- authority ---------------------------------------------------------
     def remaining_authority(self, pool):
-        """DERIVED from the ledger: cap minus emitted. Never pre-funded."""
+        """DERIVED: cap minus emitted minus reserve.
+
+        The reserve occupies unminted authority. Those units are not free
+        to meter and not free to disburse. Never pre-funded. Never counted
+        twice.
+        """
         _require_pool(pool)
+        free = POOL_CAPS[pool] - self.emitted[pool] - self.reserve[pool]
         return Figure(
-            POOL_CAPS[pool] - self.emitted[pool],
+            free,
             "DERIVED",
             f"{pool} pool: {POOL_CAPS[pool]:,.0f} cap minus "
-            f"{self.emitted[pool]:,.4f} emitted",
+            f"{self.emitted[pool]:,.4f} emitted minus "
+            f"{self.reserve[pool]:,.4f} reserved",
         )
 
     def reserve_balance(self, pool):
@@ -1360,16 +1374,20 @@ class Ledger:
                 "disbursement amount is UNKNOWN/unsigned — refusing")
         if a.value <= 0:
             raise ValueError("disbursement amount must be positive")
-        remaining = POOL_CAPS[pool] - self.emitted[pool]
-        if a.value > remaining + 1e-9:
+        free = POOL_CAPS[pool] - self.emitted[pool] - self.reserve[pool]
+        if a.value > free + 1e-9:
             raise AuthorityExceededError(
-                f"{a.value} exceeds {pool} pool remaining authority {remaining}")
+                f"{a.value} exceeds {pool} pool free authority {free} "
+                f"(cap {POOL_CAPS[pool]} minus emitted {self.emitted[pool]} "
+                f"minus reserve {self.reserve[pool]})"
+            )
         self.emitted[pool] += a.value
+        free_after = POOL_CAPS[pool] - self.emitted[pool] - self.reserve[pool]
         return self._new_receipt(
             uid, "disbursement",
             {"pool": pool, "amount": a.value,
              "amount_provenance": a.provenance,
-             "remaining_authority_after": POOL_CAPS[pool] - self.emitted[pool]},
+             "remaining_authority_after": free_after},
             a.provenance if a.provenance != "UNKNOWN" else "DERIVED",
             epoch)
 

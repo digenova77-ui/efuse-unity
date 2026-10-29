@@ -492,9 +492,21 @@ class TestPegRegulationReserve(unittest.TestCase):
         self.assertEqual(set(T.POOLS), {"human", "machine"})
         self.assertAlmostEqual(L.reserve["human"], 0.10)
         self.assertAlmostEqual(L.reserve["machine"], 0.05)
-        # machine-pool absorb did not touch the human pool's authority
+        # each pool's reserve occupies only that pool's authority
         self.assertAlmostEqual(
-            L.remaining_authority("human").value, 50_000_000.0)
+            L.remaining_authority("human").value, 50_000_000.0 - 0.10)
+        self.assertAlmostEqual(
+            L.remaining_authority("machine").value, 50_000_000.0 - 0.05)
+
+    def test_reserve_occupies_authority(self):
+        L = Ledger()
+        out = self._close_absorb(L, epoch=1)
+        held = out.reserve_held.value
+        free = L.remaining_authority("human").value
+        self.assertAlmostEqual(free, 50_000_000.0 - held)
+        # The held units are not disbursable on top of the returned shares.
+        with self.assertRaises(T.AuthorityExceededError):
+            L.disburse("human", "u1", v(free + held, "DERIVED"), epoch=1)
 
     def test_reserve_never_leaks_to_members(self):
         L = Ledger()
@@ -517,11 +529,11 @@ class TestPegRegulationReserve(unittest.TestCase):
         self.assertAlmostEqual(L.reserve["human"], held)
 
     def test_reserve_balance_never_flows_to_disburse(self):
-        # Structural proof via AST: self.reserve is touched only by
-        # __init__ (create), reserve_balance (read), emission_close
-        # (absorb/release), and state_digest (read). No disbursement path
-        # reads it — the Reserve is incapable of paying members by
-        # construction, not by a runtime check.
+        # Structural proof via AST. The reserve is read by remaining
+        # authority and by disburse so held units cannot be spent twice.
+        # Nothing in those functions pays the reserve out. There is still
+        # no path that moves reserve to a member except a later release
+        # through emission_close.
         import ast
         import inspect
         tree = ast.parse(inspect.getsource(Ledger))
@@ -534,8 +546,10 @@ class TestPegRegulationReserve(unittest.TestCase):
                             and sub.value.id == "self"
                             and sub.attr == "reserve"):
                         touches.add(node.name)
+        # disburse and remaining_authority may READ the reserve so held
+        # units are not spent. They do not pay it out.
         allowed = {"__init__", "reserve_balance", "emission_close",
-                   "state_digest"}
+                   "state_digest", "remaining_authority", "disburse"}
         self.assertEqual(touches - allowed, set(),
                          f"unexpected self.reserve touches: {touches - allowed}")
         self.assertTrue(allowed <= touches)
