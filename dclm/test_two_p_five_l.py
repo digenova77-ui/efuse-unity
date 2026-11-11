@@ -69,7 +69,7 @@ class TestNarrowing(unittest.TestCase):
         gate = t.constraint_gate(PURE_PROPOSAL)
         self.assertEqual(gate["procedure"], "pragmatism")
         self.assertTrue(gate["clear"])
-        self.assertEqual(gate["status"], "VICTORY")
+        self.assertEqual(gate["status"], t.FLAWLESS)
         self.assertEqual(gate["problems"], [])
 
     def test_coercion_is_a_constraint_not_a_vote(self):

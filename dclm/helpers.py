@@ -457,9 +457,11 @@ KNOWLEDGE_BASE = (
      "he owns the tree; the sap still flows to every leaf. [Canon §0]"),
     (("trinity", "dclm", "narrowing"),
      "Logic and truth judge every claim. DCLM binds logic. Iris binds truth. "
-     "Pragmatism is not a third ring. It narrows until one candidate remains, "
-     "or until no unused constraint can split the rest. Balance does not crown "
-     "a winner. The seat formerly named Twain² is withdrawn. [Canon §I]"),
+     "Pragmatism is not a third constraint. It narrows until one candidate "
+     "satisfies every constraint — that ending is Flawless, pure logic "
+     "decision execution, free of defect, not a victory — or until no unused "
+     "constraint can split the rest. Balance does not crown a winner. The "
+     "seat formerly named Twain² is withdrawn. [Canon §I]"),
 )
 
 
@@ -639,8 +641,8 @@ HANDOFF_SCRIPT = (
     "She's always on demand. Whenever you need her — a judgment, a check, a question "
     "— you call her three ways:\n"
     "  judge  — bring her a proposal. DCLM checks the logic. Iris checks the truth. "
-    "Pragmatism narrows until one remains, or until the remainder cannot be split. "
-    "There is no third vote.\n"
+    "Pragmatism narrows until the execution is Flawless, or until the remainder "
+    "cannot be split. There is no third vote.\n"
     "  check  — bring her an action, and she runs it through the full pipeline.\n"
     "  advise — bring her a question, and she'll advise. She advises — she never "
     "commands. The choice stays yours.\n\n"

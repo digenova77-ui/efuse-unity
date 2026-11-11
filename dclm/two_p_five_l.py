@@ -127,6 +127,7 @@ import hashlib
 import json
 import sys
 import time
+from narrow import FLAWLESS, STALEMATE
 from typing import Any, Dict, List, Optional, Tuple
 
 # ---------------------------------------------------------------------------
@@ -370,7 +371,7 @@ def constraint_gate(proposal: Dict[str, Any]) -> Dict[str, Any]:
         "procedure": "pragmatism",
         "clear": not problems,
         "problems": problems,
-        "status": "VICTORY" if not problems else "STALEMATE",
+        "status": FLAWLESS if not problems else STALEMATE,
         "reason": ("no constraint eliminated the proposal"
                    if not problems else
                    "a constraint already in force eliminated the proposal"),

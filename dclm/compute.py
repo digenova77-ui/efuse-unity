@@ -5,9 +5,9 @@ The website code runs INSIDE DCLM: the server computes the world state and
 spits out signed data. Client devices render it; they do not compute on
 connect.
 
-Ring logic is local (dclm/rings.py). An outside directory is not consulted.
-Pragmatism narrows the candidates already on the wave. It does not score
-a third axis.
+The narrowing is local (dclm/narrow.py). An outside directory is not consulted.
+Pragmatism narrows the candidates already on the wave. A pure ending is
+Flawless. It is not a victory, and it does not score a third axis.
 
 Data honesty rules (absolute, no exceptions):
   * EVERY field carries a provenance label:
@@ -28,7 +28,7 @@ import sys
 # --- import the ring logic (this tree only) --------------------------------
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-from rings import DecisionWave, Parliament, Point, STALEMATE, VICTORY  # noqa: E402
+from narrow import DecisionWave, Narrow, Point, STALEMATE, FLAWLESS  # noqa: E402
 
 
 # --- provenance ------------------------------------------------------------
@@ -39,7 +39,7 @@ PROVENANCE_LABELS = frozenset(
 # --- status labels ---------------------------------------------------------
 FEED_LIVE = "LIVE"
 FEED_PENDING = "PENDING"
-VERDICT_DECIDED = VICTORY
+VERDICT_DECIDED = FLAWLESS
 VERDICT_STALEMATE = STALEMATE
 
 KEYS_DIR = os.path.join(_HERE, "..", "keys")
@@ -88,22 +88,22 @@ class WorldState:
 # compute pipeline
 # ---------------------------------------------------------------------------
 def compute_world_state(waves, feeds=None, registry_data=None,
-                        purity_pulse=None, parliament=None):
-    """Run each wave through Parliament collapse, assemble the WorldState.
+                        purity_pulse=None, narrow=None):
+    """Run each wave through the narrowing, assemble the WorldState.
 
     waves         — list[DecisionWave], each with question + candidates
     feeds         — list of dicts {name, reading (bytes/str|None), reading_hash (str|None)}
     registry_data — bytes|str|None; anything digested for the registry
     purity_pulse  — dict|None: {"signed": bool, "pulse_id": str}
-    parliament    — Parliament instance (defaults to DCLM and Iris)
+    narrow        — Narrow instance (defaults to DCLM and Iris)
 
     Returns the WorldState as a plain dict. Provenance on everything.
     """
     state = WorldState()
-    parliament = parliament if parliament is not None else Parliament()
+    narrow = narrow if narrow is not None else Narrow()
 
     for wave in waves:
-        parliament.collapse(wave)
+        narrow.collapse(wave)
         state.verdicts.append({
             "question": wave.question,
             "candidates": [_point_dict(p) for p in wave.candidates],

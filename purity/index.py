@@ -553,7 +553,7 @@ def _d2_structures(root):
     econ = _load_py(root, "economics/economic_state.py", "purity_econ")
     meter = _load_py(root, "dclm/meter.py", "purity_meter")
 
-    from rings import DecisionWave, Point  # real ring logic, not copied
+    from narrow import DecisionWave, Point  # the narrowing, not a copied rule
 
     waves = [
         DecisionWave(question="decided?", candidates=[Point(1.0, 0.5, 0.2), Point(-0.5, 0.1, 0.3)]),

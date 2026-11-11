@@ -12,15 +12,15 @@ import unittest
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 
-from rings import (  # noqa: E402
+from narrow import (  # noqa: E402
+    Constraint,
     DecisionWave,
-    Parliament,
+    Narrow,
     Point,
-    Ring,
-    RING_DCLM,
-    RING_IRIS,
+    DCLM,
+    IRIS,
     STALEMATE,
-    VICTORY,
+    FLAWLESS,
 )
 from compute import (  # noqa: E402
     PROVENANCE_LABELS,
@@ -50,7 +50,7 @@ class TestNarrowing(unittest.TestCase):
         state = compute_world_state([wave])
         verdict = state["verdicts"][0]
 
-        self.assertIsNone(Parliament().decide("which path?", list(UNSPLIT)))
+        self.assertIsNone(Narrow().decide("which path?", list(UNSPLIT)))
         self.assertEqual(verdict["status"], STALEMATE)
         self.assertEqual(verdict["status"], VERDICT_STALEMATE)
         self.assertIsNone(verdict["decision"])
@@ -59,17 +59,17 @@ class TestNarrowing(unittest.TestCase):
         self.assertEqual(verdict["provenance"], "DERIVED")
         self.assertNotIn("z", verdict["candidates"][0])
 
-    def test_one_candidate_that_satisfies_both_is_victory(self):
-        strict = Parliament(rings=(
-            Ring("DCLM", RING_DCLM.dimension, binding=0.5),
-            Ring("Iris", RING_IRIS.dimension, binding=0.5),
+    def test_one_candidate_that_satisfies_both_is_flawless(self):
+        strict = Narrow(constraints=(
+            Constraint("DCLM", DCLM.dimension, binding=0.5),
+            Constraint("Iris", IRIS.dimension, binding=0.5),
         ))
         candidates = [Point(0.9, 0.8), Point(0.2, 0.1)]
         wave = DecisionWave(question="which path?", candidates=list(candidates))
-        state = compute_world_state([wave], parliament=strict)
+        state = compute_world_state([wave], narrow=strict)
         verdict = state["verdicts"][0]
 
-        self.assertEqual(verdict["status"], VICTORY)
+        self.assertEqual(verdict["status"], FLAWLESS)
         self.assertEqual(verdict["status"], VERDICT_DECIDED)
         self.assertEqual(verdict["decision"], {"x": 0.9, "y": 0.8})
         self.assertEqual(verdict["reason"], "ONE_REMAINS")
@@ -77,13 +77,13 @@ class TestNarrowing(unittest.TestCase):
         self.assertTrue(wave.is_collapsed())
 
     def test_constraints_that_disagree_do_not_pick(self):
-        strict = Parliament(rings=(
-            Ring("DCLM", RING_DCLM.dimension, binding=0.5),
-            Ring("Iris", RING_IRIS.dimension, binding=0.5),
+        strict = Narrow(constraints=(
+            Constraint("DCLM", DCLM.dimension, binding=0.5),
+            Constraint("Iris", IRIS.dimension, binding=0.5),
         ))
         candidates = [Point(0.9, 0.1), Point(0.1, 0.9)]
         wave = DecisionWave(question="which way?", candidates=list(candidates))
-        state = compute_world_state([wave], parliament=strict)
+        state = compute_world_state([wave], narrow=strict)
         verdict = state["verdicts"][0]
 
         self.assertEqual(verdict["status"], STALEMATE)
@@ -94,12 +94,12 @@ class TestNarrowing(unittest.TestCase):
         self.assertFalse(wave.is_collapsed())
 
     def test_a_candidate_that_fails_a_constraint_is_not_crowned(self):
-        strict = Parliament(rings=(
-            Ring("DCLM", RING_DCLM.dimension, binding=0.5),
-            Ring("Iris", RING_IRIS.dimension, binding=0.5),
+        strict = Narrow(constraints=(
+            Constraint("DCLM", DCLM.dimension, binding=0.5),
+            Constraint("Iris", IRIS.dimension, binding=0.5),
         ))
         wave = DecisionWave(question="too weak?", candidates=[Point(0.1, 0.1, 0.1)])
-        state = compute_world_state([wave], parliament=strict)
+        state = compute_world_state([wave], narrow=strict)
         verdict = state["verdicts"][0]
 
         self.assertEqual(verdict["status"], STALEMATE)
@@ -119,16 +119,16 @@ class TestNarrowing(unittest.TestCase):
 
     def test_a_third_dimension_is_not_a_ring(self):
         offered = (
-            RING_DCLM,
-            RING_IRIS,
-            Ring("former", 2, binding=0.99),
+            DCLM,
+            IRIS,
+            Constraint("former", 2, binding=0.99),
         )
-        parliament = Parliament(rings=offered)
-        self.assertEqual(tuple(ring.dimension for ring in parliament.rings), (0, 1))
-        # z would have failed the dropped ring. It must not decide.
+        narrow = Narrow(constraints=offered)
+        self.assertEqual(tuple(constraint.dimension for constraint in narrow.constraints), (0, 1))
+        # z would have failed the dropped axis. It must not decide.
         wave = DecisionWave(question="z?", candidates=[Point(1.0, 1.0, 0.0)])
-        self.assertEqual(parliament.collapse(wave), Point(1.0, 1.0, 0.0))
-        self.assertEqual(wave.status, VICTORY)
+        self.assertEqual(narrow.collapse(wave), Point(1.0, 1.0, 0.0))
+        self.assertEqual(wave.status, FLAWLESS)
 
 
 class TestProvenance(unittest.TestCase):

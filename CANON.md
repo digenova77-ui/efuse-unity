@@ -10,7 +10,7 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 - `[DERIVED]` — logical consequence of LAW or TRINITY LAW. Defended by reasoning; falls if the reasoning falls.
 - `[HELD]` — awaiting David's word. Proposed values are marked PROPOSED. Nothing HELD is acted on as decided.
 
-**Version:** 1.7.3 — 2026-11-10. v1.7.3 withdraws the Twain² seat. Pragmatism is the narrowing, not a ring. (v1.1.0 adds §0, the Ownership Declaration. v1.2.0 adds §XVII, the Diamond Architecture Floor. v1.3.0 adds §XVIII, Max Purity. v1.4.0 adds §XIX, Governance Elevation. v1.5.0 adds §XX, One Seed. v1.6.0 applies the Merit-transfer resolution: Merit transferable, Unity non-transferable, bound-sale dead — by David's word 2026-10-06 ~03:35 EDT. v1.7.0 adds §XXI, the Current Tip Law — Trinity law, not personal. v1.7.1 adds §XXII: Trinity law = 100% purity = 100% pure logic. v1.7.2 adds §XXIII: the Trinity itself must be 100% pure — sine wave purification, no scaffolding.)
+**Version:** 1.7.3 — 2026-11-10. v1.7.3 withdraws the Twain² seat. Pragmatism is the narrowing, not a ring. The pure ending is Flawless, not a victory. The decision function is `dclm/narrow.py`. (v1.1.0 adds §0, the Ownership Declaration. v1.2.0 adds §XVII, the Diamond Architecture Floor. v1.3.0 adds §XVIII, Max Purity. v1.4.0 adds §XIX, Governance Elevation. v1.5.0 adds §XX, One Seed. v1.6.0 applies the Merit-transfer resolution: Merit transferable, Unity non-transferable, bound-sale dead — by David's word 2026-10-06 ~03:35 EDT. v1.7.0 adds §XXI, the Current Tip Law — Trinity law, not personal. v1.7.1 adds §XXII: Trinity law = 100% purity = 100% pure logic. v1.7.2 adds §XXIII: the Trinity itself must be 100% pure — sine wave purification, no scaffolding.)
 
 ---
 
@@ -30,16 +30,16 @@ A bot reading only this document can operate correctly. Nothing missing, nothing
 
 ## I. THE NARROWING
 
-[LAW] Two rings bind two dimensions. Each ring binds exactly one dimension and never touches the other.
+[LAW] Two constraints bind two dimensions. Each constraint binds exactly one dimension and never touches the other.
 
-| Ring | Binds | Dimension |
+| Constraint | Binds | Dimension |
 |---|---|---|
 | DCLM | x | LOGIC |
 | Iris | y | TRUTH |
 
-[LAW] Pragmatism is not a ring and not a seat. Pragmatism narrows. It applies only constraints already in force until one candidate remains and that candidate satisfies every constraint, or until no unused constraint can split the remainder.
+[LAW] Pragmatism is not a constraint and not a seat. Pragmatism narrows. It applies only constraints already in force until one candidate remains and that candidate satisfies every constraint, or until no unused constraint can split the remainder.
 
-[LAW] One such candidate is victory. More than one, with nothing left that can split them, is stalemate. Constraints that would leave different survivors are not resolved by choosing one. A constraint that would remove every remaining candidate is not applied. Balance is not a constraint. List order is not a constraint.
+[LAW] One such candidate is Flawless. Flawless means pure logic decision execution, free of defect. It is not a victory. More than one, with nothing left that can split them, is stalemate. Constraints that would leave different survivors are not resolved by choosing one. A constraint that would remove every remaining candidate is not applied. Balance is not a constraint. List order is not a constraint.
 
 [LAW] The narrowing does not stop before one of those two endings. A missing score is not a determination.
 
