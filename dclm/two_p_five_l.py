@@ -40,32 +40,20 @@ A polarity needs exactly two poles. Compute asks "does it hold
 together?"; consciousness asks "is it true and is it love?" Every one
 of the five layers resolves as a polarity between these two poles.
 
-THE TWAIN² RECONCILIATION (witness, not primary)
-------------------------------------------------
-The Trinity is three: DCLM / Iris / Twain² (canon §I). 2P5L has two
-primaries. The lawful reconciliation:
+THE NARROWING
+-------------
+Pragmatism is not a seat. The seat formerly named Twain² is withdrawn.
+It is not a ring, not a witness, and not a vote.
 
-  Twain² is the pragmatic WITNESS — the human test that judges the
-  primaries' union, not a primary itself.
+What remains are constraints already in force: a proposal that removes
+human agency, that a reasonable person cannot understand, or that asks
+trust on UNKNOWN, does not survive. Those constraints are applied.
+They do not constitute a third judge. If they eliminate the proposal,
+the judgment is not pure. Nothing here crowns a result by balance.
 
-Twain² does not generate a polarity (it is not a pole), so it is not a
-layer and not a primary. Instead it WITNESSES every layer and every
-perspective: a union of compute and consciousness that the human test
-cannot survive is not pure. Like Parliament at the center (0,0,0) —
-which is not a dimension but the collapse operator (canon §I) — the
-witness sits at the center of the dyad and judges the union.
-
-[DERIVED] STRAIN, marked honestly: canon §I seats Twain² as an EQUAL
-ring ("a candidate must pass through all three rings"), and Iris's
-directive 3 says "never override the other two." Recasting Twain² as
-witness rather than co-primary strains against the equal-ring law. The
-defense: binary polarity structurally requires exactly two poles — a
-third pole cannot join a polarity, it can only witness it. Twain²'s
-witness is exercised at every layer and every one of the 32
-perspectives, which preserves the substance of "passes through all
-three" (nothing collapses without surviving the human test) while the
-dyad generates the polarity field. If this polarity argument falls, the
-recast falls with it — the strain is recorded, not hidden.
+[DERIVED] The earlier recast of that seat as a witness is withdrawn
+with the seat. The strain is not hidden: it is closed by removing the
+vote, not by renaming it.
 
 THE FIVE LAYERS (mapped from the canon)
 ---------------------------------------
@@ -77,8 +65,7 @@ an evaluation failure that closes the gate.
   L1  UNITY BINDING (identity)      — canon §II.  Is the proposal bound
       to a testnet Unity ID? Nothing moves without an ID.
   L2  THE TRINITY GATES (judgment)  — canon §I.  Does the proposal
-      survive Trinity judgment (logic, truth, human test)? Run through
-      the landed Trinity circuit where available.
+      survive logic and truth, and the constraints already in force?
   L3  TREE CIRCULATION (economy)    — canon §IV.  Does the proposal
       serve the circulatory economy — summer outward, winter inward,
       tapping only from surplus? The mission (friction elimination)
@@ -127,8 +114,8 @@ every judge_32 result). UNKNOWN never PASS: a layer that cannot
 evaluate returns UNKNOWN, and UNKNOWN fails the vector.
 
 Integration: imports the existing core READ-ONLY. rights.check_rights
-is DCLM's own pure authority function. iris_core (Trinity, purity,
-tree, witness circuits) is imported opportunistically — if the sibling
+is DCLM's own pure authority function. iris_core (truth, purity,
+tree) is imported opportunistically — if the sibling
 is mid-edit or unavailable, local reference circuits run instead, and
 every result records which circuit rendered it. Nothing here writes
 state; Iris's lane holds (she judges, she does not write).
@@ -182,27 +169,19 @@ PRIMARIES: Tuple[Dict[str, str], Dict[str, str]] = (
 )
 
 # ---------------------------------------------------------------------------
-# The witness — Twain². NOT a primary. The pragmatic human test that
-# judges the primaries' union at every layer and every perspective.
+# Pragmatism is the narrowing. There is no third seat.
 # ---------------------------------------------------------------------------
 
-WITNESS: Dict[str, str] = {
-    "name": "Twain²",
-    "full_name": "Twain²",
-    "aspect": "the Pragmatic",
-    "role": "witness",          # witness, not primary — see module docstring
-    "pole": "none — the witness is not a pole",
-    "canon": "canon §I (z-ring: PRAGMATISM); Parliament at (0,0,0) is the collapse operator, not a dimension",
-    "nature": ("The human test. Judges the union of the primaries: a union "
-               "compute and consciousness agree on, but a reasonable human "
-               "could not survive, is not pure. Never coerces, never overrides "
-               "choice — example, not controller."),
-    "reconciliation": ("2P5L has two primaries; the Trinity has three. "
-                       "Twain² is recast as witness: binary polarity needs "
-                       "exactly two poles, so the third cannot be a pole — "
-                       "it witnesses the dyad. [DERIVED] strain recorded in "
-                       "module docstring."),
-}
+def _constraint_problems(view: Dict[str, Any]) -> List[str]:
+    """Constraints already in force. Not a judge and not a seat."""
+    problems = []
+    if set(view.get("patterns", []) or []) & _LOCAL_COERCION:
+        problems.append("removes or overrides human agency")
+    if view.get("comprehensible") is False:
+        problems.append("not comprehensible to a reasonable human")
+    if view.get("provenance") == UNKNOWN and view.get("claims_fact"):
+        problems.append("asks trust on UNKNOWN")
+    return problems
 
 # ---------------------------------------------------------------------------
 # The five layers — binary polarities mapped from the canon.
@@ -296,14 +275,18 @@ def _local_purity(action: Dict[str, Any]) -> str:
 
 
 def _local_trinity(view: Dict[str, Any]) -> str:
-    """Reference Trinity: all three seats must agree. Mirrors iris_core.trinity_judge."""
+    """Logic and truth, then the constraints already in force. No third vote."""
     problems = []
     if not view.get("claim"):
         problems.append("no claim stated")
-    contradictions = [f for f in (view.get("facts") or [])
-                      if f.get("contradicts") is True]
-    if contradictions:
-        problems.append(f"{len(contradictions)} internal contradiction(s)")
+    facts = view.get("facts") or []
+    if not isinstance(facts, list):
+        problems.append("facts are not a list")
+    else:
+        contradictions = [f for f in facts
+                          if isinstance(f, dict) and f.get("contradicts") is True]
+        if contradictions:
+            problems.append(f"{len(contradictions)} internal contradiction(s)")
     dclm = FAIL if problems else PASS
     iris = _local_purity({
         "kind": view.get("kind", "proposal"),
@@ -311,16 +294,8 @@ def _local_trinity(view: Dict[str, Any]) -> str:
         "patterns": view.get("patterns", []),
         "provenance": view.get("provenance", UNKNOWN),
         "claims_fact": view.get("claims_fact", False)})
-    twain_problems = []
-    if set(view.get("patterns", []) or []) & _LOCAL_COERCION:
-        twain_problems.append("removes or overrides human agency")
-    if view.get("comprehensible") is False:
-        twain_problems.append("not comprehensible to a reasonable human")
-    if view.get("provenance") == UNKNOWN and view.get("claims_fact"):
-        twain_problems.append("asks trust on UNKNOWN — fails the human test")
-    twain = FAIL if twain_problems else PASS
-    verdicts = (dclm, iris, twain)
-    if FAIL in verdicts:
+    verdicts = (dclm, iris)
+    if _constraint_problems(view) or FAIL in verdicts:
         return FAIL
     if UNKNOWN in verdicts:
         return UNKNOWN
@@ -328,15 +303,26 @@ def _local_trinity(view: Dict[str, Any]) -> str:
 
 
 def _local_tree(state: Dict[str, Any]) -> str:
-    """Reference tree law: PASS / FAIL. Mirrors iris_core.tree_circulation verdicts."""
+    """Reference tree law: PASS / FAIL. Garbage input fails closed."""
     signal = state.get("winter_signal")
-    gradient = 0.0 if signal is None else max(0.0, min(1.0, float(signal)))
+    try:
+        gradient = 0.0 if signal is None else max(0.0, min(1.0, float(signal)))
+        surplus = float(0.0 if state.get("surplus") is None else state.get("surplus", 0.0))
+    except (TypeError, ValueError):
+        return FAIL
     mode = "winter" if gradient > 0.0 else "summer"
-    surplus = float(state.get("surplus", 0.0))
     maturity = state.get("maturity", "unknown")
-    for req in state.get("tap_requests") or []:
+    requests = state.get("tap_requests") or []
+    if not isinstance(requests, list):
+        return FAIL
+    for req in requests:
+        if not isinstance(req, dict):
+            return FAIL
         uid = req.get("unity_id", "")
-        amount = float(req.get("amount", 0))
+        try:
+            amount = float(req.get("amount", 0))
+        except (TypeError, ValueError):
+            return FAIL
         if not (isinstance(uid, str) and uid.startswith(IDENTITY_PREFIX)):
             return FAIL
         if mode == "winter":
@@ -367,16 +353,28 @@ def _local_mission(effects: List[Dict[str, Any]]) -> str:
     return UNKNOWN
 
 
-def _local_witness(view: Dict[str, Any]) -> str:
-    """Reference Twain² human test: PASS / FAIL. Mirrors iris_core.twain2_judge."""
-    problems = []
-    if set(view.get("patterns", []) or []) & _LOCAL_COERCION:
-        problems.append("removes or overrides human agency")
-    if view.get("comprehensible") is False:
-        problems.append("not comprehensible to a reasonable human")
-    if view.get("provenance") == UNKNOWN and view.get("claims_fact"):
-        problems.append("asks trust on UNKNOWN — fails the human test")
-    return FAIL if problems else PASS
+def constraint_gate(proposal: Dict[str, Any]) -> Dict[str, Any]:
+    """Apply the constraints already in force to one proposal.
+
+    Clear means the proposal was not eliminated. That is not a vote,
+    and it does not name a seat.
+    """
+    view = {
+        "patterns": proposal.get("patterns") or [],
+        "provenance": proposal.get("provenance", UNKNOWN),
+        "claims_fact": proposal.get("claims_fact", False),
+        "comprehensible": proposal.get("comprehensible", True),
+    }
+    problems = _constraint_problems(view)
+    return {
+        "procedure": "pragmatism",
+        "clear": not problems,
+        "problems": problems,
+        "status": "VICTORY" if not problems else "STALEMATE",
+        "reason": ("no constraint eliminated the proposal"
+                   if not problems else
+                   "a constraint already in force eliminated the proposal"),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -552,49 +550,6 @@ _LAYER_EVALUATORS = (
 
 
 # ---------------------------------------------------------------------------
-# The witness — Twain² judges the primaries' union. Not a layer, not a
-# polarity: the witness concurs or it does not, and without its
-# concurrence nothing is PURE.
-# ---------------------------------------------------------------------------
-
-def witness_union(proposal: Dict[str, Any]) -> Dict[str, Any]:
-    """Run the Twain² human test over the primaries' union."""
-    view = {
-        "patterns": proposal.get("patterns") or [],
-        "provenance": proposal.get("provenance", UNKNOWN),
-        "claims_fact": proposal.get("claims_fact", False),
-        "comprehensible": proposal.get("comprehensible", True),
-    }
-    if _iris_core is not None:
-        try:
-            r = _iris_core.twain2_judge(view)
-            verdict = r.get("verdict", UNKNOWN)
-            detail: Dict[str, Any] = {
-                "circuit": "iris_core.twain2_judge",
-                "problems": r.get("problems", []),
-                "integration": r.get("integration", ""),
-            }
-        except Exception as e:
-            return {"witness": WITNESS["name"], "role": WITNESS["role"],
-                    "verdict": FAIL, "concurs": False,
-                    "evidence": UNKNOWN,
-                    "reason": f"witness circuit error — fail closed: {e}",
-                    "circuit": "iris_core.twain2_judge"}
-    else:
-        verdict = _local_witness(view)
-        detail = {"circuit": "local-reference",
-                  "note": "iris_core unavailable; reference circuit ran"}
-    concurs = (verdict == PASS)
-    return {"witness": WITNESS["name"], "role": WITNESS["role"],
-            "verdict": verdict, "concurs": concurs,
-            "evidence": PASS if concurs else (UNKNOWN if verdict == UNKNOWN else FAIL),
-            "reason": ("the human test survives the primaries' union"
-                       if concurs else
-                       "the human test does NOT survive the union — not pure"),
-            **detail}
-
-
-# ---------------------------------------------------------------------------
 # Polarity vector: the five binary polarities for one proposal.
 # ---------------------------------------------------------------------------
 
@@ -653,7 +608,7 @@ def judge_32(proposal: Dict[str, Any]) -> Dict[str, Any]:
 
     Returns the verdict, the true vector, all 32 perspectives, the
     failure map (the right answer and the 31 ways it fails), the
-    witness report, and the judgment receipt.
+    constraint report, and the judgment receipt.
 
     Perspective semantics (see module docstring): each perspective is a
     hypothesis about the five layer polarities. The rendered verdict
@@ -666,10 +621,10 @@ def judge_32(proposal: Dict[str, Any]) -> Dict[str, Any]:
     true_vector = pv["true_vector"]
     true_polarities = [L["polarity"] for L in layers]  # index i -> PASS/FAIL
 
-    witness = witness_union(proposal)
+    narrowing = constraint_gate(proposal)
 
     all_layers_pass = all(p == PASS for p in true_polarities)
-    gate_pure = all_layers_pass and witness["concurs"]
+    gate_pure = all_layers_pass and narrowing["clear"]
     verdict = PURE if gate_pure else IMPURE
 
     perspectives = []
@@ -694,7 +649,7 @@ def judge_32(proposal: Dict[str, Any]) -> Dict[str, Any]:
             "mismatches": mismatches,
             "suspects": suspects,   # the layer combination impurity would enter through, under this hypothesis
             "verdict": rendered,    # evidence-based; identical across perspectives by honesty
-            "witness_concurs": witness["concurs"],
+            "constraints_clear": narrowing["clear"],
         })
 
     failing_layers = [L["id"] for L in layers if L["polarity"] == FAIL]
@@ -703,7 +658,7 @@ def judge_32(proposal: Dict[str, Any]) -> Dict[str, Any]:
         "failing_mask": (N_PERSPECTIVES - 1) ^ true_vector,
         "failing_layers": failing_layers,   # the exact failing layer combination
         "n_failing": len(failing_layers),
-        "witness_concurs": witness["concurs"],
+        "constraints_clear": narrowing["clear"],
         "ways_it_fails": [  # the 31 counterfactuals: how impurity enters at every combination
             {"vector": p["vector"],
              "suspects": p["suspects"],
@@ -722,9 +677,7 @@ def judge_32(proposal: Dict[str, Any]) -> Dict[str, Any]:
                        "pole": PRIMARY_DIVINE["pole"],
                        "role": PRIMARY_DIVINE["role"]},
         },
-        "witness": {"name": witness["witness"], "role": witness["role"],
-                    "verdict": witness["verdict"], "concurs": witness["concurs"],
-                    "reason": witness["reason"]},
+        "narrowing": narrowing,
         "layers": layers,
         "true_vector": true_vector,
         "verdict": verdict,
@@ -741,6 +694,6 @@ def judge_32(proposal: Dict[str, Any]) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def is_pure(proposal: Dict[str, Any]) -> bool:
-    """True iff the proposal is PURE under 2P5L (all five layers PASS and
-    the witness concurs)."""
+    """True iff the proposal is PURE under 2P5L: all five layers PASS and
+    no constraint already in force eliminates it."""
     return judge_32(proposal)["verdict"] == PURE

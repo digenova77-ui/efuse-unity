@@ -1,13 +1,15 @@
-"""RINGS — pure three-ring collapse contract.
+"""PRAGMATISM — narrow until victory or stalemate.
 
-Transform: local pure implementation of the DecisionWave / Parliament / Point
-interface expected by dclm/compute.py and dclm/test_compute.py.
-Not a copy of an external file; a self-contained contract that satisfies the
-observed tests and the fail-closed rule (no survivors → undecided, never forced).
+DCLM binds logic (x). Iris binds truth (y). There is no third ring.
+A point may still carry z. That coordinate is never read.
 
-Balance prefers candidates that are equal and non-zero across the three
-dimensions. A perfectly equal point scores 1.0. Weak points can still score
-high on balance but are rejected by ring binding thresholds.
+Pragmatism applies only constraints already in force. It stops only when
+one candidate remains and that candidate satisfies every constraint
+(victory), or when no unused constraint can split the remainder
+(stalemate). Balance is not a constraint. List order is not a constraint.
+A constraint that would remove every remaining candidate is not applied.
+Two constraints that would leave different survivors are not resolved by
+picking one of them.
 """
 from __future__ import annotations
 
@@ -15,23 +17,34 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Sequence
 
 
+VICTORY = "VICTORY"
+STALEMATE = "STALEMATE"
+
+
 @dataclass(frozen=True)
 class Point:
     x: float
     y: float
-    z: float
+    z: float = 0.0  # carried so older callers still construct; never consulted
 
 
-@dataclass
+@dataclass(frozen=True)
 class Ring:
     name: str
-    dimension: int          # 0=x, 1=y, 2=z
-    binding: float = 0.0    # minimum strength required on this dimension
+    dimension: int          # 0 = x, 1 = y. No other dimension is a ring.
+    binding: float = 0.0    # minimum the candidate must meet on this axis
 
 
-RING_DCLM  = Ring("DCLM",  0, binding=0.0)
-RING_IRIS  = Ring("Iris",  1, binding=0.0)
-RING_TWAIN = Ring("Twain²", 2, binding=0.0)
+RING_DCLM = Ring("DCLM", 0, binding=0.0)
+RING_IRIS = Ring("Iris", 1, binding=0.0)
+
+
+def _axis(point: Point, dimension: int) -> float:
+    if dimension == 0:
+        return point.x
+    if dimension == 1:
+        return point.y
+    raise ValueError(f"not a ring dimension: {dimension}")
 
 
 @dataclass
@@ -40,57 +53,96 @@ class DecisionWave:
     candidates: List[Point] = field(default_factory=list)
     _collapsed: bool = False
     decision: Optional[Point] = None
+    status: Optional[str] = None
+    reason: Optional[str] = None
+    remaining: List[Point] = field(default_factory=list)
+    applied: List[str] = field(default_factory=list)
 
     def is_collapsed(self) -> bool:
         return self._collapsed
 
 
 class Parliament:
-    """Three-ring collapse. Highest balance among survivors wins.
-    No survivors → wave goes to undecided, never forced."""
+    """Narrow by the constraints in force. Never a third vote."""
 
     def __init__(self, rings: Optional[Sequence[Ring]] = None):
-        self.rings = tuple(rings) if rings is not None else (
-            RING_DCLM, RING_IRIS, RING_TWAIN)
-        self.undecided: List[DecisionWave] = []
+        chosen = tuple(rings) if rings is not None else (RING_DCLM, RING_IRIS)
+        self.rings = tuple(
+            ring for ring in chosen
+            if ring.dimension in (0, 1)
+        )
+        self.stalemates: List[DecisionWave] = []
 
-    @staticmethod
-    def balance(p: Point) -> float:
-        """1.0 when all three dimensions are equal and positive.
-        Otherwise a [0,1] measure of equality × strength.
-        """
-        vals = (p.x, p.y, p.z)
-        mn, mx = min(vals), max(vals)
-        if mn <= 0:
-            return 0.0
-        if abs(mx - mn) < 1e-12:
-            return 1.0
-        mean = sum(vals) / 3.0
-        spread = mx - mn
-        equality = max(0.0, 1.0 - spread / mean) if mean > 0 else 0.0
-        return equality * mn
-
-    def _survives(self, p: Point) -> bool:
-        for r in self.rings:
-            dim = (p.x, p.y, p.z)[r.dimension]
-            if dim < r.binding:
-                return False
-        return True
+    def _splitters(self, remaining: Sequence[Point], unused: Sequence[Ring]):
+        found = []
+        for ring in unused:
+            passed = [
+                candidate for candidate in remaining
+                if _axis(candidate, ring.dimension) >= ring.binding
+            ]
+            if passed and len(passed) < len(remaining):
+                found.append((ring, passed))
+        return found
 
     def collapse(self, wave: DecisionWave) -> Optional[Point]:
-        survivors = [c for c in wave.candidates if self._survives(c)]
-        if not survivors:
-            wave._collapsed = False
-            self.undecided.append(wave)
-            return None
-        best = max(survivors, key=lambda c: (self.balance(c), -survivors.index(c)))
-        wave.decision = best
-        wave._collapsed = True
-        return best
+        remaining = list(wave.candidates)
+        unused = list(self.rings)
+        applied: List[str] = []
 
-    def decide(self, question: str, candidates: List[Point]) -> Point:
+        while True:
+            splitters = self._splitters(remaining, unused)
+            if not splitters:
+                break
+            signatures = {
+                tuple(id(candidate) for candidate in passed)
+                for _, passed in splitters
+            }
+            if len(signatures) != 1:
+                self._stalemate(
+                    wave, remaining, applied, "CONSTRAINTS_DISAGREE",
+                )
+                return None
+            for ring, _passed in splitters:
+                applied.append(ring.name)
+            unused = [ring for ring in unused if ring.name not in applied]
+            remaining = list(splitters[0][1])
+
+        satisfying = [
+            candidate for candidate in remaining
+            if all(
+                _axis(candidate, ring.dimension) >= ring.binding
+                for ring in self.rings
+            )
+        ]
+        wave.applied = applied
+        if len(satisfying) == 1:
+            wave.decision = satisfying[0]
+            wave.remaining = list(satisfying)
+            wave.status = VICTORY
+            wave.reason = "ONE_REMAINS"
+            wave._collapsed = True
+            return satisfying[0]
+
+        if not wave.candidates:
+            reason = "NO_CANDIDATES"
+        elif not satisfying:
+            reason = "NONE_SATISFIES"
+        else:
+            reason = "NO_CONSTRAINT_SPLITS"
+        self._stalemate(wave, satisfying, applied, reason)
+        return None
+
+    def _stalemate(self, wave, remaining, applied, reason) -> None:
+        wave.decision = None
+        wave.remaining = list(remaining)
+        wave.applied = list(applied)
+        wave.status = STALEMATE
+        wave.reason = reason
+        wave._collapsed = False
+        self.stalemates.append(wave)
+
+    def decide(self, question: str, candidates: List[Point]) -> Optional[Point]:
+        """Victory returns the one remaining point. Stalemate returns None.
+        It does not raise, and it does not pick."""
         wave = DecisionWave(question, list(candidates))
-        decision = self.collapse(wave)
-        if decision is None:
-            raise RuntimeError("no survivors — undecided, never forced")
-        return decision
+        return self.collapse(wave)

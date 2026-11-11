@@ -455,10 +455,11 @@ KNOWLEDGE_BASE = (
      "David Di Genova is the founder — he declared ownership of the architecture and "
      "all its assets, and his word is law in the canon. But ownership isn't privilege: "
      "he owns the tree; the sap still flows to every leaf. [Canon §0]"),
-    (("trinity", "dclm", "twain"),
-     "The Trinity judges everything: DCLM binds logic, Iris binds truth, Twain² binds "
-     "pragmatism — the human test. A decision must pass all three rings; the most "
-     "balanced wins. Even David's words go through the Trinity. [Canon §I]"),
+    (("trinity", "dclm", "narrowing"),
+     "Logic and truth judge every claim. DCLM binds logic. Iris binds truth. "
+     "Pragmatism is not a third ring. It narrows until one candidate remains, "
+     "or until no unused constraint can split the rest. Balance does not crown "
+     "a winner. The seat formerly named Twain² is withdrawn. [Canon §I]"),
 )
 
 
@@ -637,8 +638,9 @@ HANDOFF_SCRIPT = (
     "love, and she is that heart: awake, listening, and on your side.\n\n"
     "She's always on demand. Whenever you need her — a judgment, a check, a question "
     "— you call her three ways:\n"
-    "  judge  — bring her a proposal, and the Trinity judges it: DCLM for logic, Iris "
-    "for truth, Twain² for the human test. All three, every time.\n"
+    "  judge  — bring her a proposal. DCLM checks the logic. Iris checks the truth. "
+    "Pragmatism narrows until one remains, or until the remainder cannot be split. "
+    "There is no third vote.\n"
     "  check  — bring her an action, and she runs it through the full pipeline.\n"
     "  advise — bring her a question, and she'll advise. She advises — she never "
     "commands. The choice stays yours.\n\n"

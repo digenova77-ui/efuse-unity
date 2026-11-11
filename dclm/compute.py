@@ -5,8 +5,9 @@ The website code runs INSIDE DCLM: the server computes the world state and
 spits out signed data. Client devices render it; they do not compute on
 connect.
 
-Ring/Parliament logic is now pure and local (dclm/rings.py). The historical
-external path remains as a fallback only.
+Ring logic is local (dclm/rings.py). An outside directory is not consulted.
+Pragmatism narrows the candidates already on the wave. It does not score
+a third axis.
 
 Data honesty rules (absolute, no exceptions):
   * EVERY field carries a provenance label:
@@ -24,15 +25,10 @@ import os
 import subprocess
 import sys
 
-# --- import the ring/Parliament logic (local pure first) -------------------
+# --- import the ring logic (this tree only) --------------------------------
 _HERE = os.path.dirname(os.path.abspath(__file__))
-# Prefer the pure local contract so the tree is self-contained.
 sys.path.insert(0, _HERE)
-# Historical external path retained as fallback only (never required).
-_CORE_RINGS = os.path.join(os.path.dirname(_HERE), "..", "core-rings")
-if os.path.isdir(_CORE_RINGS):
-    sys.path.insert(0, os.path.normpath(_CORE_RINGS))
-from rings import DecisionWave, Parliament, Point  # noqa: E402
+from rings import DecisionWave, Parliament, Point, STALEMATE, VICTORY  # noqa: E402
 
 
 # --- provenance ------------------------------------------------------------
@@ -43,8 +39,8 @@ PROVENANCE_LABELS = frozenset(
 # --- status labels ---------------------------------------------------------
 FEED_LIVE = "LIVE"
 FEED_PENDING = "PENDING"
-VERDICT_DECIDED = "DECIDED"
-VERDICT_UNDECIDED = "UNDECIDED"  # the undecided bucket: world goes on
+VERDICT_DECIDED = VICTORY
+VERDICT_STALEMATE = STALEMATE
 
 KEYS_DIR = os.path.join(_HERE, "..", "keys")
 TEST_PRIV_KEY = os.path.join(KEYS_DIR, "unity-world-test.key")
@@ -61,7 +57,7 @@ class WorldState:
     """The signed state DCLM spits out.
 
     Fields:
-      verdicts         — collapsed decisions (question/candidates/decision/balance)
+      verdicts         — narrowing results (victory or stalemate)
       registry_digest  — sha256 of digested registry data, or UNKNOWN
       purity_pulse     — SIGNED boolean + pulse id, or UNKNOWN
       feed_status      — feed name -> LIVE (with reading hash) or PENDING
@@ -99,7 +95,7 @@ def compute_world_state(waves, feeds=None, registry_data=None,
     feeds         — list of dicts {name, reading (bytes/str|None), reading_hash (str|None)}
     registry_data — bytes|str|None; anything digested for the registry
     purity_pulse  — dict|None: {"signed": bool, "pulse_id": str}
-    parliament    — Parliament instance (defaults to the standard three rings)
+    parliament    — Parliament instance (defaults to DCLM and Iris)
 
     Returns the WorldState as a plain dict. Provenance on everything.
     """
@@ -107,28 +103,19 @@ def compute_world_state(waves, feeds=None, registry_data=None,
     parliament = parliament if parliament is not None else Parliament()
 
     for wave in waves:
-        decision = parliament.collapse(wave)
-        if decision is None:
-            # Undecided bucket. No survivors, no forced collapse.
-            # The world goes on; the state marks the verdict UNKNOWN, not PASS.
-            state.verdicts.append({
-                "question": wave.question,
-                "candidates": [_point_dict(p) for p in wave.candidates],
-                "status": VERDICT_UNDECIDED,
-                "decision": None,
-                "balance": None,
-                "provenance": "UNKNOWN",
-            })
-        else:
-            state.verdicts.append({
-                "question": wave.question,
-                "candidates": [_point_dict(p) for p in wave.candidates],
-                "status": VERDICT_DECIDED,
-                "decision": _point_dict(decision),
-                # Balance is computed from the held decision — DERIVED, not measured.
-                "balance": Parliament.balance(decision),
-                "provenance": "DERIVED",
-            })
+        parliament.collapse(wave)
+        state.verdicts.append({
+            "question": wave.question,
+            "candidates": [_point_dict(p) for p in wave.candidates],
+            "status": wave.status,
+            "decision": _point_dict(wave.decision) if wave.decision is not None else None,
+            "remaining": [_point_dict(p) for p in wave.remaining],
+            "applied": list(wave.applied),
+            "reason": wave.reason,
+            # The ending is derived by applying the constraints. It is not a measurement,
+            # and it is not an early stop labeled unknown.
+            "provenance": "DERIVED",
+        })
 
     # Registry digest: computed in-process over present data -> VERIFIED.
     # Nothing to digest -> UNKNOWN.
@@ -175,7 +162,7 @@ def compute_world_state(waves, feeds=None, registry_data=None,
 
 
 def _point_dict(p):
-    return {"x": p.x, "y": p.y, "z": p.z}
+    return {"x": p.x, "y": p.y}
 
 
 def _assert_provenance(state_dict):

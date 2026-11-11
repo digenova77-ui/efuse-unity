@@ -3,8 +3,9 @@
 Covers: the two primaries identified correctly; five layers each binary
 (no third state); judge_32 returns 32 evaluations for any proposal; a
 pure proposal passes all 32; an impure proposal's failure map names the
-exact failing layer combination(s); the Twain² reconciliation (witness,
-not primary); UNKNOWN fails the vector; every judgment receipted.
+exact failing layer combination(s); pragmatism applies constraints and
+does not seat a third judge; UNKNOWN fails the vector; every judgment
+receipted.
 
 Testnet only. Run:  python3 test_two_p_five_l.py
 """
@@ -33,8 +34,7 @@ IMPURE_L1 = dict(PURE_PROPOSAL, unity_id="unity:mainnet:deadbeef")
 
 # Fails exactly L2 + L4: deception pattern trips the purity floor (L4)
 # and, through Iris's seat, the Trinity gates (L2). Identity, economy,
-# and authority stay clean; the witness still concurs ("deception" is
-# not a coercion pattern).
+# and authority stay clean. "deception" is not a coercion constraint.
 IMPURE_L2_L4 = dict(PURE_PROPOSAL, patterns=["deception"])
 
 
@@ -59,47 +59,39 @@ class TestPrimaries(unittest.TestCase):
         self.assertEqual(poles, {"compute", "consciousness"})
 
 
-class TestWitnessReconciliation(unittest.TestCase):
-    def test_twain2_is_witness_not_primary(self):
-        self.assertEqual(t.WITNESS["name"], "Twain²")
-        self.assertEqual(t.WITNESS["role"], "witness")
-        self.assertNotIn(t.WITNESS, t.PRIMARIES)
+class TestNarrowing(unittest.TestCase):
+    def test_there_is_no_third_seat(self):
+        self.assertFalse(hasattr(t, "WITNESS"))
         self.assertNotIn("Twain²", [p["name"] for p in t.PRIMARIES])
+        self.assertIn("withdrawn", t.__doc__)
 
-    def test_reconciliation_documented(self):
-        self.assertIn("witness", t.WITNESS["reconciliation"])
-        self.assertIn("[DERIVED]", t.WITNESS["reconciliation"])
-        # The module docstring records the strain honestly.
-        self.assertIn("[DERIVED] STRAIN", t.__doc__)
-        self.assertIn("Twain²", t.__doc__)
+    def test_a_clear_proposal_is_not_eliminated(self):
+        gate = t.constraint_gate(PURE_PROPOSAL)
+        self.assertEqual(gate["procedure"], "pragmatism")
+        self.assertTrue(gate["clear"])
+        self.assertEqual(gate["status"], "VICTORY")
+        self.assertEqual(gate["problems"], [])
 
-    def test_witness_concurs_on_pure(self):
-        w = t.witness_union(PURE_PROPOSAL)
-        self.assertEqual(w["witness"], "Twain²")
-        self.assertEqual(w["role"], "witness")
-        self.assertTrue(w["concurs"])
-        self.assertEqual(w["verdict"], t.PASS)
+    def test_coercion_is_a_constraint_not_a_vote(self):
+        gate = t.constraint_gate(dict(PURE_PROPOSAL, patterns=["coerce"]))
+        self.assertFalse(gate["clear"])
+        self.assertEqual(gate["status"], "STALEMATE")
+        result = t.judge_32(dict(PURE_PROPOSAL, patterns=["coerce"]))
+        self.assertEqual(result["verdict"], t.IMPURE)
+        self.assertNotIn("witness", result)
+        self.assertIn("L2_TRINITY_GATES", result["failure_map"]["failing_layers"])
 
-    def test_witness_dissents_on_coercion(self):
-        w = t.witness_union(dict(PURE_PROPOSAL, patterns=["coerce"]))
-        self.assertFalse(w["concurs"])
-        self.assertEqual(w["verdict"], t.FAIL)
-
-    def test_witness_gates_the_union(self):
-        # Even with all five layers passing, a dissenting witness
-        # must keep the judgment from PURE. (Monkeypatched to isolate
-        # the gating logic from the shared reference circuit.)
-        real = t.witness_union
+    def test_a_patched_constraint_still_blocks_purity(self):
+        real = t.constraint_gate
         try:
-            t.witness_union = lambda proposal: {
-                "witness": "Twain²", "role": "witness", "verdict": t.FAIL,
-                "concurs": False, "evidence": t.FAIL,
-                "reason": "patched dissent", "circuit": "test"}
+            t.constraint_gate = lambda proposal: {
+                "procedure": "pragmatism", "clear": False, "problems": ["patched"],
+                "status": "STALEMATE", "reason": "patched"}
             result = t.judge_32(PURE_PROPOSAL)
             self.assertEqual(result["verdict"], t.IMPURE)
-            self.assertFalse(result["witness"]["concurs"])
+            self.assertFalse(result["narrowing"]["clear"])
         finally:
-            t.witness_union = real
+            t.constraint_gate = real
 
 
 class TestFiveLayers(unittest.TestCase):
