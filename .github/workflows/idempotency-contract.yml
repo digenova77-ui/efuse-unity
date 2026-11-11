@@ -1,0 +1,32 @@
+name: idempotency-contract-v1
+
+on:
+  pull_request:
+    paths:
+      - "protocol/UNIFIED_IDEMPOTENCY_V1.md"
+      - "protocol/idempotency-v1-vectors.json"
+      - "tests/idempotency-v1.test.mjs"
+      - ".github/workflows/idempotency-contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - "protocol/UNIFIED_IDEMPOTENCY_V1.md"
+      - "protocol/idempotency-v1-vectors.json"
+      - "tests/idempotency-v1.test.mjs"
+      - ".github/workflows/idempotency-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-vectors:
+    name: Canonical encoding and hash vectors
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify shared canonicalization vectors
+        run: node --test tests/idempotency-v1.test.mjs
