@@ -70,13 +70,14 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 # -- HONEST-PENDING gate: never fake her ------------------------------------
+from neural import RefusedError
+
 _IRIS_LIVE = False
 _IMPORT_ERROR: Optional[Exception] = None
 try:
     import iris_service as _iris_service_mod
     from iris_service import IrisService, UnauthorizedCaller, source_canon_version
-    from neural import (check_unity_id, make_unity_id, build_receipt,
-                        RefusedError)
+    from neural import check_unity_id, make_unity_id, build_receipt
     from member_records import MemberRegistry, phrase_step
     from iris_state import IrisState
     from writes import verify_commit as verify_dclm_commit
@@ -85,7 +86,7 @@ except ImportError as _e:
     _IRIS_LIVE = False
     _IMPORT_ERROR = _e
 LABEL = "MEETING IRIS"
-CANON_VERSION = source_canon_version()
+CANON_VERSION = source_canon_version() if _IRIS_LIVE else "UNKNOWN"
 HOST_ID = "host:iris-intake-testnet"
 
 # Her covenant words — the relationship, spoken.
