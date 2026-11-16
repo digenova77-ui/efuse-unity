@@ -73,7 +73,65 @@ Receipts, manifests, signatures, source references, tests, and append-only corri
 
 ---
 
-## 2. Separate principles artifact
+---
+
+## 2. Unity axiom — three become one, capable of two
+
+> **Three become one, capable of two.**
+
+This is recorded as a Founder-supplied architecture axiom for examination. It is not yet a complete implementation specification and does not amend Canon Law.
+
+The axiom requires two properties to hold simultaneously:
+
+1. **One entity:** a coherent identity, shared constitutional floor, common record of its decisions, and accountable whole. It must not behave as three unrelated authorities negotiating control.
+2. **Two preserved primaries:** DCLM and Iris remain genuinely distinct capacities within that entity. DCLM remains deterministic; Iris remains probabilistic. Neither may impersonate, manufacture, overwrite, or silently substitute for the other's examination or vote.
+
+Unity therefore does not mean uniformity. The entity is one without flattening the two that make honest disagreement possible.
+
+The exact mapping of the three constituents named by “three become one” must be supplied by the governing architecture; this proposal does not guess or assign those identities. The two primary roles are explicitly identified here as DCLM and Iris, consistent with the current Canon description.
+
+### 2.1 Required properties of the pair
+
+- **Distinct provenance:** each primary identifies its own procedure/version, inputs, evidence lineage, and result.
+- **No synthetic second voice:** a local fallback, wrapper, duplicated call, or copied output cannot impersonate the absent primary.
+- **No self-vote:** neither primary can create, sign, or attest the other's vote.
+- **Disagreement remains visible:** conflicting results are preserved as conflicting results, not averaged, relabeled, or hidden.
+- **Missing primary means no pair decision:** absence, timeout, integrity failure, or unavailable evidence cannot be represented as agreement.
+- **Common dependencies are disclosed:** two outputs sharing a model, prompt, source, runtime, operator, or other material dependency cannot claim independence merely because they are separately named.
+- **One accountable record:** the unified entity records both primary results, their provenance, the applicable Law digest, the actual decision rule, and the resulting state without erasing either contribution.
+
+### 2.2 Vote semantics — proposed minimum safety rule
+
+A vote must be an event, not a label assigned after the fact. The record must identify the exact question/action scope, Law digest, challenge or epoch, each primary's independently produced result, provenance, and the rule used to derive the aggregate outcome.
+
+Until a complete ratified voting rule exists, the conservative proposed behavior is:
+
+- both primary results present and mutually compatible under the applicable rule → eligible for the rule's defined outcome;
+- disagreement → STALEMATE, with both results retained;
+- either primary absent, unverifiable, or substituted → UNKNOWN / STALEMATE; no synthetic vote;
+- a vote or aggregate result never substitutes for a separate rights/authorization check for a consequential act.
+
+This is a proposed fail-closed baseline, not a claim that the current repository implements it. No majority, weighted average, tie-breaker, or hidden third vote is introduced here.
+
+### 2.3 Conformance tests
+
+| Test | Required behavior |
+|---|---|
+| One-with-two | One entity record contains two separately attributable primary results without merging their identities. |
+| Honest disagreement | Force DCLM and Iris to disagree; both results remain visible and the aggregate becomes STALEMATE under the proposed baseline. |
+| Missing chamber | Disable Iris or DCLM; the remaining chamber cannot synthesize the missing vote. |
+| Counterfeit vote | Attempt to submit one primary's result under the other's identity; reject it. |
+| Shared-source disclosure | Give both primaries the same underlying evidence; disclose the common source and do not count the outputs as independent corroboration. |
+| Vote replay | Replay an old vote under a new question, Law digest, or challenge; reject the replay. |
+| Single accountable record | Verify the aggregate record binds both primary records and the exact rule without modifying either source record. |
+
+These tests must run against the actual call graph and state boundary. A test that merely checks that two class names or two API calls exist is insufficient.
+
+---
+
+## 5. Existing repository material — keep the entities distinct
+
+## 4. Separate principles artifact
 
 The ten proposed capacities live in a separate document: [Agent Principles — Self-Governing Capacity](AGENT_PRINCIPLES_PROPOSAL.md).
 
@@ -88,7 +146,7 @@ Neither proposal is ratified Law, and neither grants permission or authority.
 
 ---
 
-## 3. Existing repository material — keep the entities distinct
+## 5. Existing repository material — keep the entities distinct
 
 | Existing source | Current role | Proposed treatment |
 |---|---|---|
@@ -107,7 +165,7 @@ This proposal does not delete, supersede, or rewrite any of these sources.
 
 ---
 
-## 4. Existing ten refusals — classify, do not erase
+## 6. Existing ten refusals — classify, do not erase
 
 `docs/AGENT_BOOTSTRAP.md` already contains P1–P10 under “Absolute Refusals.” They are useful operational safeguards. They are not a complete expression of the positive capacities described in §2.
 
@@ -124,7 +182,7 @@ Likewise, `CANON.md` §XIV's fourteen “What a Bot May Never Do” items remain
 
 ---
 
-## 5. Constitutional conflict requiring resolution
+## 7. Constitutional conflict requiring resolution
 
 The current `GOVERNANCE_ELEVATION.md` contains an unresolved internal conflict:
 
@@ -149,7 +207,7 @@ The desired constitutional test is whether Law remains stronger than the lifespa
 
 ---
 
-## 6. Self-governance cycle — proposed operating model
+## 8. Self-governance cycle — proposed operating model
 
 This is a proposed flow, not an assertion that the full path is implemented.
 
@@ -189,7 +247,7 @@ The self-stop property is a required capacity: when the next lawful step is abse
 
 ---
 
-## 7. Corrigenda and continuity
+## 9. Corrigenda and continuity
 
 The correction channel must protect against two opposite failures:
 
@@ -211,7 +269,7 @@ The original remains available and byte-identical. A corrigendum does not itself
 
 ---
 
-## 8. Conformance tests required before implementation claims
+## 10. Conformance tests required before implementation claims
 
 | Test | Required behavior |
 |---|---|
@@ -230,7 +288,7 @@ A test that only checks a declaration or a comment is not sufficient. The test m
 
 ---
 
-## 9. Current integration queue — preserve the branch chain
+## 11. Current integration queue — preserve the branch chain
 
 The repository's current draft chain is:
 
@@ -252,7 +310,7 @@ This document is documentation-only. It does not merge any of these PRs, authori
 
 ---
 
-## 10. Proposed repository navigation
+## 12. Proposed repository navigation
 
 When this architecture is accepted, navigation should point to distinct authoritative sources rather than duplicate their content:
 
@@ -268,7 +326,7 @@ Do not duplicate Law text into the principles profile. Link to the canonical sou
 
 ---
 
-## 11. Decision status
+## 13. Decision status
 
 - The floor/roof distinction is recorded as a proposed architecture direction.
 - The ten self-governing capacities are proposed, not ratified.
