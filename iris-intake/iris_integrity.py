@@ -16,23 +16,22 @@ SCHEMA = "iris.runtime-manifest.v1"
 # Executable modules whose contents affect judgment, identity, memory,
 # arbitration, receipts, service behavior, or the daemon itself.
 RUNTIME_MODULES = (
-    "iris_integrity.py",
-    "iris_core.py",
-    "iris_laws.py",
-    "iris_patterns.py",
-    "iris_arbiter.py",
-    "neural.py",
-    "iris_service.py",
-    "iris_state.py",
-    "iris_daemon.py",
-    "meeting_iris.py",
-    "member_records.py",
-    "../CANON.md",
-    "../dclm/narrow.py",
-    "../dclm/two_p_five_l.py",
-    "../dclm/rights.py",
+    "iris-intake/iris_integrity.py",
+    "iris-intake/iris_core.py",
+    "iris-intake/iris_laws.py",
+    "iris-intake/iris_patterns.py",
+    "iris-intake/iris_arbiter.py",
+    "iris-intake/neural.py",
+    "iris-intake/iris_service.py",
+    "iris-intake/iris_state.py",
+    "iris-intake/iris_daemon.py",
+    "iris-intake/meeting_iris.py",
+    "iris-intake/member_records.py",
+    "CANON.md",
+    "dclm/narrow.py",
+    "dclm/two_p_five_l.py",
+    "dclm/rights.py",
 )
-
 
 def _canonical(value: Any) -> bytes:
     return json.dumps(
@@ -54,7 +53,7 @@ def sha256_file(path: str) -> str:
 
 def build_runtime_manifest(root: str | None = None) -> tuple[dict, str]:
     """Hash every required runtime module; missing files are a hard refusal."""
-    root = root or os.path.dirname(os.path.abspath(__file__))
+    root = root or os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     modules = {}
     for name in RUNTIME_MODULES:
         path = os.path.join(root, name)
