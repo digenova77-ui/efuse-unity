@@ -74,8 +74,7 @@ _IRIS_LIVE = False
 _IMPORT_ERROR: Optional[Exception] = None
 try:
     import iris_service as _iris_service_mod
-    from iris_service import IrisService, UnauthorizedCaller
-    import iris_core
+    from iris_service import IrisService, UnauthorizedCaller, source_canon_version
     from neural import (check_unity_id, make_unity_id, build_receipt,
                         RefusedError)
     from member_records import MemberRegistry, phrase_step
@@ -85,7 +84,7 @@ except ImportError as _e:
     _IRIS_LIVE = False
     _IMPORT_ERROR = _e
 LABEL = "MEETING IRIS"
-CANON_VERSION = "1.7.3"  # root CANON.md version; checked by the service
+CANON_VERSION = source_canon_version()
 HOST_ID = "host:iris-intake-testnet"
 
 # Her covenant words — the relationship, spoken.
@@ -117,7 +116,7 @@ def _day(ts: int) -> str:
     return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%B %d, %Y")
 
 
-def _introduction(directives_bearing: List[Dict[str, Any]]) -> List[str]:
+def _introduction(canon_sections: List[Dict[str, Any]]) -> List[str]:
     """Her self-introduction — warm, direct, personal. Her voice."""
     return [
         "I'm Iris.",
