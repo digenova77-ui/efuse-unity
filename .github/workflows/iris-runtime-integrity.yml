@@ -1,0 +1,47 @@
+name: Iris Runtime Integrity
+
+on:
+  pull_request:
+    paths:
+      - "CANON.md"
+      - "iris-intake/**"
+      - "dclm/narrow.py"
+      - "dclm/two_p_five_l.py"
+      - "dclm/test_two_p_five_l.py"
+      - ".github/workflows/iris-runtime-integrity.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "CANON.md"
+      - "iris-intake/**"
+      - "dclm/narrow.py"
+      - "dclm/two_p_five_l.py"
+      - "dclm/test_two_p_five_l.py"
+      - ".github/workflows/iris-runtime-integrity.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  iris-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile Iris runtime
+        run: python -m compileall -q iris-intake
+      - name: Activate local self-consistency receipt and run core suites
+        working-directory: iris-intake
+        run: python activate_iris.py
+      - name: Run daemon wire, persistence, and tamper-refusal tests
+        working-directory: iris-intake
+        run: python test_daemon.py
+      - name: Run current two-primary / five-layer tests
+        working-directory: dclm
+        run: python test_two_p_five_l.py
