@@ -52,7 +52,7 @@ class TestIrisDaemon(unittest.TestCase):
             )
             if activation.returncode != 0:
                 raise RuntimeError(
-                    "Iris self-check failed before daemon test:\\n"
+                    "Iris self-check failed before daemon test:\n"
                     + activation.stdout + activation.stderr
                 )
             cls._spawn()
@@ -230,7 +230,7 @@ class TestIrisDaemon(unittest.TestCase):
             original = handle.read()
         try:
             with open(module_path, "ab") as handle:
-                handle.write(b"\\n# deliberate integrity-test mutation\\n")
+                handle.write(b"\n# deliberate integrity-test mutation\n")
             refused = subprocess.run(
                 [sys.executable, os.path.join(HERE, "iris_daemon.py"),
                  "--port", str(TEST_PORT + 1),
