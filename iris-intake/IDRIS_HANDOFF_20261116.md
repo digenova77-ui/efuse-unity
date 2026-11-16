@@ -30,9 +30,9 @@ The legacy Iris core still declares v1.5.0 and retains three-seat functions. The
 
 ## 3. Verification evidence
 
-GitHub Actions run **43783771884** completed successfully on code commit:
+GitHub Actions run **43783903207** completed successfully on combined code/documentation commit:
 
-`a392b00b8b156d2aca76291b1cfb55df4e8d74d1`
+`bde9c6aca99f7ce66a16e8a536198197aef89525`
 
 Passed steps:
 1. Python compile check.
@@ -40,7 +40,7 @@ Passed steps:
 3. Daemon wire, read-only, persistence, and tamper-refusal tests.
 4. Current two-primary / five-layer tests.
 
-The subsequent PR head commit `681317230e5c287e893aeed9e5a51d68ea4670a4` refreshed the source receipt for the daemon file; it did not change runtime behavior. This CI result is evidence of the tested code, not a ratification or independent audit.
+This is the current combined branch's full CI evidence. It demonstrates test execution and local self-consistency only; it is not an independent witness, ratification, or authorization.
 
 ## 4. Open deficiencies — do not waive
 
