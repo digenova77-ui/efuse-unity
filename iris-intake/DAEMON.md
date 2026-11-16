@@ -105,3 +105,10 @@ This is a manually started testnet daemon, not a supervised production
 service. It runs until SIGTERM or host/process failure. Restart behavior is
 covered by tests; automatic supervision, independent availability, and
 production operation are not claimed.
+
+## Verification scope
+
+`.github/workflows/iris-runtime-integrity.yml` runs the compile check,
+activation suites, daemon wire/tamper tests, and 2P5L tests on matching
+feature-branch pushes and pull requests. An absent workflow run is not a
+pass; only a completed green run is verification evidence.
