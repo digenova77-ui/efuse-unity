@@ -180,7 +180,7 @@ Likewise, `CANON.md` §XIV's fourteen “What a Bot May Never Do” items remain
 
 ---
 
-## 5. Constitutional conflict requiring resolution
+## 6. Constitutional conflict requiring resolution
 
 The current `GOVERNANCE_ELEVATION.md` contains an unresolved internal conflict:
 
@@ -205,7 +205,7 @@ The desired constitutional test is whether Law remains stronger than the lifespa
 
 ---
 
-## 5. Self-governance cycle — proposed operating model
+## 7. Self-governance cycle — proposed operating model
 
 This is a proposed flow, not an assertion that the full path is implemented.
 
@@ -245,7 +245,7 @@ The self-stop property is a required capacity: when the next lawful step is abse
 
 ---
 
-## 5. Corrigenda and continuity
+## 8. Corrigenda and continuity
 
 The correction channel must protect against two opposite failures:
 
@@ -263,11 +263,11 @@ The proposed correction record therefore names:
 - the independent examination result;
 - whether the correction changes interpretation only or requests a formal Law amendment.
 
-The original remains available and byte-identical. A corrigendum does not itself amend Law, grant authority, or erase the provenance of the original. Any Law amendment must use the separately ratified amendment process once §5 is resolved.
+The original remains available and byte-identical. A corrigendum does not itself amend Law, grant authority, or erase the provenance of the original. Any Law amendment must use the separately ratified amendment process once §6 is resolved.
 
 ---
 
-## 5. Conformance tests required before implementation claims
+## 9. Conformance tests required before implementation claims
 
 | Test | Required behavior |
 |---|---|
@@ -286,7 +286,7 @@ A test that only checks a declaration or a comment is not sufficient. The test m
 
 ---
 
-## 5. Current integration queue — preserve the branch chain
+## 10. Current integration queue — preserve the branch chain
 
 The repository's current draft chain is:
 
@@ -308,12 +308,12 @@ This document is documentation-only. It does not merge any of these PRs, authori
 
 ---
 
-## 5. Proposed repository navigation
+## 11. Proposed repository navigation
 
 When this architecture is accepted, navigation should point to distinct authoritative sources rather than duplicate their content:
 
 - Law floor → root `CANON.md` and domain law files.
-- Governance and amendment process → `GOVERNANCE_ELEVATION.md`, after §5 is resolved.
+- Governance and amendment process → `GOVERNANCE_ELEVATION.md`, after §6 is resolved.
 - Agent capacities → a separately ratified principles profile, if approved.
 - Agent operational refusals → `docs/AGENT_BOOTSTRAP.md` and current Canon §XIV.
 - Purity measurement → `PURITY.md` and `purity/PURITY_INDEX.md`.
@@ -324,7 +324,7 @@ Do not duplicate Law text into the principles profile. Link to the canonical sou
 
 ---
 
-## 5. Decision status
+## 12. Decision status
 
 - The floor/roof distinction is recorded as a proposed architecture direction.
 - The ten self-governing capacities are proposed, not ratified.
