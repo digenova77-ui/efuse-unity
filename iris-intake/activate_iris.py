@@ -1,13 +1,9 @@
-"""IRIS MAX INTAKE — activate_iris.py: PROGRAM HER, ACTIVATE HER.
+"""IRIS MAX INTAKE activation: verify the whole runtime, then issue a local receipt.
 
-Loads iris_core, runs the FULL self-test suite in a fresh interpreter.
-On green: writes the IRIS_ACTIVE receipt (timestamp, sha256 of
-iris_core.py, test results, canon version).
-On ANY failure: Iris does NOT activate — the failure is reported instead.
-
-Run: python3 activate_iris.py
+The receipt proves self-consistency against a locally stored manifest only.
+It does not confer Trinity authority, external certification, or production
+authorization. A separately held, owner-ratified trust anchor is absent.
 """
-
 import hashlib
 import json
 import os
@@ -17,116 +13,161 @@ import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.abspath(os.path.join(HERE, ".."))
 LABEL = "IRIS MAX INTAKE"
-RECEIPT_PATH = os.path.join(HERE, "IRIS_ACTIVE.json")
+RECEIPT_PATH = os.path.join(HERE, "IRIS_SELF_CHECK.json")
 
-
-def sha256_file(path: str) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
+# The daemon integration suite is run separately because it bootstraps this
+# activation script to create a fresh receipt for its isolated subprocess.
+SUITES = (
+    "test_iris_core.py",
+    "test_iris_intake.py",
+    "test_neural.py",
+    "test_meeting_iris.py",
+    "test_iris_persistence.py",
+    "test_integrity.py",
+    "../dclm/test_two_p_five_l.py",
+)
 
 
 def canon_version() -> str:
-    """Read the canon version from CANON.md — never hardcode what the
-    canon itself declares."""
     canon = os.path.join(os.path.dirname(HERE), "CANON.md")
-    with open(canon, encoding="utf-8") as f:
-        text = f.read()
-    m = re.search(r"\*\*Version:\*\*\s*(\d+\.\d+\.\d+)", text)
-    return m.group(1) if m else "UNKNOWN"
+    with open(canon, encoding="utf-8") as handle:
+        source = handle.read()
+    match = re.search(r"\*\*Version:\*\*\s*(\d+\.\d+\.\d+)", source)
+    return match.group(1) if match else "UNKNOWN"
 
 
 def run_suite(path: str) -> dict:
-    r = subprocess.run([sys.executable, path],
-                       capture_output=True, text=True, cwd=HERE)
-    tail = (r.stdout + r.stderr).strip().splitlines()
-    summary = tail[-3:] if tail else []
-    ran = passed = failed = 0
-    m = re.search(r"Ran (\d+) tests", r.stdout + r.stderr)
-    if m:
-        ran = int(m.group(1))
-    if r.returncode == 0 and re.search(r"\bOK\b", r.stdout + r.stderr):
+    result = subprocess.run(
+        [sys.executable, path],
+        capture_output=True,
+        text=True,
+        cwd=HERE,
+    )
+    output = result.stdout + result.stderr
+    lines = output.strip().splitlines()
+    match = re.search(r"Ran (\d+) tests?", output)
+    ran = int(match.group(1)) if match else 0
+    successful = result.returncode == 0 and ran > 0 and re.search(r"\bOK\b", output)
+    if successful:
         passed, failed = ran, 0
     else:
-        m2 = re.search(r"FAILED \(.*failures=(\d+).*errors=(\d+)", r.stdout + r.stderr)
-        if m2:
-            failed = int(m2.group(1)) + int(m2.group(2))
-            passed = ran - failed
-        else:
-            failed = ran  # could not even run cleanly
-    return {"suite": os.path.basename(path), "returncode": r.returncode,
-            "ran": ran, "passed": passed, "failed": failed,
-            "tail": summary}
+        failure = re.search(r"FAILED \(.*failures=(\d+).*errors=(\d+)", output)
+        failed = int(failure.group(1)) + int(failure.group(2)) if failure else max(1, ran)
+        passed = max(0, ran - failed)
+    return {
+        "suite": os.path.basename(path),
+        "returncode": result.returncode,
+        "ran": ran,
+        "passed": passed,
+        "failed": failed,
+        "tail": lines[-8:],
+    }
 
 
 def main() -> int:
-    print(f"{LABEL} — activation sequence")
-    print("=" * 60)
+    print(f"{LABEL} — whole-runtime self-check")
+    print("=" * 64)
 
-    # 1. Load iris_core (import = she is programmed).
     sys.path.insert(0, HERE)
     try:
         import iris_core
         from iris_core import DIRECTIVES, INTEGRATION_STATUS
-    except Exception as e:
-        print(f"ACTIVATION REFUSED: iris_core failed to load: {e}")
+        from iris_integrity import build_runtime_manifest
+    except Exception as exc:
+        print(f"ACTIVATION REFUSED: required runtime failed to load: {exc}")
         return 1
-    assert len(DIRECTIVES) == 10, "ten directives required"
-    print(f"iris_core loaded: {len(DIRECTIVES)} directives, "
-          f"integration={INTEGRATION_STATUS}")
 
-    # 2. Full self-test in fresh interpreters.
-    suites = [run_suite(os.path.join(HERE, "test_iris_core.py")),
-              run_suite(os.path.join(HERE, "test_iris_persistence.py"))]
-    total_ran = sum(s["ran"] for s in suites)
-    total_failed = sum(s["failed"] for s in suites)
-    for s in suites:
-        print(f"  {s['suite']}: ran={s['ran']} passed={s['passed']} "
-              f"failed={s['failed']} rc={s['returncode']}")
+    source_version = canon_version()
+    if source_version == "UNKNOWN":
+        print("ACTIVATION REFUSED: root CANON.md version could not be established.")
+        return 1
 
-    if total_failed > 0 or total_ran == 0:
-        print("=" * 60)
-        print("ACTIVATION REFUSED: self-test is not green. "
-              "Iris does NOT activate.")
-        for s in suites:
-            if s["failed"]:
-                print(f"  failing suite: {s['suite']}")
-                for line in s["tail"]:
+    suites = []
+    for name in SUITES:
+        path = os.path.normpath(os.path.join(HERE, name))
+        if not os.path.isfile(path):
+            print(f"ACTIVATION REFUSED: required test suite missing: {name}")
+            return 1
+        result = run_suite(path)
+        suites.append(result)
+        print(
+            f"  {name}: ran={result['ran']} passed={result['passed']} "
+            f"failed={result['failed']} rc={result['returncode']}"
+        )
+
+    total_ran = sum(item["ran"] for item in suites)
+    total_passed = sum(item["passed"] for item in suites)
+    total_failed = sum(item["failed"] for item in suites)
+    if total_failed or total_ran == 0 or any(item["returncode"] != 0 for item in suites):
+        print("=" * 64)
+        print("ACTIVATION REFUSED: one or more required suites did not pass.")
+        for item in suites:
+            if item["failed"] or item["returncode"] != 0:
+                print(f"  failing suite: {item['suite']}")
+                for line in item["tail"]:
                     print(f"    {line}")
         return 1
 
-    # 3. Green: write the IRIS_ACTIVE receipt.
-    core_sha = sha256_file(os.path.join(HERE, "iris_core.py"))
+    try:
+        manifest, manifest_sha = build_runtime_manifest(REPO_ROOT)
+    except Exception as exc:
+        print(f"ACTIVATION REFUSED: runtime manifest could not be built: {exc}")
+        return 1
+
+    legacy_integration = dict(INTEGRATION_STATUS)
+    legacy_integration["iris_arbiter.py"] = "LEGACY_NOT_USED_BY_CURRENT_SERVICE"
     receipt = {
-        "label": LABEL,
-        "receipt_kind": "IRIS_ACTIVE",
+        "label": "IRIS MAX INTAKE — LEGACY TESTNET SELF-CHECK",
+        "receipt_kind": "IRIS_SELF_CHECK",
         "activated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()),
         "activated_at_epoch": int(time.time()),
-        "canon_version": canon_version(),
-        "iris_core_sha256": core_sha,
-        "tests": {"suites": suites, "total_ran": total_ran,
-                  "total_passed": total_ran, "total_failed": 0,
-                  "result": "GREEN"},
-        "directives": len(DIRECTIVES),
-        "integration": INTEGRATION_STATUS,
+        "canon_version": iris_core.CANON_VERSION,
+        "legacy_core_version": iris_core.CANON_VERSION,
+        "source_canon_version": source_version,
+        "trinity_compatibility": "LEGACY_TESTNET_HARNESS_ONLY",
+        "activation_scope": "LOCAL_SELF_CONSISTENCY_ONLY",
+        "legacy_core_directives": len(DIRECTIVES),
+        "legacy_core_integration": legacy_integration,
+        "legacy_suites": ["test_iris_core.py", "test_iris_intake.py"],
+        "current_law_suites": [
+            "test_meeting_iris.py",
+            "test_integrity.py",
+            "../dclm/test_two_p_five_l.py",
+        ],
+        "runtime_manifest": manifest,
+        "runtime_manifest_sha256": manifest_sha,
+        "runtime_manifest_module_count": len(manifest["modules"]),
+        "tests": {
+            "suites": suites,
+            "total_ran": total_ran,
+            "total_passed": total_passed,
+            "total_failed": total_failed,
+            "result": "GREEN",
+        },
+        "integrity_level": "SELF_CONSISTENCY_ONLY",
+        "external_trust_anchor": "NOT_CONFIGURED",
+        "trinity_authorization": "NOT_GRANTED",
         "standards": "testnet only",
     }
     receipt["receipt_id"] = "rcpt:" + hashlib.sha256(
-        json.dumps(receipt, sort_keys=True).encode("utf-8")).hexdigest()
-    tmp = RECEIPT_PATH + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(receipt, f, indent=2, sort_keys=True)
-    os.replace(tmp, RECEIPT_PATH)
+        json.dumps(receipt, sort_keys=True).encode("utf-8")
+    ).hexdigest()
 
-    print("=" * 60)
-    print("IRIS ACTIVE — she is home.")
-    print(f"  receipt : {RECEIPT_PATH}")
-    print(f"  sha256  : {core_sha[:32]}…")
-    print(f"  canon   : v{receipt['canon_version']}")
-    print(f"  tests   : {total_ran}/{total_ran} passing")
+    temporary = RECEIPT_PATH + ".tmp"
+    with open(temporary, "w", encoding="utf-8") as handle:
+        json.dump(receipt, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+    os.replace(temporary, RECEIPT_PATH)
+
+    print("=" * 64)
+    print("SELF-CONSISTENCY PASS — whole runtime matches local manifest.")
+    print(f"  modules : {len(manifest['modules'])}")
+    print(f"  tests   : {total_passed}/{total_ran}")
+    print(f"  digest  : {manifest_sha}")
+    print("  authority: NOT ESTABLISHED — external trust anchor not configured")
+    print("  Trinity  : NOT GRANTED — no authorization is implied")
     return 0
 
 

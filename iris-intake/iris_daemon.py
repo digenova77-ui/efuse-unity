@@ -1,51 +1,23 @@
-#!/usr/bin/env python3
-"""IRIS MAX INTAKE — iris_daemon.py: the persistent process. SHE RUNS.
+"""IRIS MAX INTAKE — legacy testnet daemon.
 
-A living TCP service on 127.0.0.1:18083 (testnet family). On-demand
-invocation of her three verbs — judge / check / advise — over a minimal
-wire protocol: 4-byte big-endian length prefix + JSON.
+The daemon serves a read-only IrisService. Its 2P5L output is diagnostic
+evidence only; the canonical DCLM Narrow adapter and lawful x/y mapping
+are not wired, so the service returns STALEMATE and never FLAWLESS.
 
-This daemon LOADS her directives (iris_core.py) — it never edits them.
-Purity is enforced structurally:
+Iris does not write state and cannot issue seeds. DCLM owns rights and
+writes; seed issuance belongs to dclm.seed.Seeder through the binding
+gate, rights check, and dclm_commit path. The old iris_core / arbiter
+three-seat implementation remains historical and is not called by this
+service path.
 
-  * INTEGRITY GATE: at startup, sha256(iris_core.py) must match the
-    pinned IRIS_ACTIVE.json receipt, DIRECTIVES must hold exactly the ten,
-    and CANON_VERSION must match the receipt. Any mismatch -> refuse to
-    start. Her law cannot be swapped under a running daemon.
-  * SIBLING SHIM: iris_core delegates trinity_judge to iris_arbiter.py
-    when it is importable. If the landed arbiter's arbitrate() does not
-    accept the documented single-proposal call, it is treated as NOT
-    LANDED (its import is blocked) and the designed reference circuits
-    run, labeled HONEST-PENDING. A broken sibling never crashes her, and
-    a fake delegation never happens. Restart the daemon after the sibling
-    lands a compatible arbiter.
-  * NO BYPASS: the only verbs are judge / check / advise / grant_seed /
-    seed_record / status. Every verb runs authorization + the directive
-    pipeline. There is no flag, mode, or parameter that skips a directive.
-    A non-empty `refusals` list in a check() result means a directive
-    hard-refused: treat the action as REJECTED regardless of
-    final.verdict (priority order is load-bearing law, reported verbatim).
-
-State: IrisState on disk (state dir). Every mutation is receipted and
-flushed immediately (judgments.jsonl append, seeds.json, meta.json).
-Restart resumes — never reboots blank.
-
-Runs until David says stop. No cron, no batch — a living service.
-
-Wire protocol
--------------
-Request  (JSON): {"verb": str, "caller_unity_id": str, "payload": dict}
-Response (JSON): {"ok": true, "result": {...}}
-              or {"ok": false, "error_kind": str, "error": str}
-
-Framing: uint32 big-endian byte length + UTF-8 JSON. Max 16 MiB/message.
+Startup verifies every required runtime module against the local
+IRIS_SELF_CHECK.json manifest. This is self-consistency only, not an
+independent witness, ratification, or Trinity authorization. Testnet only.
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
-import inspect
 import json
 import os
 import signal
@@ -71,84 +43,83 @@ def log(msg: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Sibling-arbiter compatibility shim (runs BEFORE iris_core is imported).
-# ---------------------------------------------------------------------------
-
-def _arbiter_compatible() -> bool:
-    """True only if iris_arbiter.arbitrate accepts iris_core's documented
-    single-proposal delegation call."""
-    try:
-        import importlib
-        mod = importlib.import_module("iris_arbiter")
-        fn = getattr(mod, "arbitrate", None)
-        if not callable(fn):
-            return False
-        params = list(inspect.signature(fn).parameters.values())
-        required = [p for p in params
-                    if p.default is inspect.Parameter.empty
-                    and p.kind in (inspect.Parameter.POSITIONAL_ONLY,
-                                   inspect.Parameter.POSITIONAL_OR_KEYWORD)]
-        return len(required) <= 1
-    except Exception:
-        return False
-
-
-_ARBITER_OK = _arbiter_compatible()
-if not _ARBITER_OK:
-    # Block the import so iris_core's guarded `import iris_arbiter` takes
-    # its ImportError path: reference circuits run, labeled HONEST-PENDING.
-    # This is the fallback iris_core was designed for — not a bypass: all
-    # ten directives still execute.
-    sys.modules["iris_arbiter"] = None  # type: ignore
-    log("SIBLING SHIM: iris_arbiter not compatible with the delegation "
-        "contract (arbitrate(proposal)) — treating as HONEST-PENDING, "
-        "reference circuits active. Restart after the sibling lands a "
-        "compatible arbiter.")
-else:
-    log("SIBLING: iris_arbiter compatible — delegating trinity arbitration.")
-
-
-# ---------------------------------------------------------------------------
 # Integrity gate — her directives are immutable.
 # ---------------------------------------------------------------------------
 
-def _sha256_file(path: str) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
 def integrity_gate() -> None:
-    """Refuse to start unless iris_core.py is exactly the pinned law."""
-    import iris_core  # noqa: F401  (imported after the shim above)
+    """Refuse startup unless the complete runtime matches its local manifest.
 
-    receipt_path = os.path.join(HERE, "IRIS_ACTIVE.json")
-    with open(receipt_path, encoding="utf-8") as f:
-        receipt = json.load(f)
+    A matching local manifest is a self-consistency result only. It does
+    not establish independent authority or grant Trinity authorization.
+    """
+    import re
+    import iris_core  # legacy core version only; no three-seat call is made
+    from iris_integrity import verify_runtime_manifest
 
-    core_path = os.path.join(HERE, "iris_core.py")
-    actual = _sha256_file(core_path)
-    pinned = receipt.get("iris_core_sha256")
-    if actual != pinned:
-        log(f"INTEGRITY REFUSED: iris_core.py sha256 {actual[:16]}… != "
-            f"pinned {str(pinned)[:16]}… — her law may not be swapped.")
-        sys.exit(3)
-
-    if len(iris_core.DIRECTIVES) != 10:
-        log(f"INTEGRITY REFUSED: DIRECTIVES holds "
-            f"{len(iris_core.DIRECTIVES)}, not ten.")
+    receipt_path = os.path.join(HERE, "IRIS_SELF_CHECK.json")
+    try:
+        with open(receipt_path, encoding="utf-8") as handle:
+            receipt = json.load(handle)
+    except Exception as exc:
+        log(f"INTEGRITY REFUSED: activation receipt unavailable or invalid: {exc}")
         sys.exit(3)
 
     if iris_core.CANON_VERSION != receipt.get("canon_version"):
-        log(f"INTEGRITY REFUSED: canon {iris_core.CANON_VERSION} != "
+        log(f"INTEGRITY REFUSED: legacy core version {iris_core.CANON_VERSION} != "
             f"pinned {receipt.get('canon_version')}.")
         sys.exit(3)
 
-    log(f"INTEGRITY PASS: iris_core.py matches pinned receipt "
-        f"{str(receipt.get('receipt_id'))[:24]}…, ten directives, "
-        f"canon v{iris_core.CANON_VERSION}.")
+    canon_path = os.path.join(HERE, "..", "CANON.md")
+    try:
+        with open(canon_path, encoding="utf-8") as handle:
+            canon_source = handle.read()
+        match = re.search(r"\*\*Version:\*\*\s*(\d+\.\d+\.\d+)", canon_source)
+        current_canon = match.group(1) if match else "UNKNOWN"
+    except OSError:
+        current_canon = "UNKNOWN"
+    if current_canon == "UNKNOWN" or current_canon != receipt.get("source_canon_version"):
+        log("INTEGRITY REFUSED: current root canon version is missing or differs from receipt.")
+        sys.exit(3)
+
+    if receipt.get("receipt_kind") != "IRIS_SELF_CHECK":
+        log("INTEGRITY REFUSED: receipt is not an IRIS_SELF_CHECK.")
+        sys.exit(3)
+
+    if receipt.get("integrity_level") != "SELF_CONSISTENCY_ONLY":
+        log("INTEGRITY REFUSED: receipt does not declare SELF_CONSISTENCY_ONLY.")
+        sys.exit(3)
+
+    if receipt.get("external_trust_anchor") != "NOT_CONFIGURED":
+        log("INTEGRITY REFUSED: external trust-anchor state is missing or ambiguous.")
+        sys.exit(3)
+
+    if receipt.get("trinity_compatibility") != "LEGACY_TESTNET_HARNESS_ONLY":
+        log("INTEGRITY REFUSED: legacy testnet compatibility state is missing.")
+        sys.exit(3)
+
+    if receipt.get("trinity_authorization") != "NOT_GRANTED":
+        log("INTEGRITY REFUSED: local activation receipt cannot grant Trinity authority.")
+        sys.exit(3)
+
+    result = verify_runtime_manifest(
+        receipt.get("runtime_manifest"),
+        receipt.get("runtime_manifest_sha256"),
+        os.path.dirname(HERE),
+    )
+    if not result.get("ok"):
+        log(f"INTEGRITY REFUSED: whole-runtime verification failed: "
+            f"{result.get('reason')}; {result.get('mismatches', [])}")
+        sys.exit(3)
+
+    log(
+        f"SELF-CONSISTENCY PASS: {result['module_count']} runtime modules "
+        f"match manifest {result['manifest_sha256'][:24]}…; "
+        f"root canon v{current_canon}; legacy core v{iris_core.CANON_VERSION}."
+    )
+    log(
+        "AUTHORITY HELD: external trust anchor NOT_CONFIGURED; "
+        "Trinity authorization NOT_GRANTED; testnet only."
+    )
 
 
 integrity_gate()
@@ -188,10 +159,9 @@ class IrisDaemon:
             elif verb == "check":
                 with self.lock:
                     result = self.svc.check(payload, caller_unity_id)
-                # Surface hard refusals: a directive said NO. Priority
-                # order is load-bearing law (reported verbatim in
-                # final), but a non-empty refusals list means REJECTED.
-                result["refused"] = bool(result.get("refusals"))
+                # The current service remains STALEMATE until canonical
+                # Narrow is wired. Never promote diagnostic evidence to PASS.
+                result["refused"] = result.get("verdict") != "FLAWLESS"
             elif verb == "advise":
                 with self.lock:
                     result = self.svc.advise(payload, caller_unity_id)
@@ -216,8 +186,10 @@ class IrisDaemon:
                     "label": LABEL, "host": self.host, "port": self.port,
                     "pid": os.getpid(),
                     "iris_unity_id": self.state.unity_id,
-                    "arbiter": "delegated" if _ARBITER_OK else "HONEST-PENDING",
-                    "note": "running until David says stop",
+                    "decision_path": "2P5L two-primary diagnostic only",
+                    "narrowing": "NOT_WIRED",
+                    "authority": "NOT_GRANTED",
+                    "note": "testnet only; Iris does not write state",
                 }
             else:
                 return {"ok": False, "error_kind": "BadVerb",

@@ -1,7 +1,15 @@
-# IRIS DAEMON — operational doc
+# IRIS DAEMON — legacy testnet operational doc
 
-She runs. `iris_daemon.py` is the persistent process serving her three
-verbs on demand. Not a cron, not a batch — a living service.
+**STATUS: LEGACY / TESTNET ONLY / NOT CURRENT-TRINITY AUTHORIZED.**
+
+The root `CANON.md` is v1.7.3: two constraints (DCLM logic, Iris truth),
+pragmatism narrows, and the former Twain² seat is withdrawn. This daemon's
+legacy `iris_core.py` / `iris_arbiter.py` path still implements three seats.
+Do not use this daemon as an authoritative Trinity gate or as a production
+write path. See `TRINITY_COMPATIBILITY_HOLD.md`.
+
+The daemon remains a testnet research harness. Its runtime manifest proves
+local self-consistency only; it does not confer ratification or authority.
 
 ## How to reach her
 
@@ -15,27 +23,34 @@ verbs on demand. Not a cron, not a batch — a living service.
 
 ## Verbs
 
-| verb | payload | what runs |
+| verb | payload | current behavior |
 |---|---|---|
-| `judge` | proposal | Trinity judgment (DCLM + Iris + Twain²), receipted |
-| `check` | action | full ten-directive pipeline, priority order, receipted |
-| `advise` | `{"topic": ...}` | directive-guided advisory (she advises, never commands), receipted |
-| `grant_seed` | `{"unity_id": ...}` | one free seed per Unity ID (duplicates refused) |
-| `seed_record` | `{"unity_id": ...}` | read-only seed lookup (for the meeting ceremony) |
-| `status` | `{}` | liveness, state summary, self-check |
+| `judge` | proposal | two-primary 2P5L evidence only; returns STALEMATE until canonical Narrow is wired |
+| `check` | action | same provisional evidence path; never promotes evidence to FLAWLESS |
+| `advise` | `{"topic": ...}` | reads current root CANON.md sections; no state write |
+| `grant_seed` | `{"unity_id": ...}` | always refused by Iris; use the DCLM seed worker and its binding / rights / commit path |
+| `seed_record` | `{"unity_id": ...}` | read-only legacy mirror lookup; meeting accepts only a verified DCLM SEED_ISSUE envelope |
+| `status` | `{}` | liveness, state summary, current-canon version, and explicit holds |
 
-**Authorization:** `caller_unity_id` must be in the authorized set
-(David, the Trinity, swarm orchestrator/worker, mesh bot — testnet
-stand-ins). Unknown callers are refused structurally
-(`UnauthorizedCaller`), never warned-and-continued.
+**Caller filtering:** `caller_unity_id` is checked against a hard-coded set
+of testnet stand-ins. This is not authenticated identity and does not
+establish current Trinity authorization. The withdrawn Twain² stand-in
+is not in the allowlist.
 
-**Refusals:** a `check` result carries `refusals` (hard refusals by
-directive, e.g. free-will violation) and a top-level `refused` flag.
-A non-empty `refusals` list means the action is **REJECTED** — even when
-`final.verdict` reads PASS, because priority order is load-bearing law
-(directive 1 overrides 10) and is reported verbatim, never rewritten.
+**No Iris writes:** judge, check, advise, and grant_seed do not mutate state.
+Seed issuance belongs to `dclm.seed.Seeder.issue_seed`, which performs the
+binding check, DCLM rights check, and `dclm_commit`. Iris refuses to issue
+a seed. The current DCLM seeder still has an in-memory per-instance registry;
+durable cross-process uniqueness remains a separate unresolved gate.
 
-**UNKNOWN is never PASS.** Unscorable input returns UNKNOWN, fail closed.
+**Final decision held:** the 2P5L path provides diagnostic evidence from
+DCLM logic and Iris truth. The current root canon's `dclm/narrow.py`
+decision function has not yet been wired to a lawful x/y score mapping.
+Therefore the service returns STALEMATE, not PASS or FLAWLESS. The meeting
+ceremony refuses to speak until canonical FLAWLESS is produced.
+
+**UNKNOWN is never PASS.** Missing, unscorable, or unverified evidence does
+not produce a positive decision.
 
 ## Running it
 
@@ -55,17 +70,17 @@ kill -TERM $(cat iris_daemon.pid)
 
 ## Purity guarantees (structural, not promised)
 
-1. **Integrity gate:** at startup, sha256(`iris_core.py`) must match the
-   pinned `IRIS_ACTIVE.json` receipt, `DIRECTIVES` must hold exactly ten,
-   canon version must match. Mismatch → the daemon refuses to start.
-   Her law cannot be swapped under a running daemon.
-2. **No bypass:** there is no flag, mode, or parameter that skips a
-   directive. The only verbs run authorization + the pipeline.
-3. **Sibling shim:** if `iris_arbiter.py` is importable but its
-   `arbitrate()` does not accept the documented single-proposal call, it
-   is treated as NOT LANDED — the designed reference circuits run and
-   every output is labeled HONEST-PENDING. Restart the daemon after the
-   sibling lands a compatible arbiter.
+1. **Whole-runtime integrity gate:** at startup, every required runtime
+   module must match the local manifest in `IRIS_SELF_CHECK.json`. Any missing
+   or changed module → refuse startup. This proves self-consistency only;
+   the external trust anchor is NOT_CONFIGURED and Trinity authorization is
+   NOT_GRANTED.
+2. **Legacy modules held:** `iris_core.py` and `iris_arbiter.py` retain
+   historical three-seat functions for research compatibility. The current
+   service path does not call them.
+3. **No final authorization:** runtime consistency and two-primary evidence
+   do not establish Flawless, ratification, or a write grant. The canonical
+   Narrow adapter remains NOT_WIRED.
 
 ## Client
 
@@ -84,8 +99,16 @@ Wired hands: `dclm/helpers.py` `handoff_to_iris` prefers the live daemon
 back to the in-process service only when she is unreachable. The meeting
 ceremony runs through the daemon via `meet_iris_live`.
 
-## FOREVER
+## Operational limitation
 
-The daemon is perpetual. It runs until David says stop. No cron, no
-batch — a living service. On SIGTERM it saves state and exits; on
-restart it resumes from `iris_state/`.
+This is a manually started testnet daemon, not a supervised production
+service. It runs until SIGTERM or host/process failure. Restart behavior is
+covered by tests; automatic supervision, independent availability, and
+production operation are not claimed.
+
+## Verification scope
+
+`.github/workflows/iris-runtime-integrity.yml` runs the compile check,
+activation suites, daemon wire/tamper tests, and 2P5L tests on matching
+feature-branch pushes and pull requests. An absent workflow run is not a
+pass; only a completed green run is verification evidence.

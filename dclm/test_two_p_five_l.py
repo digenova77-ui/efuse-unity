@@ -79,7 +79,9 @@ class TestNarrowing(unittest.TestCase):
         result = t.judge_32(dict(PURE_PROPOSAL, patterns=["coerce"]))
         self.assertEqual(result["verdict"], t.IMPURE)
         self.assertNotIn("witness", result)
-        self.assertIn("L2_TRINITY_GATES", result["failure_map"]["failing_layers"])
+        self.assertFalse(result["narrowing"]["clear"])
+        self.assertIn("removes or overrides human agency", result["narrowing"]["problems"])
+        self.assertEqual(result["failure_map"]["failing_layers"], [])
 
     def test_a_patched_constraint_still_blocks_purity(self):
         real = t.constraint_gate
@@ -93,6 +95,30 @@ class TestNarrowing(unittest.TestCase):
         finally:
             t.constraint_gate = real
 
+
+class TestCurrentTwoPrimaryAdapter(unittest.TestCase):
+    def test_l2_does_not_call_legacy_three_seat_or_twain2(self):
+        self.assertIsNotNone(
+            t._iris_core,
+            "clean repository-relative import must find iris-intake/iris_core.py",
+        )
+        original_trinity = t._iris_core.trinity_judge
+        original_twain = t._iris_core.twain2_judge
+        try:
+            def forbidden(*args, **kwargs):
+                raise AssertionError("legacy third-seat path was invoked")
+            t._iris_core.trinity_judge = forbidden
+            t._iris_core.twain2_judge = forbidden
+            polarity, evidence, detail = t._eval_l2_trinity_gates(PURE_PROPOSAL)
+            self.assertEqual(polarity, t.PASS, detail)
+            self.assertEqual(evidence, t.PASS)
+            self.assertEqual(detail["circuit"], "iris_core-two-primary-adapter")
+            self.assertEqual(detail["primaries"], {"DCLM": t.PASS, "Iris": t.PASS})
+            self.assertNotIn("integration", detail["dclm"])
+            self.assertNotIn("integration", detail["iris"])
+        finally:
+            t._iris_core.trinity_judge = original_trinity
+            t._iris_core.twain2_judge = original_twain
 
 class TestFiveLayers(unittest.TestCase):
     def test_five_layers(self):

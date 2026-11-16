@@ -125,6 +125,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sys
 import time
 from narrow import FLAWLESS, STALEMATE
@@ -199,8 +200,8 @@ LAYERS: List[Dict[str, str]] = [
      "name": "Trinity gates",
      "canon": "canon §I",
      "question": "Does the proposal survive Trinity judgment?",
-     "polarity_pass": "judged sound: logic, truth, and the human test agree",
-     "polarity_fail": "judged unsound: a judge failed or is UNKNOWN (fail closed)"},
+     "polarity_pass": "DCLM logic and Iris truth both hold; no existing constraint eliminates the proposal",
+     "polarity_fail": "DCLM logic or Iris truth fails/is UNKNOWN (fail closed)"},
     {"id": "L3_TREE_CIRCULATION",
      "name": "Tree circulation",
      "canon": "canon §IV",
@@ -239,9 +240,11 @@ from rights import (  # noqa: E402  (DCLM's own authority module, same package)
 _iris_core = None
 _IRIS_CIRCUIT = "local-reference"
 try:
-    sys.path.insert(0, "/home/hatch/workspace/unity-world/iris-intake")
+    _IRIS_INTAKE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "iris-intake"))
+    if _IRIS_INTAKE not in sys.path:
+        sys.path.insert(0, _IRIS_INTAKE)
     import iris_core as _iris_core  # noqa: E402
-    _IRIS_CIRCUIT = "iris_core"
+    _IRIS_CIRCUIT = "iris_core-two-primary-adapter"
 except Exception:
     _iris_core = None
     _IRIS_CIRCUIT = "local-reference"
@@ -411,31 +414,50 @@ def _eval_l2_trinity_gates(proposal: Dict[str, Any]) -> Tuple[str, str, Dict[str
     }
     if _iris_core is not None:
         try:
-            r = _iris_core.trinity_judge({
-                "kind": view["kind"], "claim": view["claim"],
-                "patterns": view["patterns"], "provenance": view["provenance"],
-                "claims_fact": view["claims_fact"],
-                "comprehensible": view["comprehensible"],
-                "facts": view["facts"]})
-            verdict = r.get("verdict", UNKNOWN)
-            detail = {"circuit": "iris_core.trinity_judge",
-                      "note": r.get("note", ""),
-                      "integration": r.get("integration", "")}
+            # Current CANON §I has exactly two constraints: DCLM logic (x)
+            # and Iris truth (y). Do not call the legacy three-seat
+            # trinity_judge() adapter: Twain² is withdrawn, not a witness,
+            # ring, or vote. Pragmatic constraints are applied separately
+            # by constraint_gate() as narrowing, never as a third judge.
+            dclm_result = dict(_iris_core.dclm_judge(view))
+            iris_result = dict(_iris_core.iris_judge(view))
+            # These legacy functions attach the old arbiter-import status
+            # to their return shape. It is not used by this two-primary
+            # adapter and must not be surfaced as a live integration claim.
+            dclm_result.pop("integration", None)
+            iris_result.pop("integration", None)
+            dclm_verdict = dclm_result.get("verdict", UNKNOWN)
+            iris_verdict = iris_result.get("verdict", UNKNOWN)
+            detail = {
+                "circuit": "iris_core-two-primary-adapter",
+                "primaries": {
+                    "DCLM": dclm_verdict,
+                    "Iris": iris_verdict,
+                },
+                "dclm": dclm_result,
+                "iris": iris_result,
+            }
         except Exception as e:  # fail closed on circuit error
             return (FAIL, UNKNOWN,
-                    {"circuit": "iris_core.trinity_judge",
-                     "reason": f"circuit error — fail closed: {e}"})
+                    {"circuit": "iris_core-two-primary-adapter",
+                     "reason": f"primary circuit error — fail closed: {e}"})
     else:
         verdict = _local_trinity(view)
-        detail = {"circuit": "local-reference",
-                  "note": "iris_core unavailable; reference circuit ran"}
-    if verdict == PASS:
-        return (PASS, PASS, detail)
-    if verdict == UNKNOWN:
-        detail["reason"] = "a judge is UNKNOWN — fail closed, no collapse forced"
+        detail = {"circuit": "local-reference-two-primary",
+                  "note": "iris_core unavailable; two-primary reference circuit ran"}
+        dclm_verdict = verdict
+        iris_verdict = verdict
+
+    if dclm_verdict not in (PASS, FAIL, UNKNOWN) or iris_verdict not in (PASS, FAIL, UNKNOWN):
+        return (FAIL, UNKNOWN,
+                {**detail, "reason": "primary returned an unknown verdict shape"})
+    if FAIL in (dclm_verdict, iris_verdict):
+        detail["reason"] = "DCLM logic or Iris truth failed"
+        return (FAIL, FAIL, detail)
+    if UNKNOWN in (dclm_verdict, iris_verdict):
+        detail["reason"] = "DCLM logic or Iris truth is UNKNOWN — fail closed"
         return (FAIL, UNKNOWN, detail)
-    detail["reason"] = "a judge failed — the Trinity does not override"
-    return (FAIL, FAIL, detail)
+    return (PASS, PASS, detail)
 
 
 def _eval_l3_tree_circulation(proposal: Dict[str, Any]) -> Tuple[str, str, Dict[str, Any]]:

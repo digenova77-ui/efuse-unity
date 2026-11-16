@@ -1,241 +1,137 @@
-"""IRIS MAX INTAKE — test_meeting_iris.py.
-
-The meeting with Iris: she welcomes the member BY WHAT SHE SEES —
-personalized from the real record, never inventing what isn't there.
-The covenant becomes a relationship. The meeting is receipted.
-Unknown IDs are refused. UNKNOWN is never PASS.
-
-Run: python3 test_meeting_iris.py
-"""
-
-import sys
+"""Tests for the current Iris read-only boundary and fail-closed welcome gate."""
 import tempfile
 import unittest
 
-sys.path.insert(0, ".")
-
 import meeting_iris
-from meeting_iris import (
-    MemberUnknown, MeetingUnavailable, UnauthorizedCaller, WelcomeFailedTruthGate,
-    COVENANT_WORDS, meet_iris, gather_record,
-)
+from meeting_iris import MemberUnknown, WelcomeFailedTruthGate, gather_record, meet_iris
 from member_records import MemberRegistry
-from iris_service import IrisService
+from iris_service import (
+    AUTHORIZED_CALLERS,
+    IrisLaneViolation,
+    IrisService,
+)
 from iris_state import IrisState
-from neural import make_unity_id, RefusedError
+from neural import make_unity_id
 
 CALLER = make_unity_id("stand-in:testnet:swarm:worker")
-INTRUDER = make_unity_id("stand-in:testnet:intruder")
 
 
 def make_world():
-    """Fresh testnet world: temp state dir, temp member registry, service."""
-    tmp = tempfile.mkdtemp(prefix="meeting-iris-test-")
+    tmp = tempfile.mkdtemp(prefix="meeting-iris-readonly-")
     state = IrisState(state_dir=tmp + "/iris_state")
     service = IrisService(state=state)
     registry = MemberRegistry(path=tmp + "/members.json")
     return tmp, service, registry
 
 
-def full_member(service, registry, tag="full"):
-    uid = make_unity_id(f"testnet:meeting-iris:{tag}")
-    service.grant_seed(uid, CALLER)
-    registry.record_orientation_step(uid, "meet-the-trinity")
-    registry.record_orientation_step(uid, "learn-the-tree")
-    registry.record_orientation_step(uid, "speak-the-covenant")
-    registry.record_first_plus_one(uid, "running their first true-check on the intake form")
-    registry.mark_affinity(uid)
-    return uid
+def add_legacy_seed_mirror(service, uid):
+    """Fixture only: an old IrisState seed record without DCLM proof."""
+    service.state.seed_granted(uid, {
+        "seed_id": "seed:legacy-fixture",
+        "unity_id": uid,
+        "granted_at": 1791274253,
+        "transferable": False,
+        "price": 0,
+    })
 
 
-def thin_member(service, registry, tag="thin"):
-    uid = make_unity_id(f"testnet:meeting-iris:{tag}")
-    service.grant_seed(uid, CALLER)  # seed only — skipped orientation
-    return uid
+class TestCurrentCanonAdvice(unittest.TestCase):
+    def test_advice_quotes_current_canon_not_legacy_directives(self):
+        _, service, _ = make_world()
+        before = service.state.summary()
+        advice = service.advise({"topic": "logic truth and writes"}, CALLER)
+        self.assertEqual(advice["canon_version"], "1.7.3")
+        cited = {section["section"] for section in advice["canon_sections"]}
+        self.assertIn("I", cited)
+        self.assertIn("III", cited)
+        self.assertNotIn("human-test seat", str(advice))
+        self.assertIn("not a third judge", advice["guidance"])
+        self.assertFalse(advice["authorization_granted"])
+        self.assertFalse(advice["write_performed"])
+        self.assertEqual(service.state.summary(), before)
+
+    def test_withdrawn_twain2_standin_is_not_authorized(self):
+        withdrawn = make_unity_id("stand-in:testnet:twain2")
+        self.assertNotIn(withdrawn, AUTHORIZED_CALLERS)
 
 
-def full_text(meeting):
-    return "\n".join(meeting["words"])
+class TestReadOnlyService(unittest.TestCase):
+    def test_judge_and_check_are_provisional_and_do_not_write(self):
+        _, service, _ = make_world()
+        before = service.state.summary()
+        proposal = {
+            "kind": "proposal",
+            "claim": "logic and truth must both hold",
+            "facts": [],
+            "provenance": "DERIVED",
+            "claims_fact": False,
+            "unity_id": make_unity_id("test:iris-provisional"),
+            "action": "LOOK",
+            "context": {"schema": "dualis.relay.v1.testnet"},
+        }
+        judged = service.judge(proposal, CALLER)
+        checked = service.check(proposal, CALLER)
+        for result in (judged, checked):
+            self.assertEqual(result["verdict"], "STALEMATE")
+            self.assertEqual(result["narrowing"], "NOT_WIRED")
+            self.assertFalse(result["authorization_granted"])
+            self.assertFalse(result["write_performed"])
+            self.assertTrue(result["receipt_id"].startswith("rcpt:"))
+        self.assertEqual(service.state.summary(), before)
+
+    def test_iris_cannot_issue_seed(self):
+        _, service, _ = make_world()
+        before = dict(service.state.seeds)
+        with self.assertRaises(IrisLaneViolation):
+            service.grant_seed(make_unity_id("test:iris-seed"), CALLER)
+        self.assertEqual(service.state.seeds, before)
 
 
-class TestFullRecordPersonalized(unittest.TestCase):
-    def test_welcome_references_their_real_journey(self):
+class TestSeedEvidence(unittest.TestCase):
+    def test_legacy_seed_mirror_is_not_membership_evidence(self):
         _, service, registry = make_world()
-        uid = full_member(service, registry)
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        text = full_text(m)
-        # seed: when they walked through the door
-        seed_at = service.state.seeds[uid]["granted_at"]
-        import datetime
-        day = datetime.datetime.fromtimestamp(
-            seed_at, tz=datetime.timezone.utc).strftime("%B %d, %Y")
-        self.assertIn(day, text)
-        self.assertIn("one free seed", text)
-        # orientation: the actual steps they completed
-        self.assertIn("you met the Three", text)
-        self.assertIn("you learned how the tree breathes", text)
-        self.assertIn("you spoke the covenant", text)
-        # first +1: what earned it
-        self.assertIn("running their first true-check on the intake form", text)
-        # Affinity: earliness honored
-        self.assertIn("Affinity", text)
-
-    def test_seen_mirror_matches_record(self):
-        _, service, registry = make_world()
-        uid = full_member(service, registry)
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        seen = m["seen"]
-        self.assertEqual(seen["seed_granted_at"], service.state.seeds[uid]["granted_at"])
-        self.assertEqual(seen["orientation_steps"],
-                         ["meet-the-trinity", "learn-the-tree", "speak-the-covenant"])
-        self.assertIn("true-check", seen["first_plus_one"])
-        self.assertTrue(seen["affinity"])
-
-
-class TestThinRecordHonest(unittest.TestCase):
-    def test_welcomes_what_is_there_and_invents_nothing(self):
-        _, service, registry = make_world()
-        uid = thin_member(service, registry)
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        text = full_text(m)
-        # what IS there: the seed
-        self.assertIn("one free seed", text)
-        self.assertIn("never pretend to see what isn't", text)
-        # what ISN'T there: never claimed
-        self.assertNotIn("Affinity", text)
-        self.assertNotIn("first +1", text)
-        self.assertNotIn("you met the Three", text)
-        self.assertNotIn("you spoke the covenant", text)
-        # the open door: no rush, free will sacred
-        self.assertIn("No rush", text)
-
-    def test_seen_mirror_is_thin_too(self):
-        _, service, registry = make_world()
-        uid = thin_member(service, registry)
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        seen = m["seen"]
-        self.assertIsNotNone(seen["seed_granted_at"])
-        self.assertEqual(seen["orientation_steps"], [])
-        self.assertIsNone(seen["first_plus_one"])
-        self.assertFalse(seen["affinity"])
-
-
-class TestCovenantMadeReal(unittest.TestCase):
-    def test_covenant_words_present_verbatim(self):
-        _, service, registry = make_world()
-        uid = full_member(service, registry, tag="covenant")
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        self.assertEqual(m["covenant_words"], COVENANT_WORDS)
-        self.assertIn(COVENANT_WORDS, full_text(m))
-
-    def test_she_is_sister_not_system(self):
-        _, service, registry = make_world()
-        uid = thin_member(service, registry, tag="sister")
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        text = full_text(m)
-        self.assertIn("I'm Iris", text)
-        self.assertIn("founding sister", text)
-        self.assertIn("I'm here whenever you need me", text)
-
-
-class TestReceipted(unittest.TestCase):
-    def test_meeting_is_an_event_with_both_ids(self):
-        _, service, registry = make_world()
-        uid = full_member(service, registry, tag="receipt")
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        r = m["receipt"]
-        self.assertEqual(r["kind"], "MEETING_IRIS")
-        self.assertTrue(r["receipt_id"].startswith("rcpt:"))
-        self.assertEqual(r["unity_id"], uid)
-        self.assertEqual(r["payload"]["member_unity_id"], uid)
-        self.assertEqual(r["payload"]["iris_unity_id"], service.state.unity_id)
-        self.assertEqual(r["payload"]["iris_unity_id"], m["iris_unity_id"])
-        self.assertEqual(r["payload"]["t_epoch"], m["t_epoch"])
-        self.assertEqual(r["provenance"], "DERIVED")
-
-    def test_ceremony_writes_no_state_itself(self):
-        # The service's own judgment log (advise; judge when the integrated
-        # path is healthy) is Iris's lane; the ceremony adds nothing else:
-        # no seeds granted, no journey entries, no member writes.
-        _, service, registry = make_world()
-        uid = full_member(service, registry, tag="lane")
-        seeds_before = dict(service.state.seeds)
-        judgments_before = len(service.state.judgments)
-        meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        self.assertEqual(service.state.seeds, seeds_before)
-        self.assertIn(len(service.state.judgments) - judgments_before, (1, 2))
-        self.assertIsNone(registry.journey(
-            make_unity_id("testnet:meeting-iris:never-recorded")))
-
-
-class TestUnknownRefused(unittest.TestCase):
-    def test_non_testnet_identity_refused(self):
-        _, service, registry = make_world()
-        with self.assertRaises(RefusedError):
-            meet_iris("bogus-id", caller_unity_id=CALLER,
-                      service=service, registry=registry)
-
-    def test_well_formed_but_recordless_id_refused(self):
-        _, service, registry = make_world()
-        uid = make_unity_id("testnet:meeting-iris:nobody")
+        uid = make_unity_id("test:legacy-seed-only")
+        add_legacy_seed_mirror(service, uid)
         with self.assertRaises(MemberUnknown):
+            gather_record(uid, service.state, registry)
+
+    def test_unverified_seed_does_not_override_real_journey(self):
+        _, service, registry = make_world()
+        uid = make_unity_id("test:journey-with-legacy-seed")
+        add_legacy_seed_mirror(service, uid)
+        registry.record_orientation_step(uid, "learn-the-tree")
+        record = gather_record(uid, service.state, registry)
+        self.assertIsNone(record["seed"])
+        self.assertEqual(record["seed_evidence"], "NOT_VERIFIED")
+        self.assertEqual(record["orientation_steps"][0]["step"], "learn-the-tree")
+
+
+class TestWelcomeGate(unittest.TestCase):
+    def test_welcome_stays_held_until_canonical_narrow_is_flawless(self):
+        _, service, registry = make_world()
+        uid = make_unity_id("test:welcome-held")
+        registry.record_orientation_step(uid, "learn-the-tree")
+        before = service.state.summary()
+        with self.assertRaises(WelcomeFailedTruthGate):
             meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
+        self.assertEqual(service.state.summary(), before)
 
-    def test_empty_journey_is_no_record(self):
-        # A registry entry with no content is nothing to see — refused.
+    def test_no_legacy_three_seat_fallback(self):
         _, service, registry = make_world()
-        uid = make_unity_id("testnet:meeting-iris:empty")
-        registry._entry(uid)  # white-box: entry created, nothing recorded
-        with self.assertRaises(MemberUnknown):
-            meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
+        uid = make_unity_id("test:no-legacy-fallback")
+        registry.record_orientation_step(uid, "learn-the-tree")
+        original = service.judge
 
-    def test_unauthorized_caller_refused(self):
-        _, service, registry = make_world()
-        uid = thin_member(service, registry, tag="intruder")
-        with self.assertRaises(UnauthorizedCaller):
-            meet_iris(uid, caller_unity_id=INTRUDER,
-                      service=service, registry=registry)
+        def raise_contract_error(*args, **kwargs):
+            raise TypeError("deliberate integration failure")
 
-
-class TestThroughHerService(unittest.TestCase):
-    def test_her_directives_shape_the_words(self):
-        _, service, registry = make_world()
-        uid = full_member(service, registry, tag="directives")
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        bearing = {d["directive"]: d for d in m["directives_bearing"]}
-        # the covenant (7), free will (5), purity (1) bear on the welcome
-        self.assertIn(7, bearing)
-        self.assertIn(5, bearing)
-        self.assertIn(1, bearing)
-        self.assertIn("COVENANT", bearing[7]["name"])
-        self.assertTrue(bearing[7]["word"].startswith("THE COVENANT"))
-        self.assertTrue(m["advise_receipt_id"].startswith("rcpt:"))
-
-    def test_truth_gate_passes_an_honest_welcome(self):
-        _, service, registry = make_world()
-        uid = full_member(service, registry, tag="gate")
-        m = meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
-        self.assertEqual(m["truth_gate"]["verdict"], "PASS")
-        # Honestly labeled: integrated arbiter when healthy, reference trio
-        # (HONEST-PENDING) while the sibling contract mismatch stands.
-        self.assertIn(m["truth_gate"]["integration"].split(" ")[0],
-                      ("service.judge", "HONEST-PENDING"))
-        if m["truth_gate"]["receipt_id"] is not None:
-            self.assertTrue(m["truth_gate"]["receipt_id"].startswith("rcpt:"))
-
-
-class TestHonestPending(unittest.TestCase):
-    def test_no_service_no_meeting_never_faked(self):
-        _, service, registry = make_world()
-        uid = thin_member(service, registry, tag="pending")
-        was_live = meeting_iris._IRIS_LIVE
-        meeting_iris._IRIS_LIVE = False
+        service.judge = raise_contract_error
         try:
-            with self.assertRaises(MeetingUnavailable):
-                meet_iris(uid, caller_unity_id=CALLER,
-                          service=service, registry=registry)
+            with self.assertRaises(WelcomeFailedTruthGate):
+                meet_iris(uid, caller_unity_id=CALLER, service=service, registry=registry)
         finally:
-            meeting_iris._IRIS_LIVE = was_live
+            service.judge = original
+        self.assertNotIn("twain2_judge", meeting_iris.__dict__)
 
 
 if __name__ == "__main__":

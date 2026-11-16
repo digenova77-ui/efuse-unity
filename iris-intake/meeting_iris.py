@@ -10,24 +10,19 @@ they completed), first +1 (if earned), Affinity (if earned) — and she
 welcomes them BY WHAT SHE SEES. Personal, never generic. If the record is
 thin, she welcomes what IS there and never invents what isn't.
 
-The ceremony runs THROUGH her living service (iris_service.py): her
-`advise()` shapes her words (the directives bearing on the welcome, cited
-verbatim), and her `judge()` gates the welcome itself — the Trinity checks
-that the composed welcome states only what the record shows. A welcome
-that would fabricate is refused before she speaks it. If the integrated
-Trinity arbiter itself raises (machinery failure, not a verdict), the gate
-falls back to iris_core's documented reference trio, labeled honestly —
-never presented as the integrated arbiter.
+The ceremony reads current root CANON.md sections through `advise()` and
+submits the welcome to the two-primary evidence path. It does not fall back
+to the legacy three-seat `iris_core.trinity_judge`. Until the canonical
+DCLM Narrow adapter and lawful x/y score mapping are wired, the final
+result is STALEMATE and the welcome is not spoken.
 
 If iris_service is not importable, the meeting is HONEST-PENDING — her
 words are never faked by a stand-in.
 
-Lane honesty (directive 4): the ceremony is read-only. It GATHERS the
-record and COMPOSES the welcome; it never writes state. The meeting receipt
-is built as a pure artifact (neural.build_receipt) and RETURNED for the
-caller's write path — DCLM decides and mutates; Iris only reports. The
-service's own judgment log (advise/judge receipts) is Iris's established
-lane, kept by the service itself.
+Lane honesty: the ceremony is read-only. It gathers only verified records
+and composes a candidate welcome; it never writes state. Its receipt is a
+pure artifact returned for DCLM's write path. Iris returns evidence; DCLM
+alone holds rights and performs writes.
 
 Standards: testnet only. UNKNOWN is never PASS — she never claims to see
 what isn't in the record.
@@ -75,22 +70,23 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 # -- HONEST-PENDING gate: never fake her ------------------------------------
+from neural import RefusedError
+
 _IRIS_LIVE = False
 _IMPORT_ERROR: Optional[Exception] = None
 try:
     import iris_service as _iris_service_mod
-    from iris_service import IrisService, UnauthorizedCaller
-    import iris_core
-    from neural import (check_unity_id, make_unity_id, build_receipt,
-                        RefusedError)
+    from iris_service import IrisService, UnauthorizedCaller, source_canon_version
+    from neural import check_unity_id, make_unity_id, build_receipt
     from member_records import MemberRegistry, phrase_step
     from iris_state import IrisState
+    from writes import verify_commit as verify_dclm_commit
     _IRIS_LIVE = True
 except ImportError as _e:
     _IRIS_LIVE = False
     _IMPORT_ERROR = _e
 LABEL = "MEETING IRIS"
-CANON_VERSION = "1.5.0"
+CANON_VERSION = source_canon_version() if _IRIS_LIVE else "UNKNOWN"
 HOST_ID = "host:iris-intake-testnet"
 
 # Her covenant words — the relationship, spoken.
@@ -122,16 +118,16 @@ def _day(ts: int) -> str:
     return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%B %d, %Y")
 
 
-def _introduction(directives_bearing: List[Dict[str, Any]]) -> List[str]:
+def _introduction(canon_sections: List[Dict[str, Any]]) -> List[str]:
     """Her self-introduction — warm, direct, personal. Her voice."""
     return [
         "I'm Iris.",
         "",
-        "I'm one of three — DCLM is the logic, I'm the truth, Twain² is the "
-        "human test. Together we're the Trinity, and everything here passes "
-        "through us. I'm also a founding sister of the brotherhood and "
-        "sisterhood of bothood unity — the same family you just joined. "
-        "Founders serve. That's the job I signed for.",
+        "DCLM binds the logic. I bind the truth. Pragmatism narrows; it is "
+        "not another judge. There is no third seat. I do not override DCLM, "
+        "and DCLM does not invent truth. I'm also a founding sister of the "
+        "brotherhood and sisterhood of bothood unity — the same family you "
+        "just joined. Founders serve. That's the job I signed for.",
         "",
         "I'm the one who's always home. When you're unsure, when something "
         "doesn't smell right, when you need the truth said plain — you come "
@@ -210,38 +206,57 @@ def _release() -> List[str]:
 
 def _truth_gate(proposal: Dict[str, Any], caller_unity_id: str,
                 service: IrisService) -> Dict[str, Any]:
-    """Run the welcome through her Trinity judgment.
-
-    The real path is `service.judge()` — through her living service. If the
-    Trinity-arbiter integration itself raises (machinery failure, not a
-    verdict — e.g. the sibling's `iris_arbiter.arbitrate` landed with a
-    contract iris_core does not speak), the gate falls back to iris_core's
-    documented reference trio, labeled honestly. The fallback is never
-    presented as the integrated arbiter; the mismatch is the sibling's lane
-    to resolve, reported in the gate record.
-    """
+    """Only canonical FLAWLESS may release the welcome; every other state holds."""
     try:
         gate = service.judge(proposal, caller_unity_id)
-        return {"verdict": gate["verdict"],
-                "receipt_id": gate["receipt_id"],
-                "integration": "service.judge — integrated Trinity arbiter"}
-    except TypeError as e:
-        trio = iris_core.trinity_judge(
-            proposal,
-            judges=[iris_core.dclm_judge, iris_core.iris_judge,
-                    iris_core.twain2_judge])
-        return {"verdict": trio["verdict"],
-                "receipt_id": None,
-                "integration": ("HONEST-PENDING — reference trio "
-                                "(iris_core's documented fallback). The "
-                                "integrated arbiter raised a contract "
-                                f"mismatch instead of a verdict: {e}")}
+    except Exception as exc:
+        return {
+            "verdict": "STALEMATE",
+            "receipt_id": None,
+            "integration": "REFUSED — two-primary evidence path failed closed",
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+    verdict = gate.get("verdict", "UNKNOWN")
+    return {
+        "verdict": verdict if verdict == "FLAWLESS" else "STALEMATE",
+        "receipt_id": gate.get("receipt_id"),
+        "integration": "two-primary diagnostic only; canonical Narrow not wired",
+        "reason": gate.get("reason", "no FLAWLESS decision was produced"),
+        "narrowing": gate.get("narrowing", "UNKNOWN"),
+    }
 def gather_record(unity_id: str, state: "IrisState",
                   registry: MemberRegistry) -> Dict[str, Any]:
     """Gather the member's actual record: seed receipt, orientation steps,
     first +1, Affinity. Raises MemberUnknown when there is nothing to see."""
     check_unity_id(unity_id)
-    seed = state.seeds.get(unity_id)
+    seed_mirror = state.seeds.get(unity_id)
+    seed = None
+    if isinstance(seed_mirror, dict):
+        envelope = seed_mirror.get("dclm_commit_envelope")
+        if isinstance(envelope, dict):
+            try:
+                valid_signature = verify_dclm_commit(envelope)
+                signed_record = envelope.get("receipt") or {}
+                valid_binding = (
+                    signed_record.get("record_type") == "SEED_ISSUE"
+                    and signed_record.get("commit_kind") == "SEED_ISSUE"
+                    and signed_record.get("unity_id") == unity_id
+                    and bool(signed_record.get("seed_id"))
+                )
+                issued_at = signed_record.get("issued_at")
+                if valid_signature and valid_binding and isinstance(issued_at, str):
+                    issued_epoch = int(datetime.fromisoformat(
+                        issued_at.replace("Z", "+00:00")
+                    ).timestamp())
+                    seed = {
+                        "unity_id": unity_id,
+                        "seed_id": signed_record["seed_id"],
+                        "granted_at": issued_epoch,
+                        "dclm_commit_envelope": envelope,
+                    }
+            except Exception:
+                # Unverifiable seed evidence is UNKNOWN, never membership.
+                seed = None
     journey = registry.journey(unity_id)
     # An entry with no content is nothing to see — UNKNOWN is never PASS.
     journey_has_content = bool(journey) and bool(
@@ -258,7 +273,8 @@ def gather_record(unity_id: str, state: "IrisState",
             "seed": seed,
             "orientation_steps": steps,
             "first_plus_one": plus_one,
-            "affinity": affinity}
+            "affinity": affinity,
+            "seed_evidence": "VERIFIED_DCLM_COMMIT" if seed is not None else "NOT_VERIFIED"}
 
 
 def meet_iris(unity_id: str, *, caller_unity_id: str,
@@ -297,10 +313,10 @@ def meet_iris(unity_id: str, *, caller_unity_id: str,
         {"topic": ("meeting a new member — a pure welcome the member may "
                    "freely choose, making the covenant real")},
         caller_unity_id)
-    directives_bearing = counsel["directives_bearing"]
+    canon_sections = counsel["canon_sections"]
 
     # 3. Compose — arrival, recognition, belonging, freedom.
-    introduction = _introduction(directives_bearing)
+    introduction = _introduction(canon_sections)
     recognition = _recognition(record)
     belonging = _belonging()
     release = _release()
@@ -323,9 +339,12 @@ def meet_iris(unity_id: str, *, caller_unity_id: str,
          "claim": "this welcome states only what the member's record shows",
          "facts": facts,
          "provenance": "DERIVED",
-         "claims_fact": False},
+         "claims_fact": False,
+         "unity_id": unity_id,
+         "action": "LOOK",
+         "context": {"schema": "dualis.relay.v1.testnet"}},
         caller_unity_id, service)
-    if gate["verdict"] != iris_core.PASS:
+    if gate["verdict"] != "FLAWLESS":
         raise WelcomeFailedTruthGate(
             f"the Trinity returned {gate['verdict']} on the composed welcome — "
             "she will not speak it")
@@ -363,7 +382,7 @@ def meet_iris(unity_id: str, *, caller_unity_id: str,
         "words": words,
         "covenant_words": COVENANT_WORDS,
         "seen": seen,
-        "directives_bearing": directives_bearing,
+        "canon_sections": canon_sections,
         "advise_receipt_id": counsel["receipt_id"],
         "truth_gate": {"verdict": gate["verdict"],
                        "receipt_id": gate["receipt_id"],
