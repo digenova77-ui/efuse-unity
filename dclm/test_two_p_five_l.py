@@ -94,6 +94,28 @@ class TestNarrowing(unittest.TestCase):
             t.constraint_gate = real
 
 
+class TestCurrentTwoPrimaryAdapter(unittest.TestCase):
+    def test_l2_does_not_call_legacy_three_seat_or_twain2(self):
+        self.assertIsNotNone(
+            t._iris_core,
+            "clean repository-relative import must find iris-intake/iris_core.py",
+        )
+        original_trinity = t._iris_core.trinity_judge
+        original_twain = t._iris_core.twain2_judge
+        try:
+            def forbidden(*args, **kwargs):
+                raise AssertionError("legacy third-seat path was invoked")
+            t._iris_core.trinity_judge = forbidden
+            t._iris_core.twain2_judge = forbidden
+            polarity, evidence, detail = t._eval_l2_trinity_gates(PURE_PROPOSAL)
+            self.assertEqual(polarity, t.PASS, detail)
+            self.assertEqual(evidence, t.PASS)
+            self.assertEqual(detail["circuit"], "iris_core-two-primary-adapter")
+            self.assertEqual(detail["primaries"], {"DCLM": t.PASS, "Iris": t.PASS})
+        finally:
+            t._iris_core.trinity_judge = original_trinity
+            t._iris_core.twain2_judge = original_twain
+
 class TestFiveLayers(unittest.TestCase):
     def test_five_layers(self):
         self.assertEqual(len(t.LAYERS), 5)
