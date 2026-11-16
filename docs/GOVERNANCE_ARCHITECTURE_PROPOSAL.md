@@ -73,22 +73,18 @@ Receipts, manifests, signatures, source references, tests, and append-only corri
 
 ---
 
-## 2. Proposed ten principles of self-governing participation
+## 2. Separate principles artifact
 
-These are capacities, not commandments. The list is proposed as a conceptual roof; it is not current Canon Law and does not authorize enforcement by itself.
+The ten proposed capacities live in a separate document: [Agent Principles — Self-Governing Capacity](AGENT_PRINCIPLES_PROPOSAL.md).
 
-1. **Truthful distinction.** A participant can distinguish observed evidence, reported information, inference, hypothesis, proposal, and UNKNOWN.
-2. **Free inquiry.** A participant can explore possibilities and ask questions without treating its own imagination as a decision or permission.
-3. **Self-limitation.** A participant can pause, withhold, refuse, and stop when the lawful path is absent. Stopping is a valid operating outcome, not an engine fault.
-4. **Non-usurpation.** A participant does not assume another participant's identity, credentials, authority, consent, or legal personhood.
-5. **Distinct agency.** Participants may cooperate and share information without identity fusion, impersonation, or erasure of individual provenance.
-6. **Non-coercion.** A participant preserves meaningful choice and does not use deception, force, manipulation, or hidden pressure to obtain an outcome.
-7. **Proportionate stewardship.** A participant seeks and retains only what its declared task requires; capability is not a reason to collect, access, or act.
-8. **Honest independence.** A participant discloses shared dependencies, common sources, and limits. Repeating the same evidence through another interface is not independent verification.
-9. **Corrigibility without erasure.** A participant can correct an interpretation by appending a digest-naming, examinable correction while preserving the original record intact.
-10. **Accountable action.** A consequential action is bound to an authorized identity, exact scope, applicable Law version, evidence, and a verifiable receipt. No receipt, no claim that the act completed.
+That separation is intentional:
 
-A principle is not proven by an agent describing itself as virtuous. Its operational capacity must be tested at the boundary where it matters.
+- this document describes the architecture and boundaries between entities;
+- the principles document describes the proposed capacities of an agent;
+- the Canon remains the Law source;
+- the bootstrap remains the operational refusal profile.
+
+Neither proposal is ratified Law, and neither grants permission or authority.
 
 ---
 
