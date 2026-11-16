@@ -39,7 +39,7 @@ class TestRuntimeManifest(unittest.TestCase):
         result = verify_runtime_manifest(manifest, digest, self.root)
         self.assertFalse(result["ok"])
         self.assertEqual(result["reason"], "runtime module mismatch")
-        self.assertIn("iris_patterns.py", [item["module"] for item in result["mismatches"]])
+        self.assertTrue(any("iris_patterns.py" in item["module"] for item in result["mismatches"]))
 
     def test_changed_deterministic_law_refuses(self):
         manifest, digest = build_runtime_manifest(self.root)
@@ -48,7 +48,7 @@ class TestRuntimeManifest(unittest.TestCase):
             handle.write(b"# changed law\n")
         result = verify_runtime_manifest(manifest, digest, self.root)
         self.assertFalse(result["ok"])
-        self.assertIn("iris_laws.py", [item["module"] for item in result["mismatches"]])
+        self.assertTrue(any("iris_laws.py" in item["module"] for item in result["mismatches"]))
 
     def test_changed_activation_logic_refuses(self):
         manifest, digest = build_runtime_manifest(self.root)
@@ -87,7 +87,7 @@ class TestRuntimeManifest(unittest.TestCase):
         os.remove(os.path.join(self.root, "iris-intake", "iris_arbiter.py"))
         result = verify_runtime_manifest(manifest, digest, self.root)
         self.assertFalse(result["ok"])
-        self.assertIn("iris_arbiter.py", [item["module"] for item in result["mismatches"]])
+        self.assertTrue(any("iris_arbiter.py" in item["module"] for item in result["mismatches"]))
 
     def test_manifest_digest_tampering_refuses(self):
         manifest, digest = build_runtime_manifest(self.root)
