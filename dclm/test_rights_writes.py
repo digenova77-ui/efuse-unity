@@ -175,7 +175,7 @@ class TestRightsPurity(unittest.TestCase):
             v.verdict = GRANT  # type: ignore
 
     def test_internal_write_tier(self):
-        """The six commit kinds grant only for DCLM-internal sources."""
+        """All commit kinds currently grant for the asserted internal label."""
         for kind in COMMIT_KINDS:
             granted = check_rights(TEST_IDENTITY, kind,
                                    {"internal": "dclm.meter"})
