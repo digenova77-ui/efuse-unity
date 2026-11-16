@@ -193,6 +193,31 @@ class TestRightsPurity(unittest.TestCase):
             self.assertEqual(forged.verdict, DENY, f"for {kind}")
 
 
+    def test_write_tier_requires_identity_for_every_commit_kind(self):
+        """Every write kind refuses missing or invalid actor identity."""
+        for kind in COMMIT_KINDS:
+            missing = check_rights(
+                None, kind, {"internal": "dclm.meter"})
+            self.assertEqual(missing.verdict, DENY, f"missing identity: {kind}")
+            self.assertEqual(
+                missing.reason, REASON_IDENTITY_REQUIRED,
+                f"missing identity reason: {kind}")
+
+            empty = check_rights(
+                "", kind, {"internal": "dclm.meter"})
+            self.assertEqual(empty.verdict, DENY, f"empty identity: {kind}")
+            self.assertEqual(
+                empty.reason, REASON_IDENTITY_REQUIRED,
+                f"empty identity reason: {kind}")
+
+            invalid = check_rights(
+                "unity:mainnet:forged", kind, {"internal": "dclm.meter"})
+            self.assertEqual(invalid.verdict, DENY, f"invalid identity: {kind}")
+            self.assertEqual(
+                invalid.reason, REASON_NOT_TESTNET_IDENTITY,
+                f"invalid identity reason: {kind}")
+
+
 # ---------------------------------------------------------------------------
 # the single commit path
 # ---------------------------------------------------------------------------
