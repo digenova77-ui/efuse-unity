@@ -129,9 +129,7 @@ These tests must run against the actual call graph and state boundary. A test th
 
 ---
 
-## 5. Existing repository material — keep the entities distinct
-
-## 4. Separate principles artifact
+## 3. Separate principles artifact
 
 The ten proposed capacities live in a separate document: [Agent Principles — Self-Governing Capacity](AGENT_PRINCIPLES_PROPOSAL.md).
 
@@ -146,12 +144,12 @@ Neither proposal is ratified Law, and neither grants permission or authority.
 
 ---
 
-## 5. Existing repository material — keep the entities distinct
+## 4. Existing repository material — keep the entities distinct
 
 | Existing source | Current role | Proposed treatment |
 |---|---|---|
 | `CANON.md` | Current root Canon and governing statements | Remains the Law floor. Do not silently rewrite or fold principles into it. |
-| `GOVERNANCE_ELEVATION.md` | Governance and philosophy elevation, formalization, amendment pipeline | Retain as governance-process source, but resolve the authority conflict in §5 before treating it as a complete amendment constitution. |
+| `GOVERNANCE_ELEVATION.md` | Governance and philosophy elevation, formalization, amendment pipeline | Retain as governance-process source, but resolve the authority conflict in §6 before treating it as a complete amendment constitution. |
 | `docs/AGENT_BOOTSTRAP.md` | Agent bootstrap, scope boundaries, P1–P10 refusals | Preserve as an operational bootstrap/refusal profile. Do not relabel P1–P10 as the complete principles roof. |
 | `PURITY.md` | Purity standard and strip criteria | Keep as a quality/conformance standard, not a substitute for Law or agent principles. |
 | `purity/PURITY_INDEX.md` | Five-dimension measurement rubric | Keep as measurement. A score does not grant authority. |
@@ -165,7 +163,7 @@ This proposal does not delete, supersede, or rewrite any of these sources.
 
 ---
 
-## 6. Existing ten refusals — classify, do not erase
+## 5. Existing ten refusals — classify, do not erase
 
 `docs/AGENT_BOOTSTRAP.md` already contains P1–P10 under “Absolute Refusals.” They are useful operational safeguards. They are not a complete expression of the positive capacities described in §2.
 
@@ -182,7 +180,7 @@ Likewise, `CANON.md` §XIV's fourteen “What a Bot May Never Do” items remain
 
 ---
 
-## 7. Constitutional conflict requiring resolution
+## 5. Constitutional conflict requiring resolution
 
 The current `GOVERNANCE_ELEVATION.md` contains an unresolved internal conflict:
 
@@ -207,7 +205,7 @@ The desired constitutional test is whether Law remains stronger than the lifespa
 
 ---
 
-## 8. Self-governance cycle — proposed operating model
+## 5. Self-governance cycle — proposed operating model
 
 This is a proposed flow, not an assertion that the full path is implemented.
 
@@ -247,7 +245,7 @@ The self-stop property is a required capacity: when the next lawful step is abse
 
 ---
 
-## 9. Corrigenda and continuity
+## 5. Corrigenda and continuity
 
 The correction channel must protect against two opposite failures:
 
@@ -269,7 +267,7 @@ The original remains available and byte-identical. A corrigendum does not itself
 
 ---
 
-## 10. Conformance tests required before implementation claims
+## 5. Conformance tests required before implementation claims
 
 | Test | Required behavior |
 |---|---|
@@ -288,7 +286,7 @@ A test that only checks a declaration or a comment is not sufficient. The test m
 
 ---
 
-## 11. Current integration queue — preserve the branch chain
+## 5. Current integration queue — preserve the branch chain
 
 The repository's current draft chain is:
 
@@ -310,7 +308,7 @@ This document is documentation-only. It does not merge any of these PRs, authori
 
 ---
 
-## 12. Proposed repository navigation
+## 5. Proposed repository navigation
 
 When this architecture is accepted, navigation should point to distinct authoritative sources rather than duplicate their content:
 
@@ -326,12 +324,12 @@ Do not duplicate Law text into the principles profile. Link to the canonical sou
 
 ---
 
-## 13. Decision status
+## 5. Decision status
 
 - The floor/roof distinction is recorded as a proposed architecture direction.
 - The ten self-governing capacities are proposed, not ratified.
 - P1–P10 and Canon §XIV remain preserved in their existing classifications.
-- The amendment-authority conflict in §5 remains OPEN.
+- The amendment-authority conflict in §6 remains OPEN.
 - PR #12 / #14 / #15 remain separate, draft, and unmerged.
 - No code path is certified by this document.
 - No production, financial, identity, or application action is authorized by this document.
