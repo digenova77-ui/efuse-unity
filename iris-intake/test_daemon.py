@@ -243,6 +243,28 @@ class TestIrisDaemon(unittest.TestCase):
         self.assertIn("arbiter", r["daemon"])
         self.assertGreaterEqual(r["state"]["judgments_logged"], 1)
 
+    # -- whole-runtime integrity gate ----------------------------------------
+    def test_98_changed_runtime_module_refuses_new_daemon(self):
+        module_path = os.path.join(HERE, "iris_patterns.py")
+        with open(module_path, "rb") as handle:
+            original = handle.read()
+        try:
+            with open(module_path, "ab") as handle:
+                handle.write(b"\\n# deliberate integrity-test mutation\\n")
+            refused = subprocess.run(
+                [sys.executable, os.path.join(HERE, "iris_daemon.py"),
+                 "--port", str(TEST_PORT + 1),
+                 "--state-dir", os.path.join(self.tmp.name, "tampered-state"),
+                 "--pid-file", os.path.join(self.tmp.name, "tampered.pid")],
+                capture_output=True, text=True, cwd=HERE, timeout=10,
+            )
+            self.assertEqual(refused.returncode, 3, refused.stdout + refused.stderr)
+            self.assertIn("iris_patterns.py", refused.stdout + refused.stderr)
+            self.assertIn("INTEGRITY REFUSED", refused.stdout + refused.stderr)
+        finally:
+            with open(module_path, "wb") as handle:
+                handle.write(original)
+
     # -- persistence across restart (runs last) -------------------------------
     def test_99_state_survives_restart(self):
         before = self.client.call("status", {}, CALLER)["result"]["state"]
