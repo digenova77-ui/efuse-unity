@@ -1,6 +1,15 @@
 name: Diamond Security Regressions
 
 on:
+  push:
+    branches:
+      - "audit/diamond-regression-gauntlet-20261116"
+    paths:
+      - "dclm/test_diamond_regressions.py"
+      - "dclm/writes.py"
+      - "dclm/rights.py"
+      - "dclm/seed.py"
+      - ".github/workflows/diamond-regressions.yml"
   pull_request:
     paths:
       - "dclm/test_diamond_regressions.py"
