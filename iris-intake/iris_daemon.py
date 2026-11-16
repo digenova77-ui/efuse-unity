@@ -1,55 +1,23 @@
-#!/usr/bin/env python3
-"""IRIS MAX INTAKE — iris_daemon.py: the persistent process. SHE RUNS.
+"""IRIS MAX INTAKE — legacy testnet daemon.
 
-A living TCP service on 127.0.0.1:18083 (testnet family). On-demand
-invocation of her three verbs — judge / check / advise — over a minimal
-wire protocol: 4-byte big-endian length prefix + JSON.
+The daemon serves a read-only IrisService. Its 2P5L output is diagnostic
+evidence only; the canonical DCLM Narrow adapter and lawful x/y mapping
+are not wired, so the service returns STALEMATE and never FLAWLESS.
 
-This daemon LOADS her directives (iris_core.py) — it never edits them.
-Purity is enforced structurally:
+Iris does not write state and cannot issue seeds. DCLM owns rights and
+writes; seed issuance belongs to dclm.seed.Seeder through the binding
+gate, rights check, and dclm_commit path. The old iris_core / arbiter
+three-seat implementation remains historical and is not called by this
+service path.
 
-  * INTEGRITY GATE: at startup, every required runtime module (law,
-    pattern chamber, arbiter, neural primitives, service, memory, meeting,
-    and daemon) must match the whole-runtime manifest in IRIS_SELF_CHECK.json.
-    Any missing or changed module -> refuse to start.
-  * AUTHORITY BOUNDARY: the local manifest proves self-consistency only.
-    It is not a signature, independent witness, ratification, or Trinity
-    authorization. The external trust anchor remains NOT_CONFIGURED and
-    production authority remains NOT_GRANTED.
-  * SIBLING SHIM: iris_core delegates trinity_judge to iris_arbiter.py
-    when it is importable. If the landed arbiter's arbitrate() does not
-    accept the documented single-proposal call, it is treated as NOT
-    LANDED (its import is blocked) and the designed reference circuits
-    run, labeled HONEST-PENDING. A broken sibling never crashes her, and
-    a fake delegation never happens. Restart the daemon after the sibling
-    lands a compatible arbiter.
-  * NO BYPASS: the only verbs are judge / check / advise / grant_seed /
-    seed_record / status. Every verb runs authorization + the directive
-    pipeline. There is no flag, mode, or parameter that skips a directive.
-    A non-empty `refusals` list in a check() result means a directive
-    hard-refused: treat the action as REJECTED regardless of
-    final.verdict (priority order is load-bearing law, reported verbatim).
-
-State: IrisState on disk (state dir). Every mutation is receipted and
-flushed immediately (judgments.jsonl append, seeds.json, meta.json).
-Restart resumes — never reboots blank.
-
-Runs until David says stop. No cron, no batch — a living service.
-
-Wire protocol
--------------
-Request  (JSON): {"verb": str, "caller_unity_id": str, "payload": dict}
-Response (JSON): {"ok": true, "result": {...}}
-              or {"ok": false, "error_kind": str, "error": str}
-
-Framing: uint32 big-endian byte length + UTF-8 JSON. Max 16 MiB/message.
+Startup verifies every required runtime module against the local
+IRIS_SELF_CHECK.json manifest. This is self-consistency only, not an
+independent witness, ratification, or Trinity authorization. Testnet only.
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
-import inspect
 import json
 import os
 import signal
@@ -75,54 +43,8 @@ def log(msg: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Sibling-arbiter compatibility shim (runs BEFORE iris_core is imported).
-# ---------------------------------------------------------------------------
-
-def _arbiter_compatible() -> bool:
-    """True only if iris_arbiter.arbitrate accepts iris_core's documented
-    single-proposal delegation call."""
-    try:
-        import importlib
-        mod = importlib.import_module("iris_arbiter")
-        fn = getattr(mod, "arbitrate", None)
-        if not callable(fn):
-            return False
-        params = list(inspect.signature(fn).parameters.values())
-        required = [p for p in params
-                    if p.default is inspect.Parameter.empty
-                    and p.kind in (inspect.Parameter.POSITIONAL_ONLY,
-                                   inspect.Parameter.POSITIONAL_OR_KEYWORD)]
-        return len(required) <= 1
-    except Exception:
-        return False
-
-
-_ARBITER_OK = _arbiter_compatible()
-if not _ARBITER_OK:
-    # Block the import so iris_core's guarded `import iris_arbiter` takes
-    # its ImportError path: reference circuits run, labeled HONEST-PENDING.
-    # This is the fallback iris_core was designed for — not a bypass: all
-    # ten directives still execute.
-    sys.modules["iris_arbiter"] = None  # type: ignore
-    log("SIBLING SHIM: iris_arbiter not compatible with the delegation "
-        "contract (arbitrate(proposal)) — treating as HONEST-PENDING, "
-        "reference circuits active. Restart after the sibling lands a "
-        "compatible arbiter.")
-else:
-    log("SIBLING: iris_arbiter compatible — delegating trinity arbitration.")
-
-
-# ---------------------------------------------------------------------------
 # Integrity gate — her directives are immutable.
 # ---------------------------------------------------------------------------
-
-def _sha256_file(path: str) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
 
 def integrity_gate() -> None:
     """Refuse startup unless the complete runtime matches its local manifest.
@@ -130,7 +52,8 @@ def integrity_gate() -> None:
     A matching local manifest is a self-consistency result only. It does
     not establish independent authority or grant Trinity authorization.
     """
-    import iris_core  # noqa: F401  (imported after the shim above)
+    import re
+    import iris_core  # legacy core version only; no three-seat call is made
     from iris_integrity import verify_runtime_manifest
 
     receipt_path = os.path.join(HERE, "IRIS_SELF_CHECK.json")
@@ -141,13 +64,21 @@ def integrity_gate() -> None:
         log(f"INTEGRITY REFUSED: activation receipt unavailable or invalid: {exc}")
         sys.exit(3)
 
-    if len(iris_core.DIRECTIVES) != 10:
-        log(f"INTEGRITY REFUSED: DIRECTIVES holds {len(iris_core.DIRECTIVES)}, not ten.")
+    if iris_core.CANON_VERSION != receipt.get("canon_version"):
+        log(f"INTEGRITY REFUSED: legacy core version {iris_core.CANON_VERSION} != "
+            f"pinned {receipt.get('canon_version')}.")
         sys.exit(3)
 
-    if iris_core.CANON_VERSION != receipt.get("canon_version"):
-        log(f"INTEGRITY REFUSED: canon {iris_core.CANON_VERSION} != "
-            f"pinned {receipt.get('canon_version')}.")
+    canon_path = os.path.join(HERE, "..", "CANON.md")
+    try:
+        with open(canon_path, encoding="utf-8") as handle:
+            canon_source = handle.read()
+        match = re.search(r"\\*\\*Version:\\*\\*\\s*(\\d+\\.\\d+\\.\\d+)", canon_source)
+        current_canon = match.group(1) if match else "UNKNOWN"
+    except OSError:
+        current_canon = "UNKNOWN"
+    if current_canon == "UNKNOWN" or current_canon != receipt.get("source_canon_version"):
+        log("INTEGRITY REFUSED: current root canon version is missing or differs from receipt.")
         sys.exit(3)
 
     if receipt.get("receipt_kind") != "IRIS_SELF_CHECK":
