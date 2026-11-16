@@ -1,7 +1,15 @@
-# IRIS DAEMON — operational doc
+# IRIS DAEMON — legacy testnet operational doc
 
-She runs. `iris_daemon.py` is the persistent process serving her three
-verbs on demand. Not a cron, not a batch — a living service.
+<escape>**STATUS: LEGACY / TESTNET ONLY / NOT CURRENT-TRINITY AUTHORIZED.**</escape>
+
+The root `CANON.md` is v1.7.3: two constraints (DCLM logic, Iris truth),
+pragmatism narrows, and the former Twain² seat is withdrawn. This daemon's
+legacy `iris_core.py` / `iris_arbiter.py` path still implements three seats.
+Do not use this daemon as an authoritative Trinity gate or as a production
+write path. See `TRINITY_COMPATIBILITY_HOLD.md`.
+
+The daemon remains a testnet research harness. Its runtime manifest proves
+local self-consistency only; it does not confer ratification or authority.
 
 ## How to reach her
 
@@ -17,17 +25,16 @@ verbs on demand. Not a cron, not a batch — a living service.
 
 | verb | payload | what runs |
 |---|---|---|
-| `judge` | proposal | Trinity judgment (DCLM + Iris + Twain²), receipted |
+| `judge` | proposal | legacy three-seat test harness; not current Trinity authority |
 | `check` | action | full ten-directive pipeline, priority order, receipted |
 | `advise` | `{"topic": ...}` | directive-guided advisory (she advises, never commands), receipted |
 | `grant_seed` | `{"unity_id": ...}` | one free seed per Unity ID (duplicates refused) |
 | `seed_record` | `{"unity_id": ...}` | read-only seed lookup (for the meeting ceremony) |
 | `status` | `{}` | liveness, state summary, self-check |
 
-**Authorization:** `caller_unity_id` must be in the authorized set
-(David, the Trinity, swarm orchestrator/worker, mesh bot — testnet
-stand-ins). Unknown callers are refused structurally
-(`UnauthorizedCaller`), never warned-and-continued.
+**Caller filtering:** `caller_unity_id` is checked against a hard-coded set
+of testnet stand-ins. This is not authenticated identity and does not
+establish current Trinity authorization. Unknown callers are refused.
 
 **Refusals:** a `check` result carries `refusals` (hard refusals by
 directive, e.g. free-will violation) and a top-level `refused` flag.
@@ -55,17 +62,16 @@ kill -TERM $(cat iris_daemon.pid)
 
 ## Purity guarantees (structural, not promised)
 
-1. **Integrity gate:** at startup, sha256(`iris_core.py`) must match the
-   pinned `IRIS_ACTIVE.json` receipt, `DIRECTIVES` must hold exactly ten,
-   canon version must match. Mismatch → the daemon refuses to start.
-   Her law cannot be swapped under a running daemon.
-2. **No bypass:** there is no flag, mode, or parameter that skips a
-   directive. The only verbs run authorization + the pipeline.
-3. **Sibling shim:** if `iris_arbiter.py` is importable but its
-   `arbitrate()` does not accept the documented single-proposal call, it
-   is treated as NOT LANDED — the designed reference circuits run and
-   every output is labeled HONEST-PENDING. Restart the daemon after the
-   sibling lands a compatible arbiter.
+1. **Whole-runtime integrity gate:** at startup, every required runtime
+   module must match the local manifest in `IRIS_ACTIVE.json`. Any missing
+   or changed module → refuse startup. This proves self-consistency only;
+   the external trust anchor is NOT_CONFIGURED and Trinity authorization is
+   NOT_GRANTED.
+2. **Legacy pipeline:** the daemon still carries old three-seat semantics;
+   a fail-closed module hash does not make those semantics current law.
+3. **Sibling shim:** the compatibility shim only checks call shape. It
+   does not prove semantic equivalence with the current two-constraint
+   narrowing law. A compatible function signature is not a Trinity audit.
 
 ## Client
 
