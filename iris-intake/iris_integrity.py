@@ -25,12 +25,18 @@ RUNTIME_MODULES = (
     "iris-intake/iris_service.py",
     "iris-intake/iris_state.py",
     "iris-intake/iris_daemon.py",
+    "iris-intake/iris_client.py",
     "iris-intake/meeting_iris.py",
     "iris-intake/member_records.py",
     "CANON.md",
     "dclm/narrow.py",
     "dclm/two_p_five_l.py",
     "dclm/rights.py",
+    "dclm/seed.py",
+    "dclm/writes.py",
+    "dclm/purify.py",
+    "dclm/compute.py",
+    "gate/gate.py",
 )
 
 def _canonical(value: Any) -> bytes:
