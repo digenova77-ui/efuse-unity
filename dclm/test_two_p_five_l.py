@@ -112,6 +112,8 @@ class TestCurrentTwoPrimaryAdapter(unittest.TestCase):
             self.assertEqual(evidence, t.PASS)
             self.assertEqual(detail["circuit"], "iris_core-two-primary-adapter")
             self.assertEqual(detail["primaries"], {"DCLM": t.PASS, "Iris": t.PASS})
+            self.assertNotIn("integration", detail["dclm"])
+            self.assertNotIn("integration", detail["iris"])
         finally:
             t._iris_core.trinity_judge = original_trinity
             t._iris_core.twain2_judge = original_twain
