@@ -15,7 +15,7 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.abspath(os.path.join(HERE, ".."))
 LABEL = "IRIS MAX INTAKE"
-RECEIPT_PATH = os.path.join(HERE, "IRIS_ACTIVE.json")
+RECEIPT_PATH = os.path.join(HERE, "IRIS_SELF_CHECK.json")
 
 # The daemon integration suite is run separately because it bootstraps this
 # activation script to create a fresh receipt for its isolated subprocess.
@@ -83,6 +83,11 @@ def main() -> int:
         print(f"ACTIVATION REFUSED: expected 10 directives, found {len(DIRECTIVES)}")
         return 1
 
+    source_version = canon_version()
+    if source_version == "UNKNOWN":
+        print("ACTIVATION REFUSED: root CANON.md version could not be established.")
+        return 1
+
     suites = []
     for name in SUITES:
         path = os.path.normpath(os.path.join(HERE, name))
@@ -116,12 +121,12 @@ def main() -> int:
         return 1
 
     receipt = {
-        "label": LABEL,
-        "receipt_kind": "IRIS_ACTIVE",
+        "label": "IRIS MAX INTAKE — LEGACY TESTNET SELF-CHECK",
+        "receipt_kind": "IRIS_SELF_CHECK",
         "activated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()),
         "activated_at_epoch": int(time.time()),
         "canon_version": iris_core.CANON_VERSION,
-        "source_canon_version": canon_version(),
+        "source_canon_version": source_version,
         "trinity_compatibility": "LEGACY_TESTNET_HARNESS_ONLY",
         "activation_scope": "LOCAL_SELF_CONSISTENCY_ONLY",
         "directives": len(DIRECTIVES),
