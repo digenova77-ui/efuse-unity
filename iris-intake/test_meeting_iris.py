@@ -44,7 +44,8 @@ class TestCurrentCanonAdvice(unittest.TestCase):
         cited = {section["section"] for section in advice["canon_sections"]}
         self.assertIn("I", cited)
         self.assertIn("III", cited)
-        self.assertNotIn("Twain²", str(advice))
+        self.assertNotIn("human-test seat", str(advice))
+        self.assertIn("not a third judge", advice["guidance"])
         self.assertFalse(advice["authorization_granted"])
         self.assertFalse(advice["write_performed"])
         self.assertEqual(service.state.summary(), before)
