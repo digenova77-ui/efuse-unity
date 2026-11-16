@@ -419,8 +419,13 @@ def _eval_l2_trinity_gates(proposal: Dict[str, Any]) -> Tuple[str, str, Dict[str
             # trinity_judge() adapter: Twain² is withdrawn, not a witness,
             # ring, or vote. Pragmatic constraints are applied separately
             # by constraint_gate() as narrowing, never as a third judge.
-            dclm_result = _iris_core.dclm_judge(view)
-            iris_result = _iris_core.iris_judge(view)
+            dclm_result = dict(_iris_core.dclm_judge(view))
+            iris_result = dict(_iris_core.iris_judge(view))
+            # These legacy functions attach the old arbiter-import status
+            # to their return shape. It is not used by this two-primary
+            # adapter and must not be surfaced as a live integration claim.
+            dclm_result.pop("integration", None)
+            iris_result.pop("integration", None)
             dclm_verdict = dclm_result.get("verdict", UNKNOWN)
             iris_verdict = iris_result.get("verdict", UNKNOWN)
             detail = {
