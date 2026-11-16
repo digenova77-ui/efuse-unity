@@ -70,7 +70,7 @@ def verify_runtime_manifest(
     root: str | None = None,
 ) -> dict:
     """Verify schema, exact module set, manifest digest, and every file byte."""
-    root = root or os.path.dirname(os.path.abspath(__file__))
+    root = root or os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     if not isinstance(manifest, dict) or manifest.get("schema") != SCHEMA:
         return {"ok": False, "reason": "manifest schema missing or unsupported"}
     modules = manifest.get("modules")
