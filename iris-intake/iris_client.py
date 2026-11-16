@@ -5,9 +5,9 @@ The real on-demand client for the Iris daemon (127.0.0.1:18083).
 Length-prefixed JSON over TCP — the same wire the daemon speaks.
 
   IrisClient          — raw wire client: call(verb, payload, caller_unity_id)
-  DaemonIrisService   — drop-in adapter with the IrisService verb surface
-                        (judge / check / advise / grant_seed / status),
-                        served by the LIVE daemon, never a stub.
+  DaemonIrisService   — read-only adapter (judge / check / advise / status).
+                        grant_seed remains a compatibility call that the
+                        daemon explicitly refuses; DCLM owns seed issuance.
   meet_iris_live      — the meeting ceremony through the live daemon.
   daemon_reachable    — probe for the daemon (short timeout).
 
@@ -119,11 +119,10 @@ class _DaemonState:
 class DaemonIrisService:
     """IrisService's verb surface, served by the live daemon.
 
-    Drop-in for code written against IrisService (judge / check / advise /
-    grant_seed / status / authorize), with .state exposing the read-only
-    slice meeting_iris needs. Raises from the daemon are surfaced with
-    their error_kind; UnauthorizedCaller is re-raised locally so callers
-    can catch the same type they already catch.
+    Read-only adapter for IrisService (judge / check / advise / status /
+    authorize). The legacy grant_seed method is retained only to surface
+    the daemon's explicit DCLM_WRITE_REQUIRED refusal. .state exposes a
+    read-only slice for meeting_iris.
     """
 
     def __init__(self, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT,
@@ -191,10 +190,10 @@ def meet_iris_live(unity_id: str, *, caller_unity_id: str,
                    registry=None, t_epoch=None,
                    host: str = DEFAULT_HOST, port: int = DEFAULT_PORT,
                    timeout: float = 15.0) -> Dict[str, Any]:
-    """The meeting ceremony through the LIVE daemon — not a stub, not an
-    in-process stand-in. gather_record reads the daemon's seed registry;
-    advise and the truth-gate judge run in the daemon process; the receipt
-    chain is hers."""
+    """Attempt the meeting through the LIVE daemon. Only DCLM-verified seed
+    evidence is accepted. The current canonical Narrow adapter is not yet
+    wired, so the truth gate holds rather than fabricating FLAWLESS."""
+
     import meeting_iris
     svc = DaemonIrisService(host=host, port=port, timeout=timeout)
     svc.authorize(caller_unity_id)  # fail fast if the caller is unknown
