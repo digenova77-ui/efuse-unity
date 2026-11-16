@@ -81,13 +81,17 @@ class TestCommitAtomicity(unittest.TestCase):
 class TestSeedContinuity(unittest.TestCase):
     def test_second_seeder_cannot_issue_second_seed_for_same_identity(self):
         """One-seed law must survive process/Seeder replacement."""
-        first = Seeder()
-        second = Seeder()
-        # Exercise the shared registry contract directly. If a production
-        # gate is required, tests should inject one shared test gate here.
-        first._seeds[TEST_ID] = object()
-        with self.assertRaises(SeedRefused):
+        class BoundGate:
+            def status(self, unity_id):
+                return "BOUND"
+
+        shared_gate = BoundGate()
+        first = Seeder(gate=shared_gate)
+        second = Seeder(gate=shared_gate)
+        first.issue_seed(TEST_ID)
+        with self.assertRaises(SeedRefused) as ctx:
             second.issue_seed(TEST_ID)
+        self.assertEqual(ctx.exception.reason, "SEED_ALREADY_ISSUED")
 
 
 if __name__ == "__main__":
