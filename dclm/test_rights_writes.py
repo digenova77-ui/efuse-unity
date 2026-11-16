@@ -175,7 +175,7 @@ class TestRightsPurity(unittest.TestCase):
             v.verdict = GRANT  # type: ignore
 
     def test_internal_write_tier(self):
-        """The six commit kinds grant only for DCLM-internal sources."""
+        """All commit kinds currently grant for the asserted internal label."""
         for kind in COMMIT_KINDS:
             granted = check_rights(TEST_IDENTITY, kind,
                                    {"internal": "dclm.meter"})
@@ -191,6 +191,34 @@ class TestRightsPurity(unittest.TestCase):
             forged = check_rights(TEST_IDENTITY, kind,
                                   {"internal": "evil-client"})
             self.assertEqual(forged.verdict, DENY, f"for {kind}")
+
+
+    def test_write_tier_requires_identity_for_every_commit_kind(self):
+        """Every write kind refuses missing or invalid actor identity."""
+        for kind in COMMIT_KINDS:
+            missing = check_rights(
+                None, kind, {"internal": "dclm.meter"})
+            self.assertEqual(missing.verdict, DENY, f"missing identity: {kind}")
+            self.assertEqual(
+                missing.reason, REASON_IDENTITY_REQUIRED,
+                f"missing identity reason: {kind}")
+
+            empty = check_rights(
+                "", kind, {"internal": "dclm.meter"})
+            self.assertEqual(empty.verdict, DENY, f"empty identity: {kind}")
+            self.assertEqual(
+                empty.reason, REASON_IDENTITY_REQUIRED,
+                f"empty identity reason: {kind}")
+
+            for bad_identity in ("unity:mainnet:forged", "unity:testnet:", "unity:testnet:   ", " ", 123):
+                invalid = check_rights(
+                    bad_identity, kind, {"internal": "dclm.meter"})
+                self.assertEqual(
+                    invalid.verdict, DENY,
+                    f"invalid identity {bad_identity!r}: {kind}")
+                self.assertEqual(
+                    invalid.reason, REASON_NOT_TESTNET_IDENTITY,
+                    f"invalid identity reason {bad_identity!r}: {kind}")
 
 
 # ---------------------------------------------------------------------------
