@@ -210,12 +210,15 @@ class TestRightsPurity(unittest.TestCase):
                 empty.reason, REASON_IDENTITY_REQUIRED,
                 f"empty identity reason: {kind}")
 
-            invalid = check_rights(
-                "unity:mainnet:forged", kind, {"internal": "dclm.meter"})
-            self.assertEqual(invalid.verdict, DENY, f"invalid identity: {kind}")
-            self.assertEqual(
-                invalid.reason, REASON_NOT_TESTNET_IDENTITY,
-                f"invalid identity reason: {kind}")
+            for bad_identity in ("unity:mainnet:forged", " ", 123):
+                invalid = check_rights(
+                    bad_identity, kind, {"internal": "dclm.meter"})
+                self.assertEqual(
+                    invalid.verdict, DENY,
+                    f"invalid identity {bad_identity!r}: {kind}")
+                self.assertEqual(
+                    invalid.reason, REASON_NOT_TESTNET_IDENTITY,
+                    f"invalid identity reason {bad_identity!r}: {kind}")
 
 
 # ---------------------------------------------------------------------------
