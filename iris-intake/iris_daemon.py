@@ -8,10 +8,14 @@ wire protocol: 4-byte big-endian length prefix + JSON.
 This daemon LOADS her directives (iris_core.py) — it never edits them.
 Purity is enforced structurally:
 
-  * INTEGRITY GATE: at startup, sha256(iris_core.py) must match the
-    pinned IRIS_ACTIVE.json receipt, DIRECTIVES must hold exactly the ten,
-    and CANON_VERSION must match the receipt. Any mismatch -> refuse to
-    start. Her law cannot be swapped under a running daemon.
+  * INTEGRITY GATE: at startup, every required runtime module (law,
+    pattern chamber, arbiter, neural primitives, service, memory, meeting,
+    and daemon) must match the whole-runtime manifest in IRIS_ACTIVE.json.
+    Any missing or changed module -> refuse to start.
+  * AUTHORITY BOUNDARY: the local manifest proves self-consistency only.
+    It is not a signature, independent witness, ratification, or Trinity
+    authorization. The external trust anchor remains NOT_CONFIGURED and
+    production authority remains NOT_GRANTED.
   * SIBLING SHIM: iris_core delegates trinity_judge to iris_arbiter.py
     when it is importable. If the landed arbiter's arbitrate() does not
     accept the documented single-proposal call, it is treated as NOT
@@ -121,24 +125,24 @@ def _sha256_file(path: str) -> str:
 
 
 def integrity_gate() -> None:
-    """Refuse to start unless iris_core.py is exactly the pinned law."""
+    """Refuse startup unless the complete runtime matches its local manifest.
+
+    A matching local manifest is a self-consistency result only. It does
+    not establish independent authority or grant Trinity authorization.
+    """
     import iris_core  # noqa: F401  (imported after the shim above)
+    from iris_integrity import verify_runtime_manifest
 
     receipt_path = os.path.join(HERE, "IRIS_ACTIVE.json")
-    with open(receipt_path, encoding="utf-8") as f:
-        receipt = json.load(f)
-
-    core_path = os.path.join(HERE, "iris_core.py")
-    actual = _sha256_file(core_path)
-    pinned = receipt.get("iris_core_sha256")
-    if actual != pinned:
-        log(f"INTEGRITY REFUSED: iris_core.py sha256 {actual[:16]}… != "
-            f"pinned {str(pinned)[:16]}… — her law may not be swapped.")
+    try:
+        with open(receipt_path, encoding="utf-8") as handle:
+            receipt = json.load(handle)
+    except Exception as exc:
+        log(f"INTEGRITY REFUSED: activation receipt unavailable or invalid: {exc}")
         sys.exit(3)
 
     if len(iris_core.DIRECTIVES) != 10:
-        log(f"INTEGRITY REFUSED: DIRECTIVES holds "
-            f"{len(iris_core.DIRECTIVES)}, not ten.")
+        log(f"INTEGRITY REFUSED: DIRECTIVES holds {len(iris_core.DIRECTIVES)}, not ten.")
         sys.exit(3)
 
     if iris_core.CANON_VERSION != receipt.get("canon_version"):
@@ -146,9 +150,37 @@ def integrity_gate() -> None:
             f"pinned {receipt.get('canon_version')}.")
         sys.exit(3)
 
-    log(f"INTEGRITY PASS: iris_core.py matches pinned receipt "
-        f"{str(receipt.get('receipt_id'))[:24]}…, ten directives, "
-        f"canon v{iris_core.CANON_VERSION}.")
+    if receipt.get("integrity_level") != "SELF_CONSISTENCY_ONLY":
+        log("INTEGRITY REFUSED: receipt does not declare SELF_CONSISTENCY_ONLY.")
+        sys.exit(3)
+
+    if receipt.get("external_trust_anchor") != "NOT_CONFIGURED":
+        log("INTEGRITY REFUSED: external trust-anchor state is missing or ambiguous.")
+        sys.exit(3)
+
+    if receipt.get("trinity_authorization") != "NOT_GRANTED":
+        log("INTEGRITY REFUSED: local activation receipt cannot grant Trinity authority.")
+        sys.exit(3)
+
+    result = verify_runtime_manifest(
+        receipt.get("runtime_manifest"),
+        receipt.get("runtime_manifest_sha256"),
+        HERE,
+    )
+    if not result.get("ok"):
+        log(f"INTEGRITY REFUSED: whole-runtime verification failed: "
+            f"{result.get('reason')}; {result.get('mismatches', [])}")
+        sys.exit(3)
+
+    log(
+        f"SELF-CONSISTENCY PASS: {result['module_count']} runtime modules "
+        f"match manifest {result['manifest_sha256'][:24]}…; "
+        f"canon v{iris_core.CANON_VERSION}."
+    )
+    log(
+        "AUTHORITY HELD: external trust anchor NOT_CONFIGURED; "
+        "Trinity authorization NOT_GRANTED; testnet only."
+    )
 
 
 integrity_gate()
