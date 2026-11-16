@@ -73,7 +73,7 @@ def integrity_gate() -> None:
     try:
         with open(canon_path, encoding="utf-8") as handle:
             canon_source = handle.read()
-        match = re.search(r"\\*\\*Version:\\*\\*\\s*(\\d+\\.\\d+\\.\\d+)", canon_source)
+        match = re.search(r"\*\*Version:\*\*\s*(\d+\.\d+\.\d+)", canon_source)
         current_canon = match.group(1) if match else "UNKNOWN"
     except OSError:
         current_canon = "UNKNOWN"
