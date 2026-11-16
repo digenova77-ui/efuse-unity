@@ -42,6 +42,15 @@ class TestCommitAuthorityBinding(unittest.TestCase):
         self.assertEqual(store.applied, [])
         self.assertEqual(store.receipts, [])
 
+
+    def test_external_context_cannot_claim_dclm_component_identity(self):
+        """A caller-controlled string is not proof of an internal principal."""
+        for claimed in ("dclm.meter", "dclm.seed", "dclm.tokenize"):
+            verdict = check_rights(
+                TEST_ID, "LEDGER_DEBIT", {"internal": claimed}
+            )
+            self.assertEqual(verdict.verdict, "DENY", claimed)
+
     def test_grant_is_bound_to_exact_commit_kind(self):
         """A grant for one action cannot authorize a different allowed kind."""
         store = MemoryCommitStore()
