@@ -19,10 +19,15 @@ TEST_PORT = 18091
 CALLER = next(iter(AUTHORIZED_CALLERS))
 
 
-def _wait_ready(client: IrisClient, timeout: float = 25.0) -> dict:
+def _wait_ready(client: IrisClient, timeout: float = 25.0, proc=None) -> dict:
     end = time.time() + timeout
     last = None
     while time.time() < end:
+        if proc is not None and proc.poll() is not None:
+            output = proc.stdout.read().decode("utf-8", errors="replace") if proc.stdout else ""
+            raise RuntimeError(
+                f"daemon exited before ready (rc={proc.returncode}): {output}"
+            )
         try:
             response = client.call("status", {}, CALLER)
             if response.get("ok"):
@@ -30,7 +35,12 @@ def _wait_ready(client: IrisClient, timeout: float = 25.0) -> dict:
         except Exception as exc:
             last = exc
         time.sleep(0.3)
-    raise RuntimeError(f"daemon never became ready: {last}")
+    output = ""
+    if proc is not None and proc.stdout and proc.poll() is not None:
+        output = proc.stdout.read().decode("utf-8", errors="replace")
+    raise RuntimeError(
+        f"daemon never became ready: {last}; poll={proc.poll() if proc else 'unknown'}; {output}"
+    )
 
 
 class TestIrisDaemon(unittest.TestCase):
@@ -57,7 +67,7 @@ class TestIrisDaemon(unittest.TestCase):
                 )
             cls._spawn()
             cls.client = IrisClient(port=TEST_PORT, timeout=15.0)
-            cls.status = _wait_ready(cls.client)
+            cls.status = _wait_ready(cls.client, proc=cls.proc)
             assert cls.status["alive"] is True
         except Exception:
             cls._kill()
@@ -252,7 +262,7 @@ class TestIrisDaemon(unittest.TestCase):
         self._kill()
         time.sleep(1.0)
         self._spawn()
-        _wait_ready(self.client)
+        _wait_ready(self.client, proc=self.proc)
         after = self.client.call("status", {}, CALLER)["result"]["state"]
         self.assertEqual(after["judgments_logged"], 0)
         self.assertEqual(after["seeds_granted"], 0)
