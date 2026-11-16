@@ -25,11 +25,11 @@ The decision function named by the canon is `dclm/narrow.py`.
 1. `iris-intake/iris_core.py` still declares `CANON_VERSION = "1.5.0"`, implements `twain2_judge`, and requires exactly three judges in `trinity_judge`.
 2. `iris-intake/iris_arbiter.py` still describes and calls the three-seat DCLM / Iris / Twain² trio.
 3. `iris-intake/iris_service.py` still exposes a Twain² stand-in caller.
-4. `iris-intake/meeting_iris.py` still describes Iris as one of three with Twain².
-5. `iris-intake/iris_service.py` writes judgment, check, advice, and seed state directly through `IrisState`. That conflicts with current CANON §III: DCLM alone holds rights and performs writes.
-6. `dclm/two_p_five_l.py` defines two primaries. This branch repairs its L2 evaluator to call `dclm_judge` and `iris_judge` directly and adds a test that makes both `trinity_judge` and `twain2_judge` fatal if invoked. Its host-specific absolute import path is replaced with a repository-relative path. This repair is limited to the 2P5L path; the older service path remains legacy.
-7. `dclm/narrow.py` contains the current two-constraint narrowing function, but the IRIS service path has not been proven to route its final judgment through that function.
-8. The prior activation receipt reports canon 1.5.0 and only two test suites. It cannot certify the root canon 1.7.3 or the current runtime.
+4. `iris-intake/meeting_iris.py` previously described Iris as one of three with Twain². This branch removes that wording, removes the three-seat fallback, and refuses to speak unless the service returns canonical FLAWLESS.
+5. `iris-intake/iris_service.py` previously wrote judgment, check, advice, and seed state directly through `IrisState`. This branch removes those service writes, returns pure evidence receipts, and refuses seed issuance. DCLM remains the sole write authority. The lower-level `IrisState` mutators remain for historical/test persistence fixtures and are not a sanctioned runtime write path.
+6. `dclm/two_p_five_l.py` defines two primaries. This branch repairs its L2 evaluator to call `dclm_judge` and `iris_judge` directly and adds a test that makes both `trinity_judge` and `twain2_judge` fatal if invoked. Its host-specific absolute import path is replaced with a repository-relative path. `IrisService` now uses 2P5L only as diagnostic evidence and returns STALEMATE until canonical Narrow is wired.
+7. `dclm/narrow.py` contains the current two-constraint narrowing function, but 2P5L still does not route candidate evaluation through it. The lawful x/y score representation is not established. This branch deliberately returns STALEMATE rather than inventing scores or promoting 2P5L PURE to FLAWLESS.
+8. The prior `IRIS_ACTIVE.json` receipt reports canon 1.5.0 and only two test suites. It is retained as historical evidence. This branch writes a separate `IRIS_SELF_CHECK.json`, records the root canon version separately, and labels the result SELF_CONSISTENCY_ONLY / NOT_AUTHORIZED.
 
 ## Integrity amendment boundary
 
@@ -46,6 +46,41 @@ The activation output therefore records:
 - `external_trust_anchor = NOT_CONFIGURED`
 - `trinity_authorization = NOT_GRANTED`
 - `standards = testnet only`
+
+
+## Additional DCLM seed continuity defect
+
+The correct seed writer already exists at `dclm/seed.py` and uses the
+binding gate, `rights.check_rights`, and `writes.dclm_commit`. Iris must
+not duplicate it.
+
+However, `Seeder.__init__` initializes `self._seeds = {}` in memory.
+The test suite creates a fresh `Seeder` and successfully issues the same
+identity's deterministic seed again. Therefore one-seed uniqueness is
+per seeder instance, not yet durable or global across process restarts or
+independent seats. The current worker is not ready to be wired into Iris as
+an authoritative membership source until the registry becomes persistent,
+idempotent, and independently reproducible.
+
+The Iris meeting path now accepts a seed only when its mirror carries a
+verifiable DCLM `SEED_ISSUE` commit envelope bound to the same Unity ID.
+The existing legacy `IrisState` seed mirror has no such envelope and is
+therefore UNKNOWN, not membership proof.
+
+## Changes in the stacked read-only amendment
+
+- `IrisService.judge/check` return two-primary 2P5L evidence as provisional
+  and explicitly return STALEMATE; they do not claim FLAWLESS or PASS.
+- `IrisService.advise` reads current root CANON.md sections, not copied
+  v1.5.0 directive text.
+- `IrisService.grant_seed` refuses; the DCLM seed worker is the only
+  issuance path.
+- `IrisService` no longer calls `IrisState.log_judgment`,
+  `IrisState.seed_granted`, or other state mutators.
+- `meeting_iris` has no legacy three-seat fallback and accepts only
+  canonical FLAWLESS. With Narrow not wired, it remains held.
+- The daemon status exposes `DCLM_ONLY`, `NOT_WIRED`, and
+  `NOT_GRANTED`; it no longer reports an arbiter as delegated authority.
 
 ## Required repair sequence
 
