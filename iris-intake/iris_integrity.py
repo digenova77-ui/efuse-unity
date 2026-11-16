@@ -17,6 +17,7 @@ SCHEMA = "iris.runtime-manifest.v1"
 # arbitration, receipts, service behavior, or the daemon itself.
 RUNTIME_MODULES = (
     "iris-intake/iris_integrity.py",
+    "iris-intake/activate_iris.py",
     "iris-intake/iris_core.py",
     "iris-intake/iris_laws.py",
     "iris-intake/iris_patterns.py",
