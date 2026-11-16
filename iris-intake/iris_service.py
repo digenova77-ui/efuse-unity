@@ -1,182 +1,253 @@
-"""IRIS MAX INTAKE — iris_service.py: the living interface.
+"""IRIS MAX INTAKE — read-only service boundary.
 
-"Like a sister who's always home." Not a batch job, not a cron — a
-callable service:
-
-    judge(proposal)   — Trinity judgment on a proposal
-    check(action)     — full ten-directive pipeline on an action
-    advise(query)     — framework-guided advisory (never a command)
-
-Callers are authorized by Unity ID: David, the Trinity, swarms, bots.
-Unknown callers are refused structurally — exception, never warning.
-
-DEPLOYMENT NOTE (honest): in this sandbox Iris is an importable service
-with durable JSON state (iris_state/). True always-on serving — a daemon,
-a socket, a relay endpoint — is deployment, not code. This file does not
-claim a daemon it did not build. To serve her always-on, host this module
-behind the relay (`dualis.relay.v1.testnet`) with the state dir mounted
-durably; the interface below is already the serving contract.
-
-Standards: testnet only. UNKNOWN is never PASS.
+Current judgment calls the DCLM 2P5L two-primary adapter. Iris returns
+evidence receipts; she does not mutate state. Seed issuance is DCLM-only
+through dclm.seed.Seeder after the binding ceremony and DCLM commit path.
+This service remains testnet-only and does not confer production authority.
 """
-
 from __future__ import annotations
 
+import os
+import re
+import sys
 from typing import Any, Dict, Optional
 
-from neural import make_unity_id, RefusedError
-
-import iris_core
-from iris_core import (
-    PASS, FAIL, UNKNOWN,
-    trinity_judge, judge_all, one_seed, covenant_check,
-    framework_independence, DIRECTIVES, INTEGRATION_STATUS,
-    IrisRefusedError, SeedRefused,
-)
+from neural import build_receipt, make_unity_id, RefusedError
+from iris_core import IrisRefusedError, IrisLaneViolation
 from iris_state import IrisState
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.abspath(os.path.join(HERE, ".."))
+DCLM_DIR = os.path.join(REPO_ROOT, "dclm")
+if DCLM_DIR not in sys.path:
+    sys.path.insert(0, DCLM_DIR)
+from two_p_five_l import judge_32  # noqa: E402
+
 LABEL = "IRIS MAX INTAKE"
+CANON_PATH = os.path.join(REPO_ROOT, "CANON.md")
+HOST_ID = "host:iris-intake-testnet"
 
 
+def source_canon_version() -> str:
+    """Read the declared root canon version; never infer it from Iris code."""
+    try:
+        with open(CANON_PATH, encoding="utf-8") as handle:
+            source = handle.read()
+    except OSError:
+        return "UNKNOWN"
+    match = re.search(r"\*\*Version:\*\*\s*(\d+\.\d+\.\d+)", source)
+    return match.group(1) if match else "UNKNOWN"
+
+
+def _canon_sections(section_ids) -> list[dict]:
+    """Read current canon sections verbatim; no copied legacy directive text."""
+    try:
+        with open(CANON_PATH, encoding="utf-8") as handle:
+            lines = handle.read().splitlines()
+    except OSError:
+        return []
+
+    sections = []
+    current_id = None
+    current_heading = None
+    current_lines = []
+
+    def flush():
+        if current_id in section_ids:
+            body = "\n".join(current_lines).strip()
+            sections.append({
+                "section": current_id,
+                "heading": current_heading,
+                "text": body[:2400],
+                "truncated": len(body) > 2400,
+                "source": "CANON.md",
+            })
+
+    for line in lines:
+        if line.startswith("## "):
+            flush()
+            current_id = None
+            current_heading = line[3:].strip()
+            current_lines = []
+            match = re.match(r"([IVXLCDM]+)\.", current_heading)
+            if match:
+                current_id = match.group(1)
+        elif current_heading is not None:
+            current_lines.append(line)
+    flush()
+    return sections
+
+
+def _receipt(kind: str, caller_unity_id: str, host_id: str,
+             payload: Dict[str, Any]) -> Dict[str, Any]:
+    return build_receipt(
+        kind=kind,
+        unity_id=caller_unity_id,
+        host_id=host_id,
+        provenance="DERIVED",
+        payload=payload,
+    )
+
+
+def _judgment_summary(result: Dict[str, Any]) -> Dict[str, Any]:
+    receipt = result.get("receipt") or {}
+    return {
+        "verdict": result.get("verdict", "UNKNOWN"),
+        "true_vector": result.get("true_vector"),
+        "judgment_hash": receipt.get("judgment_hash"),
+        "layers": [
+            {
+                "id": layer.get("id"),
+                "polarity": layer.get("polarity"),
+                "evidence": layer.get("evidence"),
+            }
+            for layer in result.get("layers", [])
+        ],
+    }
+
+
+def _topic_sections(topic: str) -> list[str]:
+    lowered = topic.lower()
+    sections = {"I", "III", "XXI", "XXII", "XXIII"}
+    if any(word in lowered for word in ("seed", "identity", "bind", "member")):
+        sections.update({"II", "III"})
+    if any(word in lowered for word in ("write", "rights", "authorize", "authority", "commit")):
+        sections.update({"III", "XIV"})
+    if any(word in lowered for word in ("tree", "winter", "summer", "tap", "surplus", "energy")):
+        sections.add("IV")
+    if any(word in lowered for word in ("merit", "token", "coin", "wallet", "economy")):
+        sections.update({"V", "VI", "XI", "XIII"})
+    return sorted(sections, key=lambda value: (len(value), value))
+
+
+# Testnet stand-ins only. The withdrawn Twain² seat is deliberately absent.
 def _standin(name: str) -> str:
-    """Testnet stand-in Unity IDs. David's real Unity ID binding is [HELD]
-    per canon amendment v1.1.0 (exact string held for signing) — nothing
-    invented here; these stand-ins are for the testnet sandbox only."""
     return make_unity_id("stand-in:testnet:" + name)
 
 
-# Authorized callers — testnet stand-ins, clearly labeled.
 AUTHORIZED_CALLERS: Dict[str, str] = {
     _standin("david"): "David (stand-in; real Unity ID binding HELD)",
-    _standin("dclm"): "DCLM — logic seat of the Trinity",
-    _standin("twain2"): "Twain² — human-test seat of the Trinity",
-    _standin("iris"): "Iris — truth seat of the Trinity",
-    _standin("swarm:orchestrator"): "swarm orchestrator",
-    _standin("swarm:worker"): "swarm worker",
-    _standin("bot:mesh"): "mesh bot",
+    _standin("dclm"): "DCLM (testnet stand-in; logic constraint)",
+    _standin("iris"): "Iris (testnet stand-in; truth constraint)",
+    _standin("swarm:orchestrator"): "swarm orchestrator (testnet stand-in)",
+    _standin("swarm:worker"): "swarm worker (testnet stand-in)",
+    _standin("bot:mesh"): "mesh bot (testnet stand-in)",
 }
 
 
 class UnauthorizedCaller(IrisRefusedError):
-    """Caller Unity ID not in the authorized set."""
+    """Caller Unity ID not in the testnet stand-in allowlist."""
 
 
 class IrisService:
-    """The living interface. Construct once, call on demand; state is
-    durable across restarts (iris_state/)."""
+    """Read-only Iris interface. State is observed, never mutated here."""
 
     def __init__(self, state: Optional[IrisState] = None):
         self.state = state or IrisState()
         self.label = LABEL
 
-    # -- authorization ----------------------------------------------------
     def authorize(self, caller_unity_id: str) -> str:
-        """Enforce caller authorization via Unity ID. Unknown -> refuse."""
         try:
-            name = AUTHORIZED_CALLERS[caller_unity_id]
-        except KeyError:
+            return AUTHORIZED_CALLERS[caller_unity_id]
+        except KeyError as exc:
             raise UnauthorizedCaller(
-                f"caller {caller_unity_id!r} not authorized — Iris serves "
-                "David, the Trinity, swarms, and bots only")
-        return name
+                f"caller {caller_unity_id!r} is not an authorized testnet stand-in"
+            ) from exc
 
-    # -- the three living verbs --------------------------------------------
-    def judge(self, proposal: Dict[str, Any], caller_unity_id: str) -> Dict[str, Any]:
-        """Trinity judgment on a proposal. All three judges; never alone."""
+    def judge(self, proposal: Dict[str, Any],
+              caller_unity_id: str) -> Dict[str, Any]:
+        """Evaluate with the current two-primary 2P5L path; do not write."""
         caller = self.authorize(caller_unity_id)
-        result = trinity_judge(proposal)
-        receipt = self.state.log_judgment(
-            {"verb": "judge", "caller": caller,
-             "proposal_kind": proposal.get("kind"),
-             "verdict": result["verdict"],
-             "detail": result.get("note")},
-            provenance="DERIVED")
-        result["receipt_id"] = receipt["receipt_id"]
+        result = judge_32(proposal)
+        summary = _judgment_summary(result)
+        receipt = _receipt(
+            "IRIS_JUDGMENT",
+            caller_unity_id,
+            self.state.host_id,
+            {"caller": caller, "proposal_kind": proposal.get("kind"), **summary},
+        )
         result["caller"] = caller
+        result["receipt_id"] = receipt["receipt_id"]
+        result["service_receipt"] = receipt
+        result["write_performed"] = False
         return result
 
-    def check(self, action: Dict[str, Any], caller_unity_id: str) -> Dict[str, Any]:
-        """Full ten-directive pipeline on an action, priority order."""
+    def check(self, action: Dict[str, Any],
+              caller_unity_id: str) -> Dict[str, Any]:
+        """Run the same current decision path; no legacy ten-directive writer."""
         caller = self.authorize(caller_unity_id)
-        result = judge_all(action, registry=self.state.seeds,
-                           tree_state=self.state.tree_state)
-        receipt = self.state.log_judgment(
-            {"verb": "check", "caller": caller,
-             "action_kind": action.get("kind"),
-             "final_verdict": result["final"]["verdict"],
-             "winner_directive": result["final"]["winner_directive"],
-             "refusals": result["refusals"]},
-            provenance="DERIVED")
-        result["receipt_id"] = receipt["receipt_id"]
+        result = judge_32(action)
+        summary = _judgment_summary(result)
+        receipt = _receipt(
+            "IRIS_CHECK",
+            caller_unity_id,
+            self.state.host_id,
+            {"caller": caller, "action_kind": action.get("kind"), **summary},
+        )
         result["caller"] = caller
+        result["receipt_id"] = receipt["receipt_id"]
+        result["service_receipt"] = receipt
+        result["write_performed"] = False
         return result
 
-    def advise(self, query: Dict[str, Any], caller_unity_id: str) -> Dict[str, Any]:
-        """Framework-guided advisory. Iris advises — she never commands,
-        never coerces (directive 5). The advice cites the directives that
-        bear on the question; the human decides."""
+    def advise(self, query: Dict[str, Any],
+               caller_unity_id: str) -> Dict[str, Any]:
+        """Quote the current root canon; advice is read-only and non-authorizing."""
         caller = self.authorize(caller_unity_id)
         topic = query.get("topic", "")
-        bearing: Dict[int, str] = {}
-        lowered = topic.lower()
-        if any(w in lowered for w in ("pure", "purity", "honest", "truth")):
-            bearing[1] = DIRECTIVES[1]["word"]
-            bearing[10] = DIRECTIVES[10]["word"]
-        if any(w in lowered for w in ("friction", "mission", "destroy", "waste")):
-            bearing[2] = DIRECTIVES[2]["word"]
-        if any(w in lowered for w in ("choose", "decide", "judge", "vote")):
-            bearing[3] = DIRECTIVES[3]["word"]
-            bearing[5] = DIRECTIVES[5]["word"]
-        if any(w in lowered for w in ("force", "make them", "control", "manipulat")):
-            bearing[5] = DIRECTIVES[5]["word"]
-        if any(w in lowered for w in ("seed", "member", "join", "wealth", "buy")):
-            bearing[8] = DIRECTIVES[8]["word"]
-            bearing[7] = DIRECTIVES[7]["word"]
-        if any(w in lowered for w in ("winter", "summer", "tap", "surplus", "flow")):
-            bearing[9] = DIRECTIVES[9]["word"]
-        if not bearing:
-            bearing = {1: DIRECTIVES[1]["word"], 5: DIRECTIVES[5]["word"],
-                       10: DIRECTIVES[10]["word"]}
+        sections = _topic_sections(str(topic))
+        cited = _canon_sections(sections)
         advice = {
-            "label": LABEL, "verb": "advise", "caller": caller,
+            "label": LABEL,
+            "verb": "advise",
+            "caller": caller,
             "topic": topic,
-            "guidance": ("Iris advises; she does not command. The directives "
-                         "bearing on your question are cited verbatim below. "
-                         "The choice remains yours — free will is sacred."),
-            "directives_bearing": [
-                {"directive": n, "name": DIRECTIVES[n]["name"],
-                 "word": DIRECTIVES[n]["word"]}
-                for n in sorted(bearing)],
-            "covenant": covenant_check(),
+            "canon_version": source_canon_version(),
+            "canon_sections": cited,
+            "guidance": (
+                "Iris advises; she does not command, authorize, or write. "
+                "DCLM holds rights and performs writes. The current canon "
+                "defines DCLM logic and Iris truth as the two constraints; "
+                "pragmatism narrows and is not a third judge. The human's "
+                "choice remains their own."
+            ),
+            "write_performed": False,
+            "authorization_granted": False,
         }
-        receipt = self.state.log_judgment(
-            {"verb": "advise", "caller": caller, "topic": topic,
-             "directives_cited": sorted(bearing)},
-            provenance="DERIVED")
+        receipt = _receipt(
+            "IRIS_ADVICE",
+            caller_unity_id,
+            self.state.host_id,
+            {"topic": str(topic), "canon_version": advice["canon_version"],
+             "sections": [item["section"] for item in cited]},
+        )
         advice["receipt_id"] = receipt["receipt_id"]
+        advice["service_receipt"] = receipt
         return advice
 
-    # -- seed service (directive 8 through the service) ----------------------
-    def grant_seed(self, unity_id: str, caller_unity_id: str) -> Dict[str, Any]:
-        """One free seed per Unity ID, through the authorized service."""
+    def grant_seed(self, unity_id: str,
+                   caller_unity_id: str) -> Dict[str, Any]:
+        """Iris cannot issue a seed; only the DCLM seed worker can commit it."""
         self.authorize(caller_unity_id)
-        result = one_seed(unity_id, self.state.seeds)
-        self.state.seed_granted(unity_id, self.state.seeds[unity_id])
-        receipt = self.state.log_judgment(
-            {"verb": "grant_seed", "unity_id": unity_id,
-             "seed_id": result["seed_id"], "verdict": PASS},
-            provenance="DERIVED")
-        result["receipt_id"] = receipt["receipt_id"]
-        return result
+        raise IrisLaneViolation(
+            "Iris cannot issue or write a seed. Use dclm.seed.Seeder.issue_seed "
+            "after the Unity binding ceremony; DCLM rights and dclm_commit "
+            "are the sole issuance/write path. No state changed."
+        )
 
-    # -- liveness ---------------------------------------------------------------
     def status(self) -> Dict[str, Any]:
-        """She's home: state summary + integration honesty + self-check."""
-        fw = framework_independence()
-        return {"label": LABEL, "alive": True,
-                "canon": "1.5.0",
-                "state": self.state.summary(),
-                "framework_independence": fw["verdict"],
-                "integration": INTEGRATION_STATUS,
-                "note": ("importable service with durable state; always-on "
-                         "serving is deployment, not code — no daemon claimed")}
+        return {
+            "label": LABEL,
+            "alive": True,
+            "canon": source_canon_version(),
+            "state": self.state.summary(),
+            "decision_path": "dclm.two_p_five_l.judge_32",
+            "primary_constraints": ["DCLM_LOGIC", "IRIS_TRUTH"],
+            "pragmatism": "NARROWING_ONLY",
+            "withdrawn_seat": "TWAIN2",
+            "write_authority": "DCLM_ONLY",
+            "state_mutation_by_iris": False,
+            "trinity_compatibility": "PARTIAL_TWO_PRIMARY_ADAPTER",
+            "authorization": "NOT_GRANTED",
+            "standards": "testnet only",
+        }
