@@ -133,7 +133,7 @@ def integrity_gate() -> None:
     import iris_core  # noqa: F401  (imported after the shim above)
     from iris_integrity import verify_runtime_manifest
 
-    receipt_path = os.path.join(HERE, "IRIS_ACTIVE.json")
+    receipt_path = os.path.join(HERE, "IRIS_SELF_CHECK.json")
     try:
         with open(receipt_path, encoding="utf-8") as handle:
             receipt = json.load(handle)
