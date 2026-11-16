@@ -215,6 +215,7 @@ class TestIrisDaemon(unittest.TestCase):
         result = response["result"]
         self.assertTrue(result["alive"])
         self.assertEqual(result["canon"], "1.7.3")
+        self.assertEqual(result["legacy_core_version"], "1.5.0")
         self.assertEqual(result["write_authority"], "DCLM_ONLY")
         self.assertEqual(result["narrowing_adapter"], "NOT_WIRED")
         self.assertEqual(result["authorization"], "NOT_GRANTED")
