@@ -13,6 +13,7 @@ import sys
 from typing import Any, Dict, Optional
 
 from neural import build_receipt, make_unity_id, RefusedError
+import iris_core
 from iris_core import IrisRefusedError, IrisLaneViolation
 from iris_state import IrisState
 
@@ -263,6 +264,7 @@ class IrisService:
             "label": LABEL,
             "alive": True,
             "canon": source_canon_version(),
+            "legacy_core_version": iris_core.CANON_VERSION,
             "state": self.state.summary(),
             "decision_path": "dclm.two_p_five_l.judge_32 (diagnostic only)",
             "primary_constraints": ["DCLM_LOGIC", "IRIS_TRUTH"],
