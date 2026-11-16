@@ -10,8 +10,6 @@ on:
       - "dclm/test_two_p_five_l.py"
       - ".github/workflows/iris-runtime-integrity.yml"
   push:
-    branches:
-      - main
     paths:
       - "CANON.md"
       - "iris-intake/**"
