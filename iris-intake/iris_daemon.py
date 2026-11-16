@@ -114,7 +114,7 @@ def integrity_gate() -> None:
     log(
         f"SELF-CONSISTENCY PASS: {result['module_count']} runtime modules "
         f"match manifest {result['manifest_sha256'][:24]}…; "
-        f"canon v{iris_core.CANON_VERSION}."
+        f"root canon v{current_canon}; legacy core v{iris_core.CANON_VERSION}."
     )
     log(
         "AUTHORITY HELD: external trust anchor NOT_CONFIGURED; "
