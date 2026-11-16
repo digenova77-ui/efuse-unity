@@ -1,0 +1,31 @@
+name: Diamond Security Regressions
+
+on:
+  pull_request:
+    paths:
+      - "dclm/test_diamond_regressions.py"
+      - "dclm/writes.py"
+      - "dclm/rights.py"
+      - "dclm/seed.py"
+      - ".github/workflows/diamond-regressions.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  regression-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Set up Node for the existing testnet signing helper
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run diamond security regression contract
+        run: python -m unittest dclm.test_diamond_regressions -v
