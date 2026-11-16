@@ -105,3 +105,24 @@ class TestSeedContinuity(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+class TestTwoPrimaryIndependence(unittest.TestCase):
+    def test_missing_iris_core_is_unknown_not_a_synthetic_second_primary(self):
+        """A local combined fallback cannot impersonate two independent minds."""
+        import two_p_five_l as circuit
+        proposal = {
+            "claim": "A simple proposition",
+            "unity_id": TEST_ID,
+            "kind": "advise",
+            "intent": "explain",
+            "patterns": [],
+            "provenance": "DERIVED",
+            "claims_fact": False,
+            "action": "LOOK",
+            "context": {},
+            "comprehensible": True,
+        }
+        with patch.object(circuit, "_iris_core", None):
+            polarity, evidence, detail = circuit._eval_l2_trinity_gates(proposal)
+        self.assertEqual((polarity, evidence), (circuit.FAIL, circuit.UNKNOWN))
+        self.assertIn("unavailable", str(detail).lower())
