@@ -228,10 +228,9 @@ class IrisDaemon:
             elif verb == "check":
                 with self.lock:
                     result = self.svc.check(payload, caller_unity_id)
-                # Surface hard refusals: a directive said NO. Priority
-                # order is load-bearing law (reported verbatim in
-                # final), but a non-empty refusals list means REJECTED.
-                result["refused"] = bool(result.get("refusals"))
+                # The current service remains STALEMATE until canonical
+                # Narrow is wired. Never promote diagnostic evidence to PASS.
+                result["refused"] = result.get("verdict") != "FLAWLESS"
             elif verb == "advise":
                 with self.lock:
                     result = self.svc.advise(payload, caller_unity_id)
@@ -256,8 +255,10 @@ class IrisDaemon:
                     "label": LABEL, "host": self.host, "port": self.port,
                     "pid": os.getpid(),
                     "iris_unity_id": self.state.unity_id,
-                    "arbiter": "delegated" if _ARBITER_OK else "HONEST-PENDING",
-                    "note": "running until David says stop",
+                    "decision_path": "2P5L two-primary diagnostic only",
+                    "narrowing": "NOT_WIRED",
+                    "authority": "NOT_GRANTED",
+                    "note": "testnet only; Iris does not write state",
                 }
             else:
                 return {"ok": False, "error_kind": "BadVerb",
