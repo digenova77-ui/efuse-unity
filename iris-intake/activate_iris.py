@@ -13,6 +13,7 @@ import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.abspath(os.path.join(HERE, ".."))
 LABEL = "IRIS MAX INTAKE"
 RECEIPT_PATH = os.path.join(HERE, "IRIS_ACTIVE.json")
 
@@ -25,6 +26,7 @@ SUITES = (
     "test_meeting_iris.py",
     "test_iris_persistence.py",
     "test_integrity.py",
+    "../dclm/test_two_p_five_l.py",
 )
 
 
@@ -83,7 +85,7 @@ def main() -> int:
 
     suites = []
     for name in SUITES:
-        path = os.path.join(HERE, name)
+        path = os.path.normpath(os.path.join(HERE, name))
         if not os.path.isfile(path):
             print(f"ACTIVATION REFUSED: required test suite missing: {name}")
             return 1
@@ -108,7 +110,7 @@ def main() -> int:
         return 1
 
     try:
-        manifest, manifest_sha = build_runtime_manifest(HERE)
+        manifest, manifest_sha = build_runtime_manifest(REPO_ROOT)
     except Exception as exc:
         print(f"ACTIVATION REFUSED: runtime manifest could not be built: {exc}")
         return 1
@@ -119,6 +121,9 @@ def main() -> int:
         "activated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()),
         "activated_at_epoch": int(time.time()),
         "canon_version": iris_core.CANON_VERSION,
+        "source_canon_version": canon_version(),
+        "trinity_compatibility": "LEGACY_TESTNET_HARNESS_ONLY",
+        "activation_scope": "LOCAL_SELF_CONSISTENCY_ONLY",
         "directives": len(DIRECTIVES),
         "integration": INTEGRATION_STATUS,
         "runtime_manifest": manifest,
