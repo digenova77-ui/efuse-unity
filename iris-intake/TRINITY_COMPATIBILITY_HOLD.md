@@ -27,7 +27,7 @@ The decision function named by the canon is `dclm/narrow.py`.
 3. `iris-intake/iris_service.py` still exposes a Twain² stand-in caller.
 4. `iris-intake/meeting_iris.py` still describes Iris as one of three with Twain².
 5. `iris-intake/iris_service.py` writes judgment, check, advice, and seed state directly through `IrisState`. That conflicts with current CANON §III: DCLM alone holds rights and performs writes.
-6. `dclm/two_p_five_l.py` defines two primaries, but its L2 evaluator calls `iris_core.trinity_judge` when the old module is importable. That can reintroduce the withdrawn third seat. Its host-specific absolute import path also means different environments can select different circuits.
+6. `dclm/two_p_five_l.py` defines two primaries. This branch repairs its L2 evaluator to call `dclm_judge` and `iris_judge` directly and adds a test that makes both `trinity_judge` and `twain2_judge` fatal if invoked. Its host-specific absolute import path is replaced with a repository-relative path. This repair is limited to the 2P5L path; the older service path remains legacy.
 7. `dclm/narrow.py` contains the current two-constraint narrowing function, but the IRIS service path has not been proven to route its final judgment through that function.
 8. The prior activation receipt reports canon 1.5.0 and only two test suites. It cannot certify the root canon 1.7.3 or the current runtime.
 
@@ -51,7 +51,7 @@ The activation output therefore records:
 
 1. Treat the old three-seat service as legacy and keep it out of any authoritative route.
 2. Remove all active three-seat calls from the current judgment path; do not merely rename the third seat.
-3. Wire DCLM and Iris as the only two constraints and use the canonical `dclm/narrow.py` decision function for candidate narrowing.
+3. Complete the 2P5L wiring: its L2 now calls only DCLM and Iris, but prove the proposal/candidate mapping and route actual candidate narrowing through the canonical `dclm/narrow.py` decision function.
 4. Establish the exact lawful representation of x / logic and y / truth from current source specifications. Do not invent score scales or thresholds.
 5. Keep pragmatism as the narrowing procedure, not an independent judge or vote.
 6. Move all persistent writes behind DCLM's single rights-check / GRANT-or-DENY / commit path. Iris returns judgment evidence; she does not write state.
