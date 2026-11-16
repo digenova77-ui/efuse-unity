@@ -79,7 +79,9 @@ class TestNarrowing(unittest.TestCase):
         result = t.judge_32(dict(PURE_PROPOSAL, patterns=["coerce"]))
         self.assertEqual(result["verdict"], t.IMPURE)
         self.assertNotIn("witness", result)
-        self.assertIn("L2_TRINITY_GATES", result["failure_map"]["failing_layers"])
+        self.assertFalse(result["narrowing"]["clear"])
+        self.assertIn("removes or overrides human agency", result["narrowing"]["problems"])
+        self.assertEqual(result["failure_map"]["failing_layers"], [])
 
     def test_a_patched_constraint_still_blocks_purity(self):
         real = t.constraint_gate
