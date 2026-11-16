@@ -50,6 +50,24 @@ class TestRuntimeManifest(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("iris_laws.py", [item["module"] for item in result["mismatches"]])
 
+    def test_changed_root_canon_refuses(self):
+        manifest, digest = build_runtime_manifest(self.root)
+        path = os.path.join(self.root, "CANON.md")
+        with open(path, "ab") as handle:
+            handle.write(b"\\n# changed current law\\n")
+        result = verify_runtime_manifest(manifest, digest, self.root)
+        self.assertFalse(result["ok"])
+        self.assertIn("CANON.md", [item["module"] for item in result["mismatches"]])
+
+    def test_changed_dclm_seed_writer_refuses(self):
+        manifest, digest = build_runtime_manifest(self.root)
+        path = os.path.join(self.root, "dclm", "seed.py")
+        with open(path, "ab") as handle:
+            handle.write(b"\\n# changed DCLM seed writer\\n")
+        result = verify_runtime_manifest(manifest, digest, self.root)
+        self.assertFalse(result["ok"])
+        self.assertIn("dclm/seed.py", [item["module"] for item in result["mismatches"]])
+
     def test_missing_runtime_module_refuses_manifest_creation(self):
         os.remove(os.path.join(self.root, "iris-intake", "neural.py"))
         with self.assertRaises(FileNotFoundError):
