@@ -27,6 +27,10 @@ RUNTIME_MODULES = (
     "iris_daemon.py",
     "meeting_iris.py",
     "member_records.py",
+    "../CANON.md",
+    "../dclm/narrow.py",
+    "../dclm/two_p_five_l.py",
+    "../dclm/rights.py",
 )
 
 
