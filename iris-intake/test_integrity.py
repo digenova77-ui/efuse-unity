@@ -50,6 +50,15 @@ class TestRuntimeManifest(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("iris_laws.py", [item["module"] for item in result["mismatches"]])
 
+    def test_changed_activation_logic_refuses(self):
+        manifest, digest = build_runtime_manifest(self.root)
+        path = os.path.join(self.root, "iris-intake", "activate_iris.py")
+        with open(path, "ab") as handle:
+            handle.write(b"# changed activation logic\\n")
+        result = verify_runtime_manifest(manifest, digest, self.root)
+        self.assertFalse(result["ok"])
+        self.assertIn("iris-intake/activate_iris.py", [item["module"] for item in result["mismatches"]])
+
     def test_changed_root_canon_refuses(self):
         manifest, digest = build_runtime_manifest(self.root)
         path = os.path.join(self.root, "CANON.md")
