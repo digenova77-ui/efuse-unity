@@ -50,10 +50,32 @@ class TestIrisDaemon(unittest.TestCase):
         cls.state_dir = os.path.join(cls.tmp.name, "state")
         cls.pid_file = os.path.join(cls.tmp.name, "iris_daemon.pid")
         cls.proc = None
-        cls._spawn()
-        cls.client = IrisClient(port=TEST_PORT, timeout=15.0)
-        cls.status = _wait_ready(cls.client)
-        assert cls.status["alive"] is True
+        cls.receipt_path = os.path.join(HERE, "IRIS_ACTIVE.json")
+        with open(cls.receipt_path, "rb") as handle:
+            cls.original_receipt = handle.read()
+        try:
+            # Build a fresh local self-consistency receipt for the exact
+            # checkout under test. Activation runs all non-daemon suites;
+            # this daemon suite is deliberately excluded to avoid recursion.
+            activation = subprocess.run(
+                [sys.executable, os.path.join(HERE, "activate_iris.py")],
+                capture_output=True, text=True, cwd=HERE,
+            )
+            if activation.returncode != 0:
+                raise RuntimeError(
+                    "Iris activation failed before daemon test:\\n"
+                    + activation.stdout + activation.stderr
+                )
+            cls._spawn()
+            cls.client = IrisClient(port=TEST_PORT, timeout=15.0)
+            cls.status = _wait_ready(cls.client)
+            assert cls.status["alive"] is True
+        except Exception:
+            cls._kill()
+            with open(cls.receipt_path, "wb") as handle:
+                handle.write(cls.original_receipt)
+            cls.tmp.cleanup()
+            raise
 
     @classmethod
     def _spawn(cls):
@@ -85,6 +107,11 @@ class TestIrisDaemon(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls._kill()
+        # Tests must not leave a newly generated activation receipt in the
+        # developer's checkout; restore the exact pre-test bytes.
+        if getattr(cls, "original_receipt", None) is not None:
+            with open(cls.receipt_path, "wb") as handle:
+                handle.write(cls.original_receipt)
         cls.tmp.cleanup()
 
     # -- wire round-trips ------------------------------------------------
