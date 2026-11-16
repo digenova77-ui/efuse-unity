@@ -1,6 +1,6 @@
 # IRIS DAEMON — legacy testnet operational doc
 
-<escape>**STATUS: LEGACY / TESTNET ONLY / NOT CURRENT-TRINITY AUTHORIZED.**</escape>
+**STATUS: LEGACY / TESTNET ONLY / NOT CURRENT-TRINITY AUTHORIZED.**
 
 The root `CANON.md` is v1.7.3: two constraints (DCLM logic, Iris truth),
 pragmatism narrows, and the former Twain² seat is withdrawn. This daemon's
