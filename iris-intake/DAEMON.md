@@ -63,7 +63,7 @@ kill -TERM $(cat iris_daemon.pid)
 ## Purity guarantees (structural, not promised)
 
 1. **Whole-runtime integrity gate:** at startup, every required runtime
-   module must match the local manifest in `IRIS_ACTIVE.json`. Any missing
+   module must match the local manifest in `IRIS_SELF_CHECK.json`. Any missing
    or changed module → refuse startup. This proves self-consistency only;
    the external trust anchor is NOT_CONFIGURED and Trinity authorization is
    NOT_GRANTED.
