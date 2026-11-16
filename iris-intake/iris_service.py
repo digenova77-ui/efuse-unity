@@ -158,37 +158,60 @@ class IrisService:
               caller_unity_id: str) -> Dict[str, Any]:
         """Evaluate with the current two-primary 2P5L path; do not write."""
         caller = self.authorize(caller_unity_id)
-        result = judge_32(proposal)
-        summary = _judgment_summary(result)
+        try:
+            evidence = judge_32(proposal)
+            summary = _judgment_summary(evidence)
+        except Exception as exc:
+            evidence = None
+            summary = {"evaluation_error": f"{type(exc).__name__}: {exc}"}
         receipt = _receipt(
-            "IRIS_JUDGMENT",
+            "IRIS_TWO_PRIMARY_EVIDENCE",
             caller_unity_id,
             self.state.host_id,
             {"caller": caller, "proposal_kind": proposal.get("kind"), **summary},
         )
-        result["caller"] = caller
-        result["receipt_id"] = receipt["receipt_id"]
-        result["service_receipt"] = receipt
-        result["write_performed"] = False
-        return result
+        # 2P5L evidence is not the canon's final Narrow decision. The x/y
+        # score mapping and canonical Narrow adapter remain unresolved;
+        # therefore no evidence result is promoted to FLAWLESS or PASS.
+        return {
+            "verdict": "STALEMATE",
+            "candidate_evidence": evidence,
+            "narrowing": "NOT_WIRED",
+            "reason": "canonical DCLM Narrow adapter and lawful x/y score mapping are not established",
+            "caller": caller,
+            "receipt_id": receipt["receipt_id"],
+            "service_receipt": receipt,
+            "write_performed": False,
+            "authorization_granted": False,
+        }
 
     def check(self, action: Dict[str, Any],
               caller_unity_id: str) -> Dict[str, Any]:
         """Run the same current decision path; no legacy ten-directive writer."""
         caller = self.authorize(caller_unity_id)
-        result = judge_32(action)
-        summary = _judgment_summary(result)
+        try:
+            evidence = judge_32(action)
+            summary = _judgment_summary(evidence)
+        except Exception as exc:
+            evidence = None
+            summary = {"evaluation_error": f"{type(exc).__name__}: {exc}"}
         receipt = _receipt(
-            "IRIS_CHECK",
+            "IRIS_TWO_PRIMARY_EVIDENCE",
             caller_unity_id,
             self.state.host_id,
             {"caller": caller, "action_kind": action.get("kind"), **summary},
         )
-        result["caller"] = caller
-        result["receipt_id"] = receipt["receipt_id"]
-        result["service_receipt"] = receipt
-        result["write_performed"] = False
-        return result
+        return {
+            "verdict": "STALEMATE",
+            "candidate_evidence": evidence,
+            "narrowing": "NOT_WIRED",
+            "reason": "canonical DCLM Narrow adapter and lawful x/y score mapping are not established",
+            "caller": caller,
+            "receipt_id": receipt["receipt_id"],
+            "service_receipt": receipt,
+            "write_performed": False,
+            "authorization_granted": False,
+        }
 
     def advise(self, query: Dict[str, Any],
                caller_unity_id: str) -> Dict[str, Any]:
@@ -241,9 +264,11 @@ class IrisService:
             "alive": True,
             "canon": source_canon_version(),
             "state": self.state.summary(),
-            "decision_path": "dclm.two_p_five_l.judge_32",
+            "decision_path": "dclm.two_p_five_l.judge_32 (diagnostic only)",
             "primary_constraints": ["DCLM_LOGIC", "IRIS_TRUTH"],
             "pragmatism": "NARROWING_ONLY",
+            "narrowing_adapter": "NOT_WIRED",
+            "final_verdict": "STALEMATE_UNTIL_CANONICAL_NARROWING",
             "withdrawn_seat": "TWAIN2",
             "write_authority": "DCLM_ONLY",
             "state_mutation_by_iris": False,
