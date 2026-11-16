@@ -32,7 +32,7 @@ Intent tier (what a caller may ask to do):
                       stays inside DCLM either way.
     anything else  — DENY, reason UNKNOWN_ACTION.
 
-Write tier (what DCLM itself may commit — twenty-one kinds): LEDGER_DEBIT,
+Write tier (what DCLM itself may commit — twenty-five kinds): LEDGER_DEBIT,
 LEDGER_CREDIT, WORLD_STATE, GATE_TRANSITION, METER_RECEIPT, DATA_INGEST,
 TAP_OUTFLOW, GRANT_ISSUE, GRANT_REVOKE, SHARED_ACCESS, TOKEN_MINT,
 MERIT_ACCRUAL, HONOR_RECORD, MERIT_TRANSFER, WINTER_STORE, WINTER_RELEASE,
@@ -301,7 +301,9 @@ def _check_rights(identity, action, context):
             # A client naming a write kind has no path: only DCLM
             # components commit.
             return _deny(REASON_INTERNAL_SOURCE_REQUIRED, identity, action)
-        if identity is not None and not _is_testnet_identity(identity):
+        if not identity:
+            return _deny(REASON_IDENTITY_REQUIRED, identity, action)
+        if not _is_testnet_identity(identity):
             return _deny(REASON_NOT_TESTNET_IDENTITY, identity, action)
         return _grant(REASON_INTERNAL_WRITE, identity, action)
 
