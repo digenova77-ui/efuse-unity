@@ -334,4 +334,4 @@ Do not duplicate Law text into the principles profile. Link to the canonical sou
 - No code path is certified by this document.
 - No production, financial, identity, or application action is authorized by this document.
 
-**Next lawful step:** examine this proposal independently, resolve §5 through the authorized constitutional process, then map each principle to observable tests and existing refusal rules without changing the Law floor by implication.
+**Next lawful step:** examine this proposal independently, resolve §6 through the authorized constitutional process, then map each principle to observable tests and existing refusal rules without changing the Law floor by implication.
