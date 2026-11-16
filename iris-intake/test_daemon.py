@@ -50,9 +50,11 @@ class TestIrisDaemon(unittest.TestCase):
         cls.state_dir = os.path.join(cls.tmp.name, "state")
         cls.pid_file = os.path.join(cls.tmp.name, "iris_daemon.pid")
         cls.proc = None
-        cls.receipt_path = os.path.join(HERE, "IRIS_ACTIVE.json")
-        with open(cls.receipt_path, "rb") as handle:
-            cls.original_receipt = handle.read()
+        cls.receipt_path = os.path.join(HERE, "IRIS_SELF_CHECK.json")
+        cls.original_receipt = None
+        if os.path.isfile(cls.receipt_path):
+            with open(cls.receipt_path, "rb") as handle:
+                cls.original_receipt = handle.read()
         try:
             # Build a fresh local self-consistency receipt for the exact
             # checkout under test. Activation runs all non-daemon suites;
@@ -72,8 +74,12 @@ class TestIrisDaemon(unittest.TestCase):
             assert cls.status["alive"] is True
         except Exception:
             cls._kill()
-            with open(cls.receipt_path, "wb") as handle:
-                handle.write(cls.original_receipt)
+            if cls.original_receipt is None:
+                if os.path.exists(cls.receipt_path):
+                    os.remove(cls.receipt_path)
+            else:
+                with open(cls.receipt_path, "wb") as handle:
+                    handle.write(cls.original_receipt)
             cls.tmp.cleanup()
             raise
 
@@ -109,7 +115,10 @@ class TestIrisDaemon(unittest.TestCase):
         cls._kill()
         # Tests must not leave a newly generated activation receipt in the
         # developer's checkout; restore the exact pre-test bytes.
-        if getattr(cls, "original_receipt", None) is not None:
+        if getattr(cls, "original_receipt", None) is None:
+            if os.path.exists(cls.receipt_path):
+                os.remove(cls.receipt_path)
+        else:
             with open(cls.receipt_path, "wb") as handle:
                 handle.write(cls.original_receipt)
         cls.tmp.cleanup()
