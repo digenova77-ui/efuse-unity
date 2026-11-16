@@ -224,6 +224,7 @@ def _is_testnet_identity(identity):
     return (
         isinstance(identity, str)
         and identity.startswith(IDENTITY_PREFIX)
+        and bool(identity[len(IDENTITY_PREFIX):].strip())
     )
 
 
