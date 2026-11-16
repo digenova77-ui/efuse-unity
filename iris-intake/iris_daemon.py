@@ -10,7 +10,7 @@ Purity is enforced structurally:
 
   * INTEGRITY GATE: at startup, every required runtime module (law,
     pattern chamber, arbiter, neural primitives, service, memory, meeting,
-    and daemon) must match the whole-runtime manifest in IRIS_ACTIVE.json.
+    and daemon) must match the whole-runtime manifest in IRIS_SELF_CHECK.json.
     Any missing or changed module -> refuse to start.
   * AUTHORITY BOUNDARY: the local manifest proves self-consistency only.
     It is not a signature, independent witness, ratification, or Trinity
@@ -148,6 +148,10 @@ def integrity_gate() -> None:
     if iris_core.CANON_VERSION != receipt.get("canon_version"):
         log(f"INTEGRITY REFUSED: canon {iris_core.CANON_VERSION} != "
             f"pinned {receipt.get('canon_version')}.")
+        sys.exit(3)
+
+    if receipt.get("receipt_kind") != "IRIS_SELF_CHECK":
+        log("INTEGRITY REFUSED: receipt is not an IRIS_SELF_CHECK.")
         sys.exit(3)
 
     if receipt.get("integrity_level") != "SELF_CONSISTENCY_ONLY":
