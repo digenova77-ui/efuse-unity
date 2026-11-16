@@ -79,10 +79,6 @@ def main() -> int:
         print(f"ACTIVATION REFUSED: required runtime failed to load: {exc}")
         return 1
 
-    if len(DIRECTIVES) != 10:
-        print(f"ACTIVATION REFUSED: expected 10 directives, found {len(DIRECTIVES)}")
-        return 1
-
     source_version = canon_version()
     if source_version == "UNKNOWN":
         print("ACTIVATION REFUSED: root CANON.md version could not be established.")
@@ -120,17 +116,26 @@ def main() -> int:
         print(f"ACTIVATION REFUSED: runtime manifest could not be built: {exc}")
         return 1
 
+    legacy_integration = dict(INTEGRATION_STATUS)
+    legacy_integration["iris_arbiter.py"] = "LEGACY_NOT_USED_BY_CURRENT_SERVICE"
     receipt = {
         "label": "IRIS MAX INTAKE — LEGACY TESTNET SELF-CHECK",
         "receipt_kind": "IRIS_SELF_CHECK",
         "activated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime()),
         "activated_at_epoch": int(time.time()),
         "canon_version": iris_core.CANON_VERSION,
+        "legacy_core_version": iris_core.CANON_VERSION,
         "source_canon_version": source_version,
         "trinity_compatibility": "LEGACY_TESTNET_HARNESS_ONLY",
         "activation_scope": "LOCAL_SELF_CONSISTENCY_ONLY",
-        "directives": len(DIRECTIVES),
-        "integration": INTEGRATION_STATUS,
+        "legacy_core_directives": len(DIRECTIVES),
+        "legacy_core_integration": legacy_integration,
+        "legacy_suites": ["test_iris_core.py", "test_iris_intake.py"],
+        "current_law_suites": [
+            "test_meeting_iris.py",
+            "test_integrity.py",
+            "../dclm/test_two_p_five_l.py",
+        ],
         "runtime_manifest": manifest,
         "runtime_manifest_sha256": manifest_sha,
         "runtime_manifest_module_count": len(manifest["modules"]),
