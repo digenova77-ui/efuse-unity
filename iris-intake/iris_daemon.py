@@ -158,6 +158,10 @@ def integrity_gate() -> None:
         log("INTEGRITY REFUSED: external trust-anchor state is missing or ambiguous.")
         sys.exit(3)
 
+    if receipt.get("trinity_compatibility") != "LEGACY_TESTNET_HARNESS_ONLY":
+        log("INTEGRITY REFUSED: legacy testnet compatibility state is missing.")
+        sys.exit(3)
+
     if receipt.get("trinity_authorization") != "NOT_GRANTED":
         log("INTEGRITY REFUSED: local activation receipt cannot grant Trinity authority.")
         sys.exit(3)
@@ -165,7 +169,7 @@ def integrity_gate() -> None:
     result = verify_runtime_manifest(
         receipt.get("runtime_manifest"),
         receipt.get("runtime_manifest_sha256"),
-        HERE,
+        os.path.dirname(HERE),
     )
     if not result.get("ok"):
         log(f"INTEGRITY REFUSED: whole-runtime verification failed: "
