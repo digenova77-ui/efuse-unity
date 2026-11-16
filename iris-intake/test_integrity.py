@@ -15,8 +15,10 @@ class TestRuntimeManifest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="iris-runtime-manifest-")
         self.root = self.tmp.name
         for name in RUNTIME_MODULES:
-            with open(os.path.join(self.root, name), "wb") as handle:
-                handle.write(("module:" + name + "\n").encode("utf-8"))
+            path = os.path.join(self.root, name)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "wb") as handle:
+                handle.write(("module:" + name + "\\n").encode("utf-8"))
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -31,7 +33,7 @@ class TestRuntimeManifest(unittest.TestCase):
 
     def test_one_changed_chamber_refuses(self):
         manifest, digest = build_runtime_manifest(self.root)
-        path = os.path.join(self.root, "iris_patterns.py")
+        path = os.path.join(self.root, "iris-intake", "iris_patterns.py")
         with open(path, "ab") as handle:
             handle.write(b"# changed after activation\n")
         result = verify_runtime_manifest(manifest, digest, self.root)
@@ -41,7 +43,7 @@ class TestRuntimeManifest(unittest.TestCase):
 
     def test_changed_deterministic_law_refuses(self):
         manifest, digest = build_runtime_manifest(self.root)
-        path = os.path.join(self.root, "iris_laws.py")
+        path = os.path.join(self.root, "iris-intake", "iris_laws.py")
         with open(path, "ab") as handle:
             handle.write(b"# changed law\n")
         result = verify_runtime_manifest(manifest, digest, self.root)
@@ -49,13 +51,13 @@ class TestRuntimeManifest(unittest.TestCase):
         self.assertIn("iris_laws.py", [item["module"] for item in result["mismatches"]])
 
     def test_missing_runtime_module_refuses_manifest_creation(self):
-        os.remove(os.path.join(self.root, "neural.py"))
+        os.remove(os.path.join(self.root, "iris-intake", "neural.py"))
         with self.assertRaises(FileNotFoundError):
             build_runtime_manifest(self.root)
 
     def test_missing_runtime_module_refuses_verification(self):
         manifest, digest = build_runtime_manifest(self.root)
-        os.remove(os.path.join(self.root, "iris_arbiter.py"))
+        os.remove(os.path.join(self.root, "iris-intake", "iris_arbiter.py"))
         result = verify_runtime_manifest(manifest, digest, self.root)
         self.assertFalse(result["ok"])
         self.assertIn("iris_arbiter.py", [item["module"] for item in result["mismatches"]])
@@ -68,7 +70,7 @@ class TestRuntimeManifest(unittest.TestCase):
 
     def test_unexpected_or_omitted_module_refuses(self):
         manifest, digest = build_runtime_manifest(self.root)
-        manifest["modules"].pop("iris_arbiter.py")
+        manifest["modules"].pop("iris-intake/iris_arbiter.py")
         result = verify_runtime_manifest(manifest, digest, self.root)
         self.assertFalse(result["ok"])
         self.assertIn("module set", result["reason"])
