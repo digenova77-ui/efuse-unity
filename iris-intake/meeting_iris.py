@@ -79,6 +79,7 @@ try:
                         RefusedError)
     from member_records import MemberRegistry, phrase_step
     from iris_state import IrisState
+    from writes import verify_commit as verify_dclm_commit
     _IRIS_LIVE = True
 except ImportError as _e:
     _IRIS_LIVE = False
@@ -227,7 +228,34 @@ def gather_record(unity_id: str, state: "IrisState",
     """Gather the member's actual record: seed receipt, orientation steps,
     first +1, Affinity. Raises MemberUnknown when there is nothing to see."""
     check_unity_id(unity_id)
-    seed = state.seeds.get(unity_id)
+    seed_mirror = state.seeds.get(unity_id)
+    seed = None
+    if isinstance(seed_mirror, dict):
+        envelope = seed_mirror.get("dclm_commit_envelope")
+        if isinstance(envelope, dict):
+            try:
+                valid_signature = verify_dclm_commit(envelope)
+                signed_record = envelope.get("receipt") or {}
+                valid_binding = (
+                    signed_record.get("record_type") == "SEED_ISSUE"
+                    and signed_record.get("commit_kind") == "SEED_ISSUE"
+                    and signed_record.get("unity_id") == unity_id
+                    and bool(signed_record.get("seed_id"))
+                )
+                issued_at = signed_record.get("issued_at")
+                if valid_signature and valid_binding and isinstance(issued_at, str):
+                    issued_epoch = int(datetime.fromisoformat(
+                        issued_at.replace("Z", "+00:00")
+                    ).timestamp())
+                    seed = {
+                        "unity_id": unity_id,
+                        "seed_id": signed_record["seed_id"],
+                        "granted_at": issued_epoch,
+                        "dclm_commit_envelope": envelope,
+                    }
+            except Exception:
+                # Unverifiable seed evidence is UNKNOWN, never membership.
+                seed = None
     journey = registry.journey(unity_id)
     # An entry with no content is nothing to see — UNKNOWN is never PASS.
     journey_has_content = bool(journey) and bool(
@@ -244,7 +272,8 @@ def gather_record(unity_id: str, state: "IrisState",
             "seed": seed,
             "orientation_steps": steps,
             "first_plus_one": plus_one,
-            "affinity": affinity}
+            "affinity": affinity,
+            "seed_evidence": "VERIFIED_DCLM_COMMIT" if seed is not None else "NOT_VERIFIED"}
 
 
 def meet_iris(unity_id: str, *, caller_unity_id: str,
