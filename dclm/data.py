@@ -345,59 +345,96 @@ def pricing_index(prices_path=PRICES_MD):
 
 
 # ---------------------------------------------------------------------------
-# RTE real telemetry (MEMORY.md — Drive-sourced REAL figures)
+# RTE reported telemetry (MEMORY.md source is optional and must be present)
 # ---------------------------------------------------------------------------
-def rte_telemetry():
-    """The REAL-labeled RTE figures, exactly as banked in MEMORY.md.
+def rte_telemetry(source_path=MEMORY_MD):
+    """Return RTE figures with provenance bounded by available source bytes.
 
-    Every metric: (metric, value, unit, label=REAL, source note).
+    A local MEMORY.md copy is not independent verification. If present and
+    containing every exact reported value, rows are REPORTED and carry the
+    source SHA-256. If absent or incomplete, rows are UNKNOWN. A source note
+    alone never earns the REAL label.
     """
-    src = "MEMORY.md — Drive-sourced figures (Sept 2026); Google Docs/Drive connected Sept 27, 2026"
+    source_status = "MISSING"
+    source_sha256 = None
+    source_note = f"MEMORY.md source unavailable: {source_path}"
+    try:
+        with open(source_path, "rb") as fh:
+            source_bytes = fh.read()
+        source_text = source_bytes.decode("utf-8")
+        source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+        required_values = (
+            "$32.02B", "$1,273.5M/yr", "$6.08B", "72", "2,071,550",
+            "4,684", "81%", "100%", "$348.5M", "320", "144,200",
+            "$215/visit", "$5,940/standard stay", "$812.4M", "575",
+            "112,500", "$340/visit", "$6,820/standard stay", "over 100%",
+        )
+        if all(value in source_text for value in required_values):
+            source_status = "CONTENT_MATCH"
+            source_note = (
+                "MEMORY.md local source copy; content match only, not "
+                "independent source verification"
+            )
+        else:
+            source_status = "CONTENT_MISMATCH"
+            source_note = (
+                "MEMORY.md exists but lacks one or more exact reported values"
+            )
+    except (OSError, UnicodeError):
+        pass
+
+    label = "REPORTED" if source_status == "CONTENT_MATCH" else "UNKNOWN"
+    src = source_note
     edu = [
-        ("combined_operating_envelope", "$32.02B", "USD", "REAL",
+        ("combined_operating_envelope", "$32.02B", "USD", label,
          "Ontario education — 72 school boards", src),
-        ("recoverable_nonclassroom_friction", "$1,273.5M/yr", "USD/yr", "REAL",
+        ("recoverable_nonclassroom_friction", "$1,273.5M/yr", "USD/yr", label,
          "Ontario education — recoverable non-classroom friction", src),
-        ("five_year_cumulative", "$6.08B", "USD", "REAL",
+        ("five_year_cumulative", "$6.08B", "USD", label,
          "Ontario education — 5-year cumulative", src),
-        ("school_boards", "72", "count", "REAL", "Ontario education scale", src),
-        ("students_fte", "2,071,550", "count", "REAL", "Ontario education scale", src),
-        ("schools", "4,684", "count", "REAL", "Ontario education scale", src),
-        ("year1_board_retention", "81%", "percent", "REAL",
+        ("school_boards", "72", "count", label, "Ontario education scale", src),
+        ("students_fte", "2,071,550", "count", label, "Ontario education scale", src),
+        ("schools", "4,684", "count", label, "Ontario education scale", src),
+        ("year1_board_retention", "81%", "percent", label,
          "Ontario education — terms, Zero-OpEx", src),
-        ("year3_board_retention", "100%", "percent", "REAL",
+        ("year3_board_retention", "100%", "percent", label,
          "Ontario education — terms, Zero-OpEx", src),
     ]
     health = [
-        ("qhc_revenue", "$348.5M", "USD", "REAL",
-         "Quinte Health — revenue (pilot-mode modeled analysis; input figures REAL disclosures)", src),
-        ("qhc_beds", "320", "count", "REAL", "Quinte Health — beds", src),
-        ("qhc_ed_visits", "144,200", "count", "REAL",
+        ("qhc_revenue", "$348.5M", "USD", label,
+         "Quinte Health — pilot-mode modeled analysis; input figures reported", src),
+        ("qhc_beds", "320", "count", label, "Quinte Health — beds", src),
+        ("qhc_ed_visits", "144,200", "count", label,
          "Quinte Health — ED visits (corporation-wide)", src),
-        ("qhc_cost_per_ed_visit", "$215/visit", "USD/visit", "REAL",
+        ("qhc_cost_per_ed_visit", "$215/visit", "USD/visit", label,
          "Quinte Health — cost per ED visit", src),
-        ("qhc_cost_per_standard_stay", "$5,940/standard stay", "USD/stay", "REAL",
+        ("qhc_cost_per_standard_stay", "$5,940/standard stay", "USD/stay", label,
          "Quinte Health — cost per standard stay", src),
-        ("khsc_revenue", "$812.4M", "USD", "REAL",
-         "KHSC — revenue (pilot-mode modeled analysis; input figures REAL disclosures)", src),
-        ("khsc_beds", "575", "count", "REAL", "KHSC — beds", src),
-        ("khsc_ed_visits", "112,500", "count", "REAL", "KHSC — ED visits", src),
-        ("khsc_kgh_cost_per_ed_visit", "$340/visit", "USD/visit", "REAL",
+        ("khsc_revenue", "$812.4M", "USD", label,
+         "KHSC — pilot-mode modeled analysis; input figures reported", src),
+        ("khsc_beds", "575", "count", label, "KHSC — beds", src),
+        ("khsc_ed_visits", "112,500", "count", label, "KHSC — ED visits", src),
+        ("khsc_kgh_cost_per_ed_visit", "$340/visit", "USD/visit", label,
          "KHSC (KGH) — cost per ED visit", src),
-        ("khsc_cost_per_standard_stay", "$6,820/standard stay", "USD/stay", "REAL",
+        ("khsc_cost_per_standard_stay", "$6,820/standard stay", "USD/stay", label,
          "KHSC — cost per standard stay", src),
-        ("both_over_100pct_occupancy", "over 100%", "percent", "REAL",
+        ("both_over_100pct_occupancy", "over 100%", "percent", label,
          "QHC and KHSC — occupancy", src),
     ]
     rows = [
-        {"metric": m, "value": v, "unit": u, "label": lbl,
-         "context": ctx, "source": s}
-        for (m, v, u, lbl, ctx, s) in (edu + health)
+        {
+            "metric": metric, "value": value, "unit": unit, "label": row_label,
+            "context": context, "source": source,
+            "source_status": source_status, "source_sha256": source_sha256,
+        }
+        for metric, value, unit, row_label, context, source in (edu + health)
     ]
-    return {"rows": rows, "count": len(rows), "provenance": "REAL"}
+    return {
+        "rows": rows, "count": len(rows), "provenance": label,
+        "source_status": source_status, "source_sha256": source_sha256,
+    }
 
 
-# ---------------------------------------------------------------------------
 # live feeds — architecture only; PENDING until a real reading + hash exists
 # ---------------------------------------------------------------------------
 _FEED_NAMES = [
