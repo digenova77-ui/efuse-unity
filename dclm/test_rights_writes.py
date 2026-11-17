@@ -19,6 +19,9 @@ sys.path.insert(0, _HERE)
 
 from rights import (  # noqa: E402
     COMMIT_KINDS,
+    COMPONENT_KIND_POLICY,
+    issue_component_capability,
+    REASON_COMPONENT_KIND_NOT_ALLOWED,
     DENY,
     GRANT,
     REASON_FREE_WORLD,
@@ -174,51 +177,47 @@ class TestRightsPurity(unittest.TestCase):
         with self.assertRaises(dataclasses.FrozenInstanceError):
             v.verdict = GRANT  # type: ignore
 
-    def test_internal_write_tier(self):
-        """All commit kinds currently grant for the asserted internal label."""
+    def test_component_policy_grants_only_declared_kinds(self):
+        """Each process-local component token is limited to declared kinds."""
+        for component, kinds in COMPONENT_KIND_POLICY.items():
+            capability = CAPABILITIES[component]
+            for kind in kinds:
+                granted = check_rights(TEST_IDENTITY, kind, {"internal": capability})
+                self.assertEqual(granted.verdict, GRANT, f"{component} -> {kind}")
+                self.assertEqual(granted.reason, REASON_INTERNAL_WRITE)
+            for kind in COMMIT_KINDS - kinds:
+                denied = check_rights(TEST_IDENTITY, kind, {"internal": capability})
+                self.assertEqual(denied.verdict, DENY, f"{component} must not grant {kind}")
+                self.assertEqual(denied.reason, REASON_COMPONENT_KIND_NOT_ALLOWED)
+
+    def test_unregistered_component_cannot_mint_capability(self):
+        for component in ("dclm.unknown", "dclm.meter.extra", "evil.client", "", None):
+            with self.assertRaises(ValueError):
+                issue_component_capability(component)
+
+    def test_bare_component_labels_are_never_capabilities(self):
         for kind in COMMIT_KINDS:
-            granted = check_rights(TEST_IDENTITY, kind,
-                                   {"internal": "dclm.meter"})
-            self.assertEqual(granted.verdict, GRANT, f"for {kind}")
-            self.assertEqual(granted.reason, REASON_INTERNAL_WRITE,
-                             f"for {kind}")
-            # A client naming a write kind — no internal source — is denied.
-            denied = check_rights(TEST_IDENTITY, kind, {})
-            self.assertEqual(denied.verdict, DENY, f"for {kind}")
-            self.assertEqual(denied.reason, REASON_INTERNAL_SOURCE_REQUIRED,
-                             f"for {kind}")
-            # A forged internal source that is not DCLM is denied.
-            forged = check_rights(TEST_IDENTITY, kind,
-                                  {"internal": "evil-client"})
-            self.assertEqual(forged.verdict, DENY, f"for {kind}")
+            denied = check_rights(TEST_IDENTITY, kind, {"internal": METER_CAPABILITY})
+            self.assertEqual(denied.verdict, DENY, f"bare label: {kind}")
+            self.assertEqual(denied.reason, REASON_INTERNAL_SOURCE_REQUIRED)
 
+    def test_write_tier_requires_identity_for_every_authorized_pair(self):
+        """Every mapped write refuses missing, empty, or invalid actor identity."""
+        for component, kinds in COMPONENT_KIND_POLICY.items():
+            capability = CAPABILITIES[component]
+            for kind in kinds:
+                missing = check_rights(None, kind, {"internal": capability})
+                self.assertEqual(missing.verdict, DENY, f"missing identity: {component}/{kind}")
+                self.assertEqual(missing.reason, REASON_IDENTITY_REQUIRED)
 
-    def test_write_tier_requires_identity_for_every_commit_kind(self):
-        """Every write kind refuses missing or invalid actor identity."""
-        for kind in COMMIT_KINDS:
-            missing = check_rights(
-                None, kind, {"internal": "dclm.meter"})
-            self.assertEqual(missing.verdict, DENY, f"missing identity: {kind}")
-            self.assertEqual(
-                missing.reason, REASON_IDENTITY_REQUIRED,
-                f"missing identity reason: {kind}")
+                empty = check_rights("", kind, {"internal": capability})
+                self.assertEqual(empty.verdict, DENY, f"empty identity: {component}/{kind}")
+                self.assertEqual(empty.reason, REASON_IDENTITY_REQUIRED)
 
-            empty = check_rights(
-                "", kind, {"internal": "dclm.meter"})
-            self.assertEqual(empty.verdict, DENY, f"empty identity: {kind}")
-            self.assertEqual(
-                empty.reason, REASON_IDENTITY_REQUIRED,
-                f"empty identity reason: {kind}")
-
-            for bad_identity in ("unity:mainnet:forged", "unity:testnet:", "unity:testnet:   ", " ", 123):
-                invalid = check_rights(
-                    bad_identity, kind, {"internal": "dclm.meter"})
-                self.assertEqual(
-                    invalid.verdict, DENY,
-                    f"invalid identity {bad_identity!r}: {kind}")
-                self.assertEqual(
-                    invalid.reason, REASON_NOT_TESTNET_IDENTITY,
-                    f"invalid identity reason {bad_identity!r}: {kind}")
+                for bad_identity in ("unity:mainnet:forged", "unity:testnet:", "unity:testnet:   ", " ", 123):
+                    invalid = check_rights(bad_identity, kind, {"internal": capability})
+                    self.assertEqual(invalid.verdict, DENY, f"invalid identity {bad_identity!r}: {component}/{kind}")
+                    self.assertEqual(invalid.reason, REASON_NOT_TESTNET_IDENTITY)
 
 
 # ---------------------------------------------------------------------------
@@ -228,7 +227,7 @@ class TestRightsPurity(unittest.TestCase):
 class TestCommitBoundary(unittest.TestCase):
     def _grant(self):
         return check_rights(TEST_IDENTITY, "LEDGER_DEBIT",
-                            {"internal": "dclm.meter"})
+                            {"internal": METER_CAPABILITY})
 
     def test_commit_with_deny_verdict_raises_and_writes_nothing(self):
         store = MemoryCommitStore()
@@ -282,16 +281,17 @@ class TestCommitBoundary(unittest.TestCase):
         self.assertEqual(receipt["rights"]["verdict"], GRANT)
         self.assertEqual(receipt["rights"]["reason"], REASON_METER_APPROVED)
 
-    def test_each_writable_kind_commits(self):
-        for kind in COMMIT_KINDS:
-            store = MemoryCommitStore()
-            verdict = check_rights(TEST_IDENTITY, kind,
-                                   {"internal": "dclm.meter"})
-            envelope = dclm_commit(
-                kind, {"kind": kind, "provenance": "DERIVED"},
-                verdict, store)
-            self.assertTrue(verify_commit(envelope), f"for {kind}")
-            self.assertEqual(len(store.applied), 1, f"for {kind}")
+    def test_each_authorized_component_kind_commits(self):
+        for component, kinds in COMPONENT_KIND_POLICY.items():
+            capability = CAPABILITIES[component]
+            for kind in kinds:
+                store = MemoryCommitStore()
+                verdict = check_rights(TEST_IDENTITY, kind, {"internal": capability})
+                envelope = dclm_commit(
+                    kind, {"kind": kind, "provenance": "DERIVED"},
+                    verdict, store)
+                self.assertTrue(verify_commit(envelope), f"{component}/{kind}")
+                self.assertEqual(len(store.applied), 1, f"{component}/{kind}")
 
     def test_tampered_commit_receipt_fails_verification(self):
         store = MemoryCommitStore()
@@ -373,7 +373,7 @@ class TestNoBypassPath(unittest.TestCase):
         attempt("unknown kind", lambda s: dclm_commit(
             "NOPE", {"x": 1},
             check_rights(TEST_IDENTITY, "LEDGER_DEBIT",
-                         {"internal": "dclm.meter"}), s))
+                         {"internal": METER_CAPABILITY}), s))
 
         self.assertEqual(refusals, 5, "every bypass attempt must refuse")
         self.assertEqual(store_probe.applied, [],
@@ -386,7 +386,7 @@ class TestNoBypassPath(unittest.TestCase):
         dclm_commit still enforces the kind whitelist per call."""
         store = MemoryCommitStore()
         verdict = check_rights(TEST_IDENTITY, "LEDGER_DEBIT",
-                               {"internal": "dclm.meter"})
+                               {"internal": METER_CAPABILITY})
         with self.assertRaises(CommitRefused):
             dclm_commit("MINT_FOREVER", {"x": 1}, verdict, store)
         self.assertEqual(store.applied, [])
