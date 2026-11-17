@@ -46,6 +46,8 @@ from writes import (  # noqa: E402
 )
 
 TEST_IDENTITY = "unity:testnet:1e26f0d9e8c46818"  # same test identity as gate
+CAPABILITIES = {name: issue_component_capability(name) for name in COMPONENT_KIND_POLICY}
+METER_CAPABILITY = CAPABILITIES["dclm.meter"]
 
 
 # ---------------------------------------------------------------------------
