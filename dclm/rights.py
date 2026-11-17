@@ -46,10 +46,13 @@ onboarder pipeline's (onboard.py — Residual Law Finance onboarder ->
 residual -> tokenomics flywheel); SEED_ISSUE is the one-seed issuer's
 (seed.py — David's law: one free seed per Unity ID, price 0, cost 0,
 non-transferable, non-spendable).
-All GRANT only for a DCLM-internal source (context["internal"] like
-"dclm.meter" / "dclm.tokenize" / "dclm.winter" / "dclm.share" /
-"dclm.onboard") — a client naming a write kind is denied with
-INTERNAL_SOURCE_REQUIRED.
+All GRANT only for an authenticated DCLM-internal source: the caller
+must present a ComponentCapability issued by this module
+(issue_component_capability) in context["internal"]. A caller-controlled
+string naming a component ("dclm.meter" and kin) is NOT proof of an
+internal principal and is denied with INTERNAL_SOURCE_REQUIRED — a
+client naming a write kind has no path. (DCX-02: component identity is
+authenticated by a held capability object, never asserted by data.)
 
 GATES (absolute — evaluated before the action matrix)
 -----------------------------------------------------
@@ -84,6 +87,7 @@ REASON_NOT_TESTNET_IDENTITY = "NOT_TESTNET_IDENTITY"
 REASON_METER_APPROVAL_REQUIRED = "METER_APPROVAL_REQUIRED"
 REASON_UNKNOWN_ACTION = "UNKNOWN_ACTION"
 REASON_INTERNAL_SOURCE_REQUIRED = "INTERNAL_SOURCE_REQUIRED"
+REASON_COMPONENT_KIND_NOT_ALLOWED = "COMPONENT_KIND_NOT_ALLOWED"
 REASON_NON_TESTNET_SCHEMA = "NON_TESTNET_SCHEMA"
 REASON_UNKNOWN_AS_PASS = "UNKNOWN_AS_PASS"
 REASON_UNSIGNED_CLAIM_AS_TRUTH = "UNSIGNED_CLAIM_AS_TRUTH"
@@ -215,6 +219,95 @@ class RightsVerdict:
 
 
 # ---------------------------------------------------------------------------
+# Closed component-to-kind policy (DCX-02 least-privilege slice)
+# ---------------------------------------------------------------------------
+#
+# Threat model: trusted code in one Python interpreter. These capability
+# objects prevent accidental cross-component authority use and bind each
+# component token to an explicit set of commit kinds. They are NOT a
+# security boundary against hostile code running in this interpreter:
+# Python code can import this issuer and request any listed principal.
+# Mutually untrusted components require a separately authenticated broker
+# and process/OS isolation; this module does not claim that property.
+#
+# Kinds absent from this mapping remain in COMMIT_KINDS for compatibility
+# but cannot receive a GRANT through this component-capability path until
+# an owner and policy are explicitly established.
+COMPONENT_KIND_POLICY = {
+    "dclm.meter": frozenset({"LEDGER_CREDIT", "LEDGER_DEBIT"}),
+    "dclm.helpers": frozenset({
+        "HELPER_ASSIGN", "HELPER_STAGE", "HELPER_HANDOFF", "HELPER_WELCOME",
+    }),
+    "dclm.onboard": frozenset({
+        "ONBOARD", "RESIDUAL_INTAKE", "SPLIT_EXECUTE", "NINETEEN_ROUTE",
+    }),
+    "dclm.seed": frozenset({"SEED_ISSUE"}),
+    "dclm.share": frozenset({
+        "GRANT_ISSUE", "GRANT_REVOKE", "SHARED_ACCESS",
+        "LEDGER_DEBIT", "LEDGER_CREDIT",
+    }),
+    "dclm.tap": frozenset({"TAP_OUTFLOW"}),
+    "dclm.tokenize": frozenset({
+        "TOKEN_MINT", "MERIT_ACCRUAL", "HONOR_RECORD", "MERIT_TRANSFER",
+    }),
+    "dclm.winter": frozenset({"WINTER_STORE", "WINTER_RELEASE"}),
+}
+
+_MINT = object()
+_ISSUED_CAPABILITIES = set()
+
+
+class ComponentCapability:
+    """Process-local least-privilege token; not a hostile-code sandbox."""
+
+    __slots__ = ("_component", "_allowed_kinds")
+
+    def __init__(self, component, allowed_kinds, _mint=None):
+        if _mint is not _MINT:
+            raise TypeError(
+                "ComponentCapability is issued by "
+                "rights.issue_component_capability(), not constructed"
+            )
+        object.__setattr__(self, "_component", component)
+        object.__setattr__(self, "_allowed_kinds", frozenset(allowed_kinds))
+
+    def __setattr__(self, name, value):
+        raise AttributeError("ComponentCapability is immutable")
+
+    @property
+    def component(self):
+        return self._component
+
+    @property
+    def allowed_kinds(self):
+        return self._allowed_kinds
+
+    def __repr__(self):
+        return f"<ComponentCapability {self._component}>"
+
+
+def issue_component_capability(component):
+    """Issue a process-local capability for one explicitly registered component.
+
+    This is a least-privilege programming contract, not caller authentication.
+    """
+    if not isinstance(component, str) or component not in COMPONENT_KIND_POLICY:
+        raise ValueError("component is not in the closed DCLM component policy")
+    cap = ComponentCapability(
+        component, COMPONENT_KIND_POLICY[component], _mint=_MINT
+    )
+    _ISSUED_CAPABILITIES.add(cap)
+    return cap
+
+
+def _is_authenticated_internal(internal):
+    return (
+        isinstance(internal, ComponentCapability)
+        and internal in _ISSUED_CAPABILITIES
+    )
+
+
+# ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
 
@@ -257,9 +350,10 @@ def check_rights(identity, action, context=None):
         assert_as_truth        — with claim_signed falsy -> DENY
         claim_signed           — the claim carries a verifiable signature
         meter_approved         — must be exactly True for SEARCH/COMPUTE
-        internal               — DCLM component name ("dclm.*") for the
-                                 write tier; clients cannot supply this
-                                 from outside DCLM
+        internal               — a ComponentCapability issued by this
+                                 module (issue_component_capability) for
+                                 the write tier; a bare "dclm.*" string is
+                                 caller-asserted data and never suffices
 
     Returns a frozen RightsVerdict(GRANT|DENY, reason).
     """
@@ -296,12 +390,11 @@ def _check_rights(identity, action, context):
     # --- write tier: DCLM-internal commits only --------------------------
     if act in COMMIT_KINDS:
         internal = ctx.get("internal")
-        if not (
-            isinstance(internal, str) and internal.startswith("dclm.")
-        ):
-            # A client naming a write kind has no path: only DCLM
-            # components commit.
+        if not _is_authenticated_internal(internal):
+            # A caller-asserted label or unissued object is not a capability.
             return _deny(REASON_INTERNAL_SOURCE_REQUIRED, identity, action)
+        if act not in internal.allowed_kinds:
+            return _deny(REASON_COMPONENT_KIND_NOT_ALLOWED, identity, action)
         if not identity:
             return _deny(REASON_IDENTITY_REQUIRED, identity, action)
         if not _is_testnet_identity(identity):
