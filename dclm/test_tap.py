@@ -136,7 +136,7 @@ class TapTestCase(unittest.TestCase):
     def test_tap_outflow_in_commit_kinds(self):
         self.assertIn(KIND_TAP_OUTFLOW, COMMIT_KINDS)
         v = check_rights(MEMBER, KIND_TAP_OUTFLOW,
-                         {"internal": "dclm.tap", "schema": tap.SCHEMA})
+                         {"internal": tap.CAPABILITY, "schema": tap.SCHEMA})
         self.assertEqual(v.verdict, "GRANT")
         denied = check_rights(MEMBER, KIND_TAP_OUTFLOW, {})
         self.assertEqual(denied.verdict, "DENY")
