@@ -65,7 +65,8 @@ from datetime import datetime, timezone
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-from rights import check_rights  # noqa: E402 — DCLM authority: rights first
+from rights import check_rights, issue_component_capability  # noqa: E402 — DCLM authority: rights first
+CAPABILITY = issue_component_capability("dclm.helpers")  # DCX-02: authenticated component principal — a held object, not a caller-asserted string
 from purify import (  # noqa: E402 — the purification medium
     purify_input,
     purify_transition,
@@ -779,7 +780,7 @@ class Helpers:
         payload = dict(payload)
         payload["provenance"] = "DERIVED"  # computed in-process by DCLM
         verdict = check_rights(
-            uid, kind, {"internal": INTERNAL, "schema": SCHEMA})
+            uid, kind, {"internal": CAPABILITY, "schema": SCHEMA})
         purify_transition(
             {"unity_id": uid, "helper_event": kind, "done": False},
             {"unity_id": uid, "helper_event": kind, "done": True},

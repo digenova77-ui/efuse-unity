@@ -57,7 +57,8 @@ from datetime import datetime, timezone
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
 from compute import PROVENANCE_LABELS  # noqa: E402 — one provenance enum
-from rights import check_rights  # noqa: E402 — DCLM authority: rights first
+from rights import check_rights, issue_component_capability  # noqa: E402 — DCLM authority: rights first
+CAPABILITY = issue_component_capability("dclm.tap")  # DCX-02: authenticated component principal — a held object, not a caller-asserted string
 from writes import CommitStore, dclm_commit, sign_commit  # noqa: E402
 from purify import (  # noqa: E402 — the purification medium: checks, never commits
     purify_input,
@@ -789,7 +790,7 @@ class Tapper:
         self._assert_receipt_labeled(receipt)
         rights_verdict = check_rights(
             identity, KIND_TAP_OUTFLOW,
-            {"internal": "dclm.tap", "schema": SCHEMA,
+            {"internal": CAPABILITY, "schema": SCHEMA,
              "season": verdict.season_id, "tap_approved": True},
         )
         # PURIFY IN FLIGHT: the outflow transition is checked — kind

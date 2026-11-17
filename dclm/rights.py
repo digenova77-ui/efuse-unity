@@ -46,10 +46,13 @@ onboarder pipeline's (onboard.py — Residual Law Finance onboarder ->
 residual -> tokenomics flywheel); SEED_ISSUE is the one-seed issuer's
 (seed.py — David's law: one free seed per Unity ID, price 0, cost 0,
 non-transferable, non-spendable).
-All GRANT only for a DCLM-internal source (context["internal"] like
-"dclm.meter" / "dclm.tokenize" / "dclm.winter" / "dclm.share" /
-"dclm.onboard") — a client naming a write kind is denied with
-INTERNAL_SOURCE_REQUIRED.
+All GRANT only for an authenticated DCLM-internal source: the caller
+must present a ComponentCapability issued by this module
+(issue_component_capability) in context["internal"]. A caller-controlled
+string naming a component ("dclm.meter" and kin) is NOT proof of an
+internal principal and is denied with INTERNAL_SOURCE_REQUIRED — a
+client naming a write kind has no path. (DCX-02: component identity is
+authenticated by a held capability object, never asserted by data.)
 
 GATES (absolute — evaluated before the action matrix)
 -----------------------------------------------------
@@ -215,6 +218,70 @@ class RightsVerdict:
 
 
 # ---------------------------------------------------------------------------
+# component capabilities (DCX-02) — authenticated internal principals
+# ---------------------------------------------------------------------------
+
+_MINT = object()  # module-private sentinel; only the issuer below holds it
+
+
+class ComponentCapability:
+    """An authenticated DCLM component principal.
+
+    A capability is an OBJECT a component holds, not data a caller can
+    write: it cannot be constructed from strings, dicts, or JSON — the
+    constructor refuses any call that does not present this module's
+    private mint sentinel, which only issue_component_capability()
+    holds. check_rights accepts the write tier only when
+    context["internal"] is a capability this module actually issued
+    (registry membership by identity). The component name is read from
+    the capability, never from caller-supplied text.
+    """
+
+    __slots__ = ("_component",)
+
+    def __init__(self, component, _mint=None):
+        if _mint is not _MINT:
+            raise TypeError(
+                "ComponentCapability is issued by "
+                "rights.issue_component_capability(), not constructed"
+            )
+        self._component = component
+
+    @property
+    def component(self):
+        return self._component
+
+    def __repr__(self):
+        return f"<ComponentCapability {self._component}>"
+
+
+_ISSUED_CAPABILITIES = set()
+
+
+def issue_component_capability(component):
+    """Mint the capability for one DCLM component (e.g. "dclm.meter").
+
+    Issuance is the trust boundary: component modules call this once,
+    at import time, for their own name, and present the returned object
+    in context["internal"] on every write-tier check. Anything that is
+    not an object returned by this function — above all a bare string —
+    is not an internal principal.
+    """
+    if not (isinstance(component, str) and component.startswith("dclm.")):
+        raise ValueError("component must be a 'dclm.*' name")
+    cap = ComponentCapability(component, _mint=_MINT)
+    _ISSUED_CAPABILITIES.add(cap)
+    return cap
+
+
+def _is_authenticated_internal(internal):
+    return (
+        isinstance(internal, ComponentCapability)
+        and internal in _ISSUED_CAPABILITIES
+    )
+
+
+# ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
 
@@ -257,9 +324,10 @@ def check_rights(identity, action, context=None):
         assert_as_truth        — with claim_signed falsy -> DENY
         claim_signed           — the claim carries a verifiable signature
         meter_approved         — must be exactly True for SEARCH/COMPUTE
-        internal               — DCLM component name ("dclm.*") for the
-                                 write tier; clients cannot supply this
-                                 from outside DCLM
+        internal               — a ComponentCapability issued by this
+                                 module (issue_component_capability) for
+                                 the write tier; a bare "dclm.*" string is
+                                 caller-asserted data and never suffices
 
     Returns a frozen RightsVerdict(GRANT|DENY, reason).
     """
@@ -296,11 +364,11 @@ def _check_rights(identity, action, context):
     # --- write tier: DCLM-internal commits only --------------------------
     if act in COMMIT_KINDS:
         internal = ctx.get("internal")
-        if not (
-            isinstance(internal, str) and internal.startswith("dclm.")
-        ):
+        if not _is_authenticated_internal(internal):
             # A client naming a write kind has no path: only DCLM
-            # components commit.
+            # components commit, and a component proves itself with a
+            # held capability — a caller-controlled string claiming a
+            # component name is not proof of an internal principal.
             return _deny(REASON_INTERNAL_SOURCE_REQUIRED, identity, action)
         if not identity:
             return _deny(REASON_IDENTITY_REQUIRED, identity, action)

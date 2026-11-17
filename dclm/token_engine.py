@@ -136,7 +136,8 @@ from dataclasses import dataclass, field
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-from rights import check_rights  # noqa: E402 — DCLM authority: rights first
+from rights import check_rights, issue_component_capability  # noqa: E402 — DCLM authority: rights first
+CAPABILITY = issue_component_capability("dclm.tokenize")  # DCX-02: authenticated component principal — a held object, not a caller-asserted string
 from purify import (  # noqa: E402 — the purification medium: checks, never commits
     PurificationRefused,
     purify_input,
@@ -1777,7 +1778,7 @@ class Tokenizer:
         import dataclasses
         verdict = check_rights(
             identity, kind,
-            {"internal": "dclm.tokenize", "schema": SCHEMA},
+            {"internal": CAPABILITY, "schema": SCHEMA},
         )
         # PURIFY IN FLIGHT: the transition itself is checked — kind
         # whitelisted, receipt planned and labeled, the change declared
