@@ -64,13 +64,29 @@ jobs:
         run: python -m compileall -q dclm
       - name: Run rights and write-boundary tests
         run: |
-          set -e
-          python dclm/test_rights_writes.py
-          python dclm/test_meter.py
-          python dclm/test_helpers.py
-          python dclm/test_onboard.py
-          python dclm/test_seed.py
-          python dclm/test_share.py
-          python dclm/test_tap.py
-          python dclm/test_tokenize.py
-          python dclm/test_winter.py
+          failed=0
+          run_suite() {
+            suite="$1"
+            echo "::group::${suite}"
+            if python "dclm/${suite}"; then
+              echo "::notice::${suite} passed"
+            else
+              code=$?
+              echo "::error::${suite} failed with exit code ${code}"
+              failed=1
+            fi
+            echo "::endgroup::"
+          }
+          for suite in \
+            test_rights_writes.py \
+            test_meter.py \
+            test_helpers.py \
+            test_onboard.py \
+            test_seed.py \
+            test_share.py \
+            test_tap.py \
+            test_tokenize.py \
+            test_winter.py; do
+            run_suite "${suite}"
+          done
+          exit "${failed}"
