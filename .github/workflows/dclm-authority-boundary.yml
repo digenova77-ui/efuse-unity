@@ -29,6 +29,7 @@ on:
       - "dclm/rights.py"
       - "dclm/writes.py"
       - "dclm/test_rights_writes.py"
+      - "dclm/test_data.py"
       - "dclm/test_winter.py"
       - "dclm/test_tap.py"
       - "dclm/test_tokenize.py"
