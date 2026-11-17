@@ -124,6 +124,9 @@ class SeedTest(unittest.TestCase):
             "manifest_hash": _mh({"fund": w.unity_id, "amount": amount}),
             "epoch": "test",
         }
+        # The wallet's lawful emission authority signs the receipt. Never
+        # bypass CRITICAL-4 just to fund a test fixture.
+        receipt = ecowallet.sign_emission_receipt(receipt)
         ecowallet.receive_emission(w, amount, receipt)
 
     # -- 1. one seed per ID ------------------------------------------------
