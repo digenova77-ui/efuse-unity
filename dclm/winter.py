@@ -67,7 +67,8 @@ from meter import (  # noqa: E402 — reuse the ledger + signing path
     Wallet,
     sign_receipt,
 )
-from rights import check_rights  # noqa: E402 — DCLM authority: rights first
+from rights import check_rights, issue_component_capability  # noqa: E402 — DCLM authority: rights first
+CAPABILITY = issue_component_capability("dclm.winter")  # DCX-02: authenticated component principal — a held object, not a caller-asserted string
 from purify import (  # noqa: E402 — the purification medium: checks, never commits
     purify_input,
     purify_output,
@@ -813,7 +814,7 @@ def winter_store(identity, amount, reason, *, wallet=None, reserve=None,
     # signed receipt. The thin client has no path here.
     verdict = check_rights(
         identity, "WINTER_STORE",
-        {"internal": "dclm.winter", "schema": SCHEMA,
+        {"internal": CAPABILITY, "schema": SCHEMA,
          "winter_approved": True, "gradient": state.gradient},
     )
     # PURIFY IN FLIGHT: the store transition is checked — kind
@@ -928,7 +929,7 @@ def winter_release(identity, amount, reason, *, wallet=None, reserve=None,
     # RIGHTS, then WRITE: same single commit path as the store.
     verdict = check_rights(
         identity, "WINTER_RELEASE",
-        {"internal": "dclm.winter", "schema": SCHEMA,
+        {"internal": CAPABILITY, "schema": SCHEMA,
          "winter_approved": True, "gradient": state.gradient},
     )
     # PURIFY IN FLIGHT: the release transition is checked before

@@ -124,6 +124,9 @@ class SeedTest(unittest.TestCase):
             "manifest_hash": _mh({"fund": w.unity_id, "amount": amount}),
             "epoch": "test",
         }
+        # The wallet's lawful emission authority signs the receipt. Never
+        # bypass CRITICAL-4 just to fund a test fixture.
+        receipt = ecowallet.sign_emission_receipt(receipt)
         ecowallet.receive_emission(w, amount, receipt)
 
     # -- 1. one seed per ID ------------------------------------------------
@@ -327,7 +330,7 @@ class SeedTest(unittest.TestCase):
         self.assertIn(KIND_SEED_ISSUE, COMMIT_KINDS)
         # GRANT only for the DCLM-internal seed component.
         granted = check_rights(UID_A, KIND_SEED_ISSUE,
-                               {"internal": "dclm.seed", "schema": sd.SCHEMA})
+                               {"internal": sd.CAPABILITY, "schema": sd.SCHEMA})
         self.assertEqual(granted.verdict, "GRANT")
         # A client naming SEED_ISSUE is denied.
         denied = check_rights(UID_A, KIND_SEED_ISSUE, {})

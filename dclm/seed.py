@@ -94,7 +94,8 @@ from dataclasses import dataclass
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-from rights import check_rights  # noqa: E402 — DCLM authority: rights first
+from rights import check_rights, issue_component_capability  # noqa: E402 — DCLM authority: rights first
+CAPABILITY = issue_component_capability("dclm.seed")  # DCX-02: authenticated component principal — a held object, not a caller-asserted string
 from purify import (  # noqa: E402 — the purification medium: checks, never commits
     purify_input,
     purify_output,
@@ -517,7 +518,7 @@ class Seeder:
 
         verdict = check_rights(
             uid, KIND_SEED_ISSUE,
-            {"internal": "dclm.seed", "schema": SCHEMA},
+            {"internal": CAPABILITY, "schema": SCHEMA},
         )
         import dataclasses
         receipt_dict = _normalize_jsonable(dataclasses.asdict(record))

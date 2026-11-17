@@ -80,7 +80,8 @@ from datetime import datetime, timezone
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-from rights import check_rights  # noqa: E402 — DCLM authority: rights first
+from rights import check_rights, issue_component_capability  # noqa: E402 — DCLM authority: rights first
+CAPABILITY = issue_component_capability("dclm.share")  # DCX-02: authenticated component principal — a held object, not a caller-asserted string
 from purify import (  # noqa: E402 — the purification medium: checks, never commits
     purify_input,
     purify_output,
@@ -478,7 +479,7 @@ def issue_grant(granter, grantee, tier, content_type, depth, duration,
     # -- RIGHTS: DCLM authorizes ------------------------------------------
     verdict = check_rights(
         granter, KIND_GRANT_ISSUE,
-        {"internal": "dclm.share", "schema": SCHEMA, "tier": tier},
+        {"internal": CAPABILITY, "schema": SCHEMA, "tier": tier},
     )
 
     # -- the grant: tier as an INTEGER inside the signed body --------------
@@ -588,7 +589,7 @@ def revoke_grant(granter, grant_id, *, store, now=None):
 
     verdict = check_rights(
         granter, KIND_GRANT_REVOKE,
-        {"internal": "dclm.share", "schema": SCHEMA, "grant_id": grant_id},
+        {"internal": CAPABILITY, "schema": SCHEMA, "grant_id": grant_id},
     )
     payload = {
         "grant_id": grant_id,
@@ -833,7 +834,7 @@ def access(grantee, grant_id, action, *, store, wallet, now=None):
         }
         verdict = check_rights(
             grantee, "LEDGER_DEBIT",
-            {"internal": "dclm.share", "schema": SCHEMA,
+            {"internal": CAPABILITY, "schema": SCHEMA,
              "grant": grant_id, "operation": "SHARED_ACCESS_DEBIT"},
         )
         # PURIFY IN FLIGHT: the accessor's debit transition is checked
@@ -882,7 +883,7 @@ def access(grantee, grant_id, action, *, store, wallet, now=None):
         }
         verdict = check_rights(
             granter, "LEDGER_CREDIT",
-            {"internal": "dclm.share", "schema": SCHEMA,
+            {"internal": CAPABILITY, "schema": SCHEMA,
              "grant": grant_id, "operation": "SHARED_ACCESS_CREDIT"},
         )
         # PURIFY IN FLIGHT: the granter's credit transition is checked
@@ -936,7 +937,7 @@ def access(grantee, grant_id, action, *, store, wallet, now=None):
     }
     verdict = check_rights(
         grantee, KIND_SHARED_ACCESS,
-        {"internal": "dclm.share", "schema": SCHEMA, "grant": grant_id},
+        {"internal": CAPABILITY, "schema": SCHEMA, "grant": grant_id},
     )
     # PURIFY IN FLIGHT: the access-event transition is checked before
     # writes.py commits.

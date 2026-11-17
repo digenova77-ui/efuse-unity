@@ -1,0 +1,92 @@
+name: DCLM Authority Boundary
+
+on:
+  pull_request:
+    paths:
+      - "dclm/rights.py"
+      - "dclm/writes.py"
+      - "dclm/test_rights_writes.py"
+      - "dclm/test_winter.py"
+      - "dclm/test_tap.py"
+      - "dclm/test_tokenize.py"
+      - "dclm/test_seed.py"
+      - "dclm/test_helpers.py"
+      - "dclm/test_onboard.py"
+      - "dclm/test_share.py"
+      - "dclm/test_meter.py"
+      - "dclm/meter.py"
+      - "dclm/helpers.py"
+      - "dclm/onboard.py"
+      - "dclm/seed.py"
+      - "dclm/share.py"
+      - "dclm/tap.py"
+      - "dclm/token_engine.py"
+      - "dclm/winter.py"
+      - ".github/workflows/dclm-authority-boundary.yml"
+  push:
+    paths:
+      - "dclm/rights.py"
+      - "dclm/writes.py"
+      - "dclm/test_rights_writes.py"
+      - "dclm/test_winter.py"
+      - "dclm/test_tap.py"
+      - "dclm/test_tokenize.py"
+      - "dclm/test_seed.py"
+      - "dclm/test_helpers.py"
+      - "dclm/test_onboard.py"
+      - "dclm/test_share.py"
+      - "dclm/test_meter.py"
+      - "dclm/meter.py"
+      - "dclm/helpers.py"
+      - "dclm/onboard.py"
+      - "dclm/seed.py"
+      - "dclm/share.py"
+      - "dclm/tap.py"
+      - "dclm/token_engine.py"
+      - "dclm/winter.py"
+      - ".github/workflows/dclm-authority-boundary.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  dclm-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile DCLM
+        run: python -m compileall -q dclm
+      - name: Run rights and write-boundary tests
+        run: |
+          failed=0
+          run_suite() {
+            suite="$1"
+            echo "::group::${suite}"
+            if python "dclm/${suite}"; then
+              echo "::notice::${suite} passed"
+            else
+              code=$?
+              echo "::error::${suite} failed with exit code ${code}"
+              failed=1
+            fi
+            echo "::endgroup::"
+          }
+          for suite in \
+            test_rights_writes.py \
+            test_meter.py \
+            test_helpers.py \
+            test_onboard.py \
+            test_seed.py \
+            test_share.py \
+            test_tap.py \
+            test_tokenize.py \
+            test_winter.py; do
+            run_suite "${suite}"
+          done
+          exit "${failed}"
