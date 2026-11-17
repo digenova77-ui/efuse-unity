@@ -6,6 +6,14 @@ on:
       - "dclm/rights.py"
       - "dclm/writes.py"
       - "dclm/test_rights_writes.py"
+      - "dclm/test_winter.py"
+      - "dclm/test_tap.py"
+      - "dclm/test_tokenize.py"
+      - "dclm/test_seed.py"
+      - "dclm/test_helpers.py"
+      - "dclm/test_onboard.py"
+      - "dclm/test_share.py"
+      - "dclm/test_meter.py"
       - "dclm/meter.py"
       - "dclm/helpers.py"
       - "dclm/onboard.py"
@@ -47,4 +55,14 @@ jobs:
       - name: Compile DCLM
         run: python -m compileall -q dclm
       - name: Run rights and write-boundary tests
-        run: python dclm/test_rights_writes.py
+        run: |
+          set -e
+          python dclm/test_rights_writes.py
+          python dclm/test_meter.py
+          python dclm/test_helpers.py
+          python dclm/test_onboard.py
+          python dclm/test_seed.py
+          python dclm/test_share.py
+          python dclm/test_tap.py
+          python dclm/test_tokenize.py
+          python dclm/test_winter.py
