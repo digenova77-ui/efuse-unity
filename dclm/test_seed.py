@@ -327,7 +327,7 @@ class SeedTest(unittest.TestCase):
         self.assertIn(KIND_SEED_ISSUE, COMMIT_KINDS)
         # GRANT only for the DCLM-internal seed component.
         granted = check_rights(UID_A, KIND_SEED_ISSUE,
-                               {"internal": "dclm.seed", "schema": sd.SCHEMA})
+                               {"internal": sd.CAPABILITY, "schema": sd.SCHEMA})
         self.assertEqual(granted.verdict, "GRANT")
         # A client naming SEED_ISSUE is denied.
         denied = check_rights(UID_A, KIND_SEED_ISSUE, {})
