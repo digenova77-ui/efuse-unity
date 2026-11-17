@@ -7,6 +7,7 @@ on:
       - "dclm/writes.py"
       - "dclm/test_rights_writes.py"
       - "dclm/test_winter.py"
+      - "dclm/test_data.py"
       - "dclm/test_tap.py"
       - "dclm/test_tokenize.py"
       - "dclm/test_seed.py"
@@ -28,6 +29,7 @@ on:
       - "dclm/rights.py"
       - "dclm/writes.py"
       - "dclm/test_rights_writes.py"
+      - "dclm/test_data.py"
       - "dclm/test_winter.py"
       - "dclm/test_tap.py"
       - "dclm/test_tokenize.py"
@@ -86,7 +88,8 @@ jobs:
             test_share.py \
             test_tap.py \
             test_tokenize.py \
-            test_winter.py; do
+            test_winter.py \
+            test_data.py; do
             run_suite "${suite}"
           done
           exit "${failed}"
