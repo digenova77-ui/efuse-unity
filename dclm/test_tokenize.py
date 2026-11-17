@@ -1032,7 +1032,7 @@ class TestMintExclusivity(unittest.TestCase):
                      "MERIT_TRANSFER"):
             self.assertIn(kind, COMMIT_KINDS)
             granted = check_rights(TEST_IDENTITY, kind,
-                                   {"internal": "dclm.tokenize",
+                                   {"internal": eng.CAPABILITY,
                                     "schema": "unity.tokenize.v1.testnet"})
             self.assertEqual(granted.verdict, "GRANT", f"for {kind}")
             # A client naming the kind — no internal source — is denied.
@@ -1042,13 +1042,13 @@ class TestMintExclusivity(unittest.TestCase):
     def test_dead_sale_kind_not_whitelisted(self):
         self.assertNotIn("UNITY_SALE", COMMIT_KINDS)
         denied = check_rights(TEST_IDENTITY, "UNITY_SALE",
-                              {"internal": "dclm.tokenize",
+                              {"internal": eng.CAPABILITY,
                                "schema": "unity.tokenize.v1.testnet"})
         self.assertEqual(denied.verdict, "DENY")
 
     def test_production_schema_denied_at_rights_gate(self):
         v = check_rights(TEST_IDENTITY, "TOKEN_MINT",
-                         {"internal": "dclm.tokenize",
+                         {"internal": eng.CAPABILITY,
                           "schema": "unity.tokenize.v1"})
         self.assertEqual(v.verdict, "DENY")
 
