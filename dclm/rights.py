@@ -68,6 +68,7 @@ schema never authorizes.
 """
 
 from dataclasses import dataclass
+from types import MappingProxyType
 
 # ---------------------------------------------------------------------------
 # Verdicts and reasons
@@ -233,7 +234,7 @@ class RightsVerdict:
 # Kinds absent from this mapping remain in COMMIT_KINDS for compatibility
 # but cannot receive a GRANT through this component-capability path until
 # an owner and policy are explicitly established.
-COMPONENT_KIND_POLICY = {
+COMPONENT_KIND_POLICY = MappingProxyType({
     "dclm.meter": frozenset({"LEDGER_CREDIT", "LEDGER_DEBIT"}),
     "dclm.helpers": frozenset({
         "HELPER_ASSIGN", "HELPER_STAGE", "HELPER_HANDOFF", "HELPER_WELCOME",
@@ -251,7 +252,7 @@ COMPONENT_KIND_POLICY = {
         "TOKEN_MINT", "MERIT_ACCRUAL", "HONOR_RECORD", "MERIT_TRANSFER",
     }),
     "dclm.winter": frozenset({"WINTER_STORE", "WINTER_RELEASE"}),
-}
+})
 
 _MINT = object()
 _ISSUED_CAPABILITIES = set()
