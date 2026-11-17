@@ -269,10 +269,13 @@ def pricing_index(prices_path=PRICES_MD):
         return {
             "rows": [], "parsed": 0, "expected": expected,
             "unknown_rows": 0, "provenance": "UNKNOWN",
+            "source_status": "MISSING", "source_sha256": None,
             "note": f"PRICES.md not found at {prices_path}",
         }
-    with open(prices_path, encoding="utf-8") as fh:
-        md = fh.read()
+    with open(prices_path, "rb") as fh:
+        source_bytes = fh.read()
+    source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+    md = source_bytes.decode("utf-8")
 
     # 1. Factory verdicts table (33 rows).
     for r in _parse_markdown_table(md, "### 1. Factory verdicts"):
@@ -311,7 +314,7 @@ def pricing_index(prices_path=PRICES_MD):
                 ln.strip("- ").strip() for ln in block.splitlines()[1:]
             )) if block else [],
             "claim_hash": None,
-            "provenance": "REAL" if block else "UNKNOWN",
+            "provenance": "REPORTED" if block else "UNKNOWN",
         })
 
     # 3. Claims register table (16 rows) — the verdict IS the price.
@@ -335,12 +338,18 @@ def pricing_index(prices_path=PRICES_MD):
         1 for r in rows
         if r.get("parse_error") or r.get("provenance") == "UNKNOWN"
     )
+    for row in rows:
+        row["source_sha256"] = source_sha256
+        row["source_status"] = "CONTENT_AVAILABLE"
+
     return {
         "rows": rows,
         "parsed": len(rows),
         "expected": expected,
         "unknown_rows": unknown_rows,
         "provenance": "REPORTED",
+        "source_status": "CONTENT_AVAILABLE",
+        "source_sha256": source_sha256,
     }
 
 
