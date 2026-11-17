@@ -192,6 +192,10 @@ class TestRightsPurity(unittest.TestCase):
                 self.assertEqual(denied.verdict, DENY, f"{component} must not grant {kind}")
                 self.assertEqual(denied.reason, REASON_COMPONENT_KIND_NOT_ALLOWED)
 
+    def test_component_policy_registry_is_immutable(self):
+        with self.assertRaises(TypeError):
+            COMPONENT_KIND_POLICY["dclm.meter"] = frozenset(COMMIT_KINDS)
+
     def test_unregistered_component_cannot_mint_capability(self):
         for component in ("dclm.unknown", "dclm.meter.extra", "evil.client", "", None):
             with self.assertRaises(ValueError):
