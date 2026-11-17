@@ -197,7 +197,7 @@ class TestRightsPurity(unittest.TestCase):
 
     def test_bare_component_labels_are_never_capabilities(self):
         for kind in COMMIT_KINDS:
-            denied = check_rights(TEST_IDENTITY, kind, {"internal": METER_CAPABILITY})
+            denied = check_rights(TEST_IDENTITY, kind, {"internal": "dclm.meter"})
             self.assertEqual(denied.verdict, DENY, f"bare label: {kind}")
             self.assertEqual(denied.reason, REASON_INTERNAL_SOURCE_REQUIRED)
 
