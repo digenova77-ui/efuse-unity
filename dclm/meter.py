@@ -56,7 +56,8 @@ from compute import (  # noqa: E402 — reuse the existing test key material
     TEST_PRIV_KEY,
     TEST_PUB_KEY,
 )
-from rights import check_rights  # noqa: E402 — DCLM authority: rights first
+from rights import check_rights, issue_component_capability  # noqa: E402 — DCLM authority: rights first
+CAPABILITY = issue_component_capability("dclm.meter")  # DCX-02: authenticated component principal — a held object, not a caller-asserted string
 from writes import CommitStore, dclm_commit  # noqa: E402 — the single commit path
 from purify import (  # noqa: E402 — the purification medium: checks, never commits
     purify_input,
@@ -409,7 +410,7 @@ class Wallet:
         # path here — this is DCLM-internal.
         verdict = check_rights(
             identity, "LEDGER_CREDIT",
-            {"internal": "dclm.meter", "schema": SCHEMA,
+            {"internal": CAPABILITY, "schema": SCHEMA,
              "operation": "FAUCET", "amount": amount},
         )
         # PURIFY IN FLIGHT: the transition itself is checked — kind
@@ -575,7 +576,7 @@ class Wallet:
         # has no path here — this is DCLM-internal.
         verdict = check_rights(
             identity, "LEDGER_DEBIT",
-            {"internal": "dclm.meter", "schema": SCHEMA,
+            {"internal": CAPABILITY, "schema": SCHEMA,
              "intent": action, "meter_approved": True},
         )
         # PURIFY IN FLIGHT: the debit transition is checked — kind
