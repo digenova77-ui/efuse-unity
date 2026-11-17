@@ -216,6 +216,12 @@ class TestPricingParsing(unittest.TestCase):
             self.assertIn("not found", pricing["note"])
         else:
             self.assertEqual(pricing["parsed"], 51)
+            self.assertEqual(pricing["source_status"], "CONTENT_AVAILABLE")
+            self.assertRegex(pricing["source_sha256"], r"^[0-9a-f]{64}$")
+            self.assertTrue(all(
+                row["source_sha256"] == pricing["source_sha256"]
+                for row in pricing["rows"]
+            ))
 
     def test_factory_rows_are_not_invented_when_source_absent(self):
         pricing = pricing_index()
