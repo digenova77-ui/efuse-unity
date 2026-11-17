@@ -1,0 +1,50 @@
+name: DCLM Authority Boundary
+
+on:
+  pull_request:
+    paths:
+      - "dclm/rights.py"
+      - "dclm/writes.py"
+      - "dclm/test_rights_writes.py"
+      - "dclm/meter.py"
+      - "dclm/helpers.py"
+      - "dclm/onboard.py"
+      - "dclm/seed.py"
+      - "dclm/share.py"
+      - "dclm/tap.py"
+      - "dclm/token_engine.py"
+      - "dclm/winter.py"
+      - ".github/workflows/dclm-authority-boundary.yml"
+  push:
+    paths:
+      - "dclm/rights.py"
+      - "dclm/writes.py"
+      - "dclm/test_rights_writes.py"
+      - "dclm/meter.py"
+      - "dclm/helpers.py"
+      - "dclm/onboard.py"
+      - "dclm/seed.py"
+      - "dclm/share.py"
+      - "dclm/tap.py"
+      - "dclm/token_engine.py"
+      - "dclm/winter.py"
+      - ".github/workflows/dclm-authority-boundary.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  dclm-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile DCLM
+        run: python -m compileall -q dclm
+      - name: Run rights and write-boundary tests
+        run: python dclm/test_rights_writes.py
