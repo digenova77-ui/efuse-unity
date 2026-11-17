@@ -27,6 +27,7 @@ from rights import (  # noqa: E402
     check_rights,
 )
 from winter import (  # noqa: E402
+    CAPABILITY,
     EMISSION_FLOOR,
     LABEL_SUMMER,
     LABEL_TILTING,
@@ -419,7 +420,7 @@ class RightsBoundaryTests(unittest.TestCase):
     def test_winter_kinds_grant_for_dclm_internal_only(self):
         for kind in ("WINTER_STORE", "WINTER_RELEASE"):
             granted = check_rights(TEST_IDENTITY, kind,
-                                   {"internal": "dclm.winter"})
+                                   {"internal": CAPABILITY})
             self.assertEqual(granted.verdict, GRANT, f"for {kind}")
             denied = check_rights(TEST_IDENTITY, kind, {})
             self.assertEqual(denied.verdict, DENY, f"for {kind}")
@@ -430,7 +431,7 @@ class RightsBoundaryTests(unittest.TestCase):
         for kind in ("WINTER_STORE", "WINTER_RELEASE"):
             store = MemoryCommitStore()
             verdict = check_rights(TEST_IDENTITY, kind,
-                                   {"internal": "dclm.winter"})
+                                   {"internal": CAPABILITY})
             env = dclm_commit(kind, {"kind": kind, "provenance": "DERIVED"},
                               verdict, store)
             self.assertTrue(verify_commit(env), f"for {kind}")
