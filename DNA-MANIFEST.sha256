@@ -1,0 +1,47 @@
+# DNA-MANIFEST.sha256 — efuse-unity (repo root)
+#
+# Published under Unification Plan landing F-4 (founder act: "Authorize the canon
+# manifest landings in efuse-unity and dualiscapax-landing"). Plan:
+# ~/workspace/research_notes/unification-plan-20261118/plan.md (sha256 f288ae1c…).
+# Preparation package: ~/workspace/research_notes/unification-f4-package-20261118/.
+#
+# GOVERNING CANON — F-1 RULED (DR-803, Nov 18, 2026):
+# The governing canon for Tip 1.7.3 is ruled to be the Tip text identified by
+# digest ea125462ca41d9ebbd9d5305d90cd525de6fd1f964a39fe6de38b765669b3685.
+# Its identical presence in both designated homes establishes the canonical byte
+# identity. Earlier versions and separate works remain preserved, historically
+# labelled and non-governing for this question. No material is deleted or
+# overwritten.
+#
+# CANON BYTE IDENTITY (P-1, DR-802): the CANON.md at this repo's root was pulled
+# through the connector and sha256'd at Idris's seat from the pulled bytes —
+# 25,297 B, byte-identical to the workspace Tip 1.7.3
+# (~/workspace/verify-20261110-narrowing/CANON.md), cmp clean. Git blob SHA-1 of
+# the repo copy: 125198ab0d91456b715ed89fe4edf4ff5cadcb5a. The hash line below
+# publishes that sha256 beside the blob, ending the hash-species blindness for
+# this file.
+ea125462ca41d9ebbd9d5305d90cd525de6fd1f964a39fe6de38b765669b3685  CANON.md
+#
+# STRAND STATES — efuse-unity:
+# · ENGINE: dclm/ is the canonical engine home (estate census, DR-799 §1).
+# · GAUNTLET PRs #12 / #14 / #15 / #16: REPAIR-IN-DRAFT — repair drafts, never
+#   law. Nothing in them governs.
+# · IRIS-INTAKE CORPUS (iris-intake/corpus/): a snapshot mirror of this repo's
+#   root and dclm/ documents, blob-verified faithful at the Atlas census
+#   (Oct 25, 2026). REFRESH RULE: TO BE WRITTEN. No refresh rule is stated in
+#   the Atlas (§3: "a snapshot with no stated refresh rule") or in the DR-799
+#   census (§2 names it "the corpus snapshot's missing refresh rule"); this
+#   manifest does not invent one. Until a rule is written and adopted, the
+#   corpus is a snapshot of record, not a living mirror, and drift from the
+#   root copies is possible and unchecked.
+#
+# PURITY_STATUS (P-3 dialect map, DR-802): five dialects estate-wide; the
+# canonical CANDIDATE is this repo's dclm/purity_status.py (7,153 B at the
+# P-3 pull). The hash line below is the P-3 pulled-bytes hash — EVIDENCE for
+# founder act F-6, NOT a pin and NOT an adoption: no canonical designation has
+# been made. F-6, if taken, pins the hash from a fresh pull at adoption time
+# (this file has drifted before: 1,771 B -> 7,153 B between October and
+# November 2026). The other four dialects (dualiscapax-law-core .rs ·
+# dualiscapax-hud .js · dccp-world .ts · unity-playground .ts) are dialects,
+# not rivals; their conformance is a test-queue question, not an editor's.
+336cce44a1670acaa8238d46193b3ca6ebfe445114894ef83f349426b197e221  dclm/purity_status.py
